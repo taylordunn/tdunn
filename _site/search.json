@@ -1,0 +1,20 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "About this blog",
+      "description": "Some additional details about the blog",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-05-06T19:32:54-04:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Taylor Dunn's personal website",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-05-06T19:32:54-04:00"
+    }
+  ],
+  "collections": ["posts/posts.json"]
+}
