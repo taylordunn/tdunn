@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Taylor Dunn</title>
+    <link>https://tdunn.ca</link>
+    <atom:link href="https://tdunn.ca/index.xml" rel="self" type="application/rss+xml"/>
+    <description>My personal website
+</description>
+    <image>
+      <title>Taylor Dunn</title>
+      <url>https://tdunn.ca/td.ico</url>
+      <link>https://tdunn.ca</link>
+    </image>
+    <generator>Distill</generator>
+    <lastBuildDate>Thu, 06 May 2021 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>test-post</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2021-05-06-test-post</link>
+      <description>A short description of the post.</description>
+      <guid>https://tdunn.ca/posts/2021-05-06-test-post</guid>
+      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2021-05-06-test-post/test-post_files/figure-html5/unnamed-chunk-1-1.png" medium="image" type="image/png" width="1248" height="768"/>
+    </item>
+    <item>
+      <title>Welcome to Taylor Dunn's personal website</title>
+      <dc:creator>Nora Jones</dc:creator>
+      <link>https://tdunn.ca/posts/welcome</link>
+      <description>Welcome to our new blog, Taylor Dunn's personal website. We hope you enjoy 
+reading what we have to say!</description>
+      <guid>https://tdunn.ca/posts/welcome</guid>
+      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
+    </item>
+  </channel>
+</rss>
