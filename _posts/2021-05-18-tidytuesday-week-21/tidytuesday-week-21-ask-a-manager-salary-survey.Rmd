@@ -1,0 +1,167 @@
+---
+title: "TidyTuesday Week 21"
+description: |
+  #TidyTuesday 2021-05-18: Ask a Manager Salary Survey
+author:
+  - name: Taylor Dunn
+date: 05-18-2021
+categories:
+  - tidytuesday
+draft: false
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidytuesdayR)
+library(lubridate)
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+# Load the data
+
+```{r}
+tt <- tt_load("2021-05-18")
+```
+
+```{r eval=FALSE, include=FALSE}
+# Check out the README
+#tt
+```
+
+The data this week comes from the Ask a Manager Survey. From the README:
+
+>The salary survey a few weeks ago got a huge response — 24,000+ people shared their salaries and other info, which is a lot of raw data to sift through. Reader Elisabeth Engl kindly took the raw data and analyzed some of the trends in it and here’s what she found. (She asked me to note that she did this as a fun project to share some insights from the survey, rather than as a paid engagement.)
+>
+>This data does not reflect the general population; it reflects Ask a Manager readers who self-selected to respond, which is a very different group (as you can see just from the demographic breakdown below, which is very white and very female).
+
+# Explore the data
+
+It comes with just the single dataframe:
+
+```{r}
+survey <- tt$survey
+glimpse(survey)
+```
+
+Looks like each row corresponds to a single survey.
+`r nrow(survey)` survey responses is really impressive.
+Here is how those were gathered over time:
+
+```{r survey_timing}
+# Convert character timestamp to a datetime object so we can plot it
+survey <- survey %>%
+  mutate(
+    timestamp = lubridate::parse_date_time(timestamp, orders = "mdy HMS"),
+    survey_date = as.Date(timestamp)
+  )
+survey %>%
+  ggplot(aes(x = survey_date)) +
+  geom_bar(fill = td_colors$nice$day9_yellow, alpha = 0.6) +
+  scale_y_continuous(expand = expansion(c(0, 0.07))) +
+  scale_x_date(breaks = seq.Date(as.Date("2021-05-01"),
+                                 as.Date("2021-06-01"), by = "week"))
+```
+
+Over 10,000 responses in one day!
+
+Here are the age ranges:
+
+```{r}
+survey %>%
+  count(how_old_are_you)
+```
+
+Convert to an ordered factor:
+
+```{r fig.height=3}
+survey <- survey %>%
+  mutate(
+    age_range = fct_reorder(
+      how_old_are_you,
+      # This will order the factor by the first number in how_old_are_you
+      parse_number(how_old_are_you)
+    ) %>%
+      fct_relevel("under 18")
+  )
+survey %>%
+  ggplot(aes(y = age_range)) +
+  geom_bar(aes(fill = age_range), show.legend = FALSE) +
+  scale_fill_viridis_d() +
+  scale_x_continuous(expand = expansion(c(0, 0.05)))
+```
+
+Out of curiosity, these are the `r sum(survey$age_range == "under 18")` survey respondents listed as "under 18":
+
+```{r}
+survey %>%
+  filter(age_range == "under 18") %>%
+  select(industry, job_title, annual_salary, country,
+         overall_years_of_professional_experience)
+  #gt()
+```
+
+Some pretty impressive teenagers here.
+I think my favorite are the ones with more years of experience than years alive.
+
+As for the `industry` variable, I know from checking out [the survey itself](https://www.askamanager.org/2021/04/how-much-money-do-you-make-4.html) that there are 26 options, +1 "Other" option to enter free-text.
+Do the most frequent 26 `industry` correspond to those preset options:
+
+```{r}
+survey %>%
+  count(industry, sort = T) %>%
+  head(30)
+```
+Not quite, `industry` = "Publishing" is the 26th most frequent despite not being an option.
+Make a factor out of this variable, and group anything infrequent (<100 occurences) into "Other":
+
+```{r}
+survey <- survey %>%
+  mutate(
+    industry_factor = fct_infreq(industry) %>%
+      fct_lump_min(min = 100)
+  )
+survey %>%
+  ggplot(aes(y = industry_factor)) +
+  geom_bar(fill = td_colors$nice$indigo_blue) +
+  scale_x_continuous(expand = c(0, 0))
+```
+
+The "Other" category accounts for a lot of responses.
+
+The `job_title` variable is entirely free-text so will be difficult to use for any analysis/visualization, but here are the most common responses:
+
+```{r}
+survey %>%
+  count(job_title, sort = T)
+```
+
+How about job titles related to data or statistics or machine learning?
+
+```{r}
+survey %>%
+  filter(
+    str_detect(job_title,
+               regex("data|statistic|machine learn", ignore_case = TRUE))
+  ) %>%
+  count(job_title, sort = T)
+```
+
+I might check this out later -- quite a few responses.
+
+In terms of location, we have `country` `state`, `city`, but I'll just be looking at the country level for now:
+
+```{r}
+survey %>%
+  count(country, sort = T)
+```
+
+This is in need of some data cleaning obviously.
+There are a lot of variations on "United States" that should be consolidated:

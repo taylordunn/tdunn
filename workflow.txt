@@ -1,1 +1,34 @@
 distill::create_post()
+
+Add this to YAML until ready to publish:
+draft: true
+
+When done: hit the "Build Website" button or run
+rmarkdown::render_site()
+
+---
+TidyTuesday example
+---
+
+# To get last Tuesday
+tidytuesdayR::last_tuesday()
+# To get the full list of data
+tidytuesdayR::tt_datasets(year = 2021)
+
+distill::create_post(
+  title = "TidyTuesday Week 21: Ask a Manager Salary Survey",
+  collection = "tidytuesday",
+  date = tidytuesdayR::last_tuesday()
+)
+
+# Edit the yaml to have a description like
+#TidyTuesday 2021-05-18: Ask a Manager Salary Survey
+
+# Use renv
+renv::init("_tiedytuesday/2021-05-18-tidytuesday-week21")
+
+# Edit the RMarkdown
+echo=TRUE
+library(tidyverse)
+library(tidytuesdayR)
+library(dunnr)
