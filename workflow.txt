@@ -3,8 +3,11 @@ distill::create_post()
 Add this to YAML until ready to publish:
 draft: true
 
+Knit the RMarkdown document
+
 When done: hit the "Build Website" button or run
 rmarkdown::render_site()
+Push to GitHub
 
 ---
 TidyTuesday example

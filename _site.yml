@@ -23,7 +23,6 @@ twitter:
   site: "@TDunn12"
   creator: "@TDunn12"
 google_analytics: "UA-196523553-1"
-repository_url: https://github.com/taylordunn/tdunn
 favicon: images/td.ico
 output: distill::distill_article
 theme: theme.css
