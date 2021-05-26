@@ -27,7 +27,7 @@ distill::create_post(
 # Edit the yaml to have a description like
 #TidyTuesday 2021-05-18: Ask a Manager Salary Survey
 
-# Use renv
+# Use renv? Need to figure out a way to not create a new project
 renv::init("_tiedytuesday/2021-05-18-tidytuesday-week21")
 
 # Edit the RMarkdown
@@ -35,3 +35,7 @@ echo=TRUE
 library(tidyverse)
 library(tidytuesdayR)
 library(dunnr)
+
+# Use the chunk option
+preview=TRUE
+# to set the preview image of the article

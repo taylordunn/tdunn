@@ -690,7 +690,7 @@ survey_data %>%
   theme(legend.position = c(0.6, 0.7))
 ```
 
-```{r}
+```{r preview=TRUE}
 survey_data %>%
   ggplot(aes(y = job_title_factor, x = total_salary_cad)) +
   geom_boxplot(outlier.shape = NA) +
