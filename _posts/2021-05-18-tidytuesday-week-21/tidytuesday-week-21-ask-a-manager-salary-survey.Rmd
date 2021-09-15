@@ -4,12 +4,13 @@ description: |
   #TidyTuesday 2021-05-18: Ask a Manager Salary Survey
 author:
   - name: Taylor Dunn
-date: 05-18-2021
+date: 2021-05-18
 categories:
   - tidytuesday
 draft: false
 output:
   distill::distill_article:
+    toc: true
     self_contained: false
 ---
 
@@ -323,9 +324,11 @@ There are two variables related to years of experience:
 
 ```{r}
 survey %>%
-  count(overall_years_of_professional_experience)
+  count(overall_years_of_professional_experience) %>%
+  rmarkdown::paged_table()
 survey %>%
-  count(years_of_experience_in_field)
+  count(years_of_experience_in_field) %>%
+  rmarkdown::paged_table()
 ```
 
 The same 8 levels were used.
@@ -358,7 +361,8 @@ The `education` options:
 
 ```{r}
 survey %>%
-  count(highest_level_of_education_completed, sort = T)
+  count(highest_level_of_education_completed, sort = T) %>%
+  rmarkdown::paged_table()
 ```
 
 We'll put it in a factor manually ordered by the most years to complete (on average):
@@ -569,7 +573,8 @@ Distribution of `currency`:
 
 ```{r}
 survey_data %>%
-  count(currency)
+  count(currency) %>%
+  rmarkdown::paged_table()
 ```
 
 A single case of `currency` = "Other":
@@ -578,7 +583,8 @@ A single case of `currency` = "Other":
 survey_data %>%
   filter(currency == "Other") %>%
   select(annual_salary, other_monetary_comp, currency, currency_other,
-         additional_context_on_income, country, state)
+         additional_context_on_income, country, state) %>%
+  glimpse()
 ```
 
 Seems like they meant to put USD.
@@ -592,14 +598,16 @@ Distribution of `currency` by country:
 
 ```{r}
 survey_data %>%
-  count(currency, country_clean)
+  count(currency, country_clean) %>%
+  rmarkdown::paged_table()
 ```
 
 A single case of someone in Canada being paid in USD:
 
 ```{r}
 survey_data %>%
-  filter(currency == "USD", country_clean == "Canada")
+  filter(currency == "USD", country_clean == "Canada") %>%
+  glimpse()
 ```
 
 Since it is just the one case, I'll convert their salary to CAD using today's exchange rate:

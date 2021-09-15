@@ -24,5 +24,8 @@ twitter:
   creator: "@TDunn12"
 google_analytics: "UA-196523553-1"
 favicon: images/td.ico
-output: distill::distill_article
+output:
+  distill::distill_article:
+    includes:
+      in_header: utterances.html
 theme: theme.css

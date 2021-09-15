@@ -2155,7 +2155,7 @@ html {
   /*-- Main font sizes --*/
   --title-size:      50px;
   --body-size:       1.06rem;
-  --code-size:       14px;
+  --code-size:       12px;
   --aside-size:      12px;
   --fig-cap-size:    13px;
   /*-- Main font colors --*/
@@ -2213,6 +2213,20 @@ d-appendix {
 
 /*-- Additional custom styles --*/
 /* Add any additional CSS rules below                      */
+
+/* Change code snippet background color */
+/* https://github.com/rstudio/distill/issues/298#issuecomment-766374934 */
+d-article div.sourceCode pre {
+  background: #f5f5f5;
+}
+
+code {
+  background-color: #f5f5f5;
+}
+
+d-article pre  {
+  background-color: #f5f5f5;
+}
 </style>
 <style type="text/css">
 /* base style */
@@ -2380,6 +2394,44 @@ d-appendix d-footnote-list a.footnote-backlink {
   <script src="../../site_libs/webcomponents-2.0.0/webcomponents.js"></script>
   <script src="../../site_libs/distill-2.2.21/template.v2.js"></script>
   <!--radix_placeholder_site_in_header-->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!/posts/.test(location.pathname)) {
+      return;
+    }
+
+    var script = document.createElement("script");
+    script.src = "https://utteranc.es/client.js";
+    script.setAttribute("repo", "taylordunn/tdunn");
+    script.setAttribute("issue-term", "title");
+    script.setAttribute("crossorigin", "anonymous");
+    script.setAttribute("label", "comment");
+    script.setAttribute("theme", "github-light");
+
+    /* wait for article to load, append script to article element */
+    var observer = new MutationObserver(function (mutations, observer) {
+      var article = document.querySelector("d-article");
+      if (article) {
+        observer.disconnect();
+        /* HACK: article scroll */
+        article.setAttribute("style", "overflow-y: hidden");
+        article.appendChild(script);
+      }
+    });
+
+    observer.observe(document.body, { childList: true });
+  });
+</script>
+
+<!-- <script src="https://utteranc.es/client.js" -->
+<!--         repo="sciencificity/Blog_Vebash" -->
+<!--         issue-term="title" -->
+<!--         label="comments ðŸ’¬" -->
+<!--         theme="github-light" -->
+<!--         crossorigin="anonymous" -->
+<!--         async> -->
+<!-- </script> -->
+
 <script type="text/javascript" cookie-consent="tracking" async src="https://www.googletagmanager.com/gtag/js?id=UA-196523553-1"></script>
 <script type="text/javascript" cookie-consent="tracking">
 window.dataLayer = window.dataLayer || [];
