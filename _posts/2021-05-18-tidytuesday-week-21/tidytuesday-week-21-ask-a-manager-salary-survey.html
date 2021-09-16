@@ -111,7 +111,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","categories","draft","output"]}},"value":[{"type":"character","attributes":{},"value":["TidyTuesday Week 21"]},{"type":"character","attributes":{},"value":["#TidyTuesday 2021-05-18: Ask a Manager Salary Survey\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Taylor Dunn"]}]}]},{"type":"character","attributes":{},"value":["2021-05-18"]},{"type":"character","attributes":{},"value":["tidytuesday"]},{"type":"logical","attributes":{},"value":[false]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","params","categories","draft","output"]}},"value":[{"type":"character","attributes":{},"value":["TidyTuesday Week 21"]},{"type":"character","attributes":{},"value":["#TidyTuesday 2021-05-18: Ask a Manager Salary Survey\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Taylor Dunn"]}]}]},{"type":"character","attributes":{},"value":["2021-05-18"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["date","slug"]}},"value":[{"type":"character","attributes":{},"value":["2021-05-18"]},{"type":"character","attributes":{},"value":["tidytuesday-week-21"]}]},{"type":"character","attributes":{},"value":["tidytuesday"]},{"type":"logical","attributes":{},"value":[false]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -1490,6 +1490,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li><a href="#load-the-data">Load the data</a></li>
 <li><a href="#explore-the-data">Explore the data</a></li>
 <li><a href="#analysis">Analysis</a></li>
+<li><a href="#reproducibility">Reproducibility</a></li>
 </ul>
 </nav>
 </div>
@@ -1579,12 +1580,12 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="mowlbbblqv" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="qsadyftmop" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#mowlbbblqv .gt_table {
+#qsadyftmop .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -1609,7 +1610,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-left-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_heading {
+#qsadyftmop .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1621,7 +1622,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_title {
+#qsadyftmop .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1631,7 +1632,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-width: 0;
 }
 
-#mowlbbblqv .gt_subtitle {
+#qsadyftmop .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1641,13 +1642,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-width: 0;
 }
 
-#mowlbbblqv .gt_bottom_border {
+#qsadyftmop .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_col_headings {
+#qsadyftmop .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1662,7 +1663,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_col_heading {
+#qsadyftmop .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1682,7 +1683,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#mowlbbblqv .gt_column_spanner_outer {
+#qsadyftmop .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1694,15 +1695,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 4px;
 }
 
-#mowlbbblqv .gt_column_spanner_outer:first-child {
+#qsadyftmop .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#mowlbbblqv .gt_column_spanner_outer:last-child {
+#qsadyftmop .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#mowlbbblqv .gt_column_spanner {
+#qsadyftmop .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1714,7 +1715,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   width: 100%;
 }
 
-#mowlbbblqv .gt_group_heading {
+#qsadyftmop .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1736,7 +1737,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#mowlbbblqv .gt_empty_group_heading {
+#qsadyftmop .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1751,15 +1752,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#mowlbbblqv .gt_from_md > :first-child {
+#qsadyftmop .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#mowlbbblqv .gt_from_md > :last-child {
+#qsadyftmop .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#mowlbbblqv .gt_row {
+#qsadyftmop .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1778,7 +1779,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#mowlbbblqv .gt_stub {
+#qsadyftmop .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1790,7 +1791,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-left: 12px;
 }
 
-#mowlbbblqv .gt_summary_row {
+#qsadyftmop .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1800,7 +1801,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#mowlbbblqv .gt_first_summary_row {
+#qsadyftmop .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1810,7 +1811,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_grand_summary_row {
+#qsadyftmop .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1820,7 +1821,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#mowlbbblqv .gt_first_grand_summary_row {
+#qsadyftmop .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1830,11 +1831,11 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_striped {
+#qsadyftmop .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#mowlbbblqv .gt_table_body {
+#qsadyftmop .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1843,7 +1844,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_footnotes {
+#qsadyftmop .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1857,13 +1858,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_footnote {
+#qsadyftmop .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#mowlbbblqv .gt_sourcenotes {
+#qsadyftmop .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1877,41 +1878,41 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#mowlbbblqv .gt_sourcenote {
+#qsadyftmop .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#mowlbbblqv .gt_left {
+#qsadyftmop .gt_left {
   text-align: left;
 }
 
-#mowlbbblqv .gt_center {
+#qsadyftmop .gt_center {
   text-align: center;
 }
 
-#mowlbbblqv .gt_right {
+#qsadyftmop .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#mowlbbblqv .gt_font_normal {
+#qsadyftmop .gt_font_normal {
   font-weight: normal;
 }
 
-#mowlbbblqv .gt_font_bold {
+#qsadyftmop .gt_font_bold {
   font-weight: bold;
 }
 
-#mowlbbblqv .gt_font_italic {
+#qsadyftmop .gt_font_italic {
   font-style: italic;
 }
 
-#mowlbbblqv .gt_super {
+#qsadyftmop .gt_super {
   font-size: 65%;
 }
 
-#mowlbbblqv .gt_footnote_marks {
+#qsadyftmop .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -1977,12 +1978,12 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="pmavqglzbz" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="xaxermfklo" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#pmavqglzbz .gt_table {
+#xaxermfklo .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2007,7 +2008,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-left-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_heading {
+#xaxermfklo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2019,7 +2020,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_title {
+#xaxermfklo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2029,7 +2030,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-width: 0;
 }
 
-#pmavqglzbz .gt_subtitle {
+#xaxermfklo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2039,13 +2040,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-width: 0;
 }
 
-#pmavqglzbz .gt_bottom_border {
+#xaxermfklo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_col_headings {
+#xaxermfklo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2060,7 +2061,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_col_heading {
+#xaxermfklo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2080,7 +2081,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#pmavqglzbz .gt_column_spanner_outer {
+#xaxermfklo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2092,15 +2093,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 4px;
 }
 
-#pmavqglzbz .gt_column_spanner_outer:first-child {
+#xaxermfklo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pmavqglzbz .gt_column_spanner_outer:last-child {
+#xaxermfklo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pmavqglzbz .gt_column_spanner {
+#xaxermfklo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2112,7 +2113,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   width: 100%;
 }
 
-#pmavqglzbz .gt_group_heading {
+#xaxermfklo .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2134,7 +2135,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#pmavqglzbz .gt_empty_group_heading {
+#xaxermfklo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2149,15 +2150,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#pmavqglzbz .gt_from_md > :first-child {
+#xaxermfklo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pmavqglzbz .gt_from_md > :last-child {
+#xaxermfklo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pmavqglzbz .gt_row {
+#xaxermfklo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2176,7 +2177,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#pmavqglzbz .gt_stub {
+#xaxermfklo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2188,7 +2189,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-left: 12px;
 }
 
-#pmavqglzbz .gt_summary_row {
+#xaxermfklo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2198,7 +2199,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#pmavqglzbz .gt_first_summary_row {
+#xaxermfklo .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2208,7 +2209,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_grand_summary_row {
+#xaxermfklo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2218,7 +2219,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#pmavqglzbz .gt_first_grand_summary_row {
+#xaxermfklo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2228,11 +2229,11 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_striped {
+#xaxermfklo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pmavqglzbz .gt_table_body {
+#xaxermfklo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2241,7 +2242,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_footnotes {
+#xaxermfklo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2255,13 +2256,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_footnote {
+#xaxermfklo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#pmavqglzbz .gt_sourcenotes {
+#xaxermfklo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2275,41 +2276,41 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#pmavqglzbz .gt_sourcenote {
+#xaxermfklo .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#pmavqglzbz .gt_left {
+#xaxermfklo .gt_left {
   text-align: left;
 }
 
-#pmavqglzbz .gt_center {
+#xaxermfklo .gt_center {
   text-align: center;
 }
 
-#pmavqglzbz .gt_right {
+#xaxermfklo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pmavqglzbz .gt_font_normal {
+#xaxermfklo .gt_font_normal {
   font-weight: normal;
 }
 
-#pmavqglzbz .gt_font_bold {
+#xaxermfklo .gt_font_bold {
   font-weight: bold;
 }
 
-#pmavqglzbz .gt_font_italic {
+#xaxermfklo .gt_font_italic {
   font-style: italic;
 }
 
-#pmavqglzbz .gt_super {
+#xaxermfklo .gt_super {
   font-size: 65%;
 }
 
-#pmavqglzbz .gt_footnote_marks {
+#xaxermfklo .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -2395,12 +2396,12 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   <span class='fu'><a href='https://gt.rstudio.com/reference/tab_options.html'>tab_options</a></span><span class='op'>(</span>container.height <span class='op'>=</span> <span class='fl'>300</span>, container.overflow.y <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="fvvbghlpmn" style="overflow-x:auto;overflow-y:auto;width:auto;height:300px;">
+<div id="cegkmakatc" style="overflow-x:auto;overflow-y:auto;width:auto;height:300px;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#fvvbghlpmn .gt_table {
+#cegkmakatc .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2425,7 +2426,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-left-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_heading {
+#cegkmakatc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2437,7 +2438,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_title {
+#cegkmakatc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2447,7 +2448,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-width: 0;
 }
 
-#fvvbghlpmn .gt_subtitle {
+#cegkmakatc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2457,13 +2458,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-width: 0;
 }
 
-#fvvbghlpmn .gt_bottom_border {
+#cegkmakatc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_col_headings {
+#cegkmakatc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2478,7 +2479,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_col_heading {
+#cegkmakatc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2498,7 +2499,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#fvvbghlpmn .gt_column_spanner_outer {
+#cegkmakatc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2510,15 +2511,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 4px;
 }
 
-#fvvbghlpmn .gt_column_spanner_outer:first-child {
+#cegkmakatc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#fvvbghlpmn .gt_column_spanner_outer:last-child {
+#cegkmakatc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#fvvbghlpmn .gt_column_spanner {
+#cegkmakatc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2530,7 +2531,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   width: 100%;
 }
 
-#fvvbghlpmn .gt_group_heading {
+#cegkmakatc .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2552,7 +2553,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#fvvbghlpmn .gt_empty_group_heading {
+#cegkmakatc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2567,15 +2568,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#fvvbghlpmn .gt_from_md > :first-child {
+#cegkmakatc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#fvvbghlpmn .gt_from_md > :last-child {
+#cegkmakatc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#fvvbghlpmn .gt_row {
+#cegkmakatc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2594,7 +2595,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#fvvbghlpmn .gt_stub {
+#cegkmakatc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2606,7 +2607,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-left: 12px;
 }
 
-#fvvbghlpmn .gt_summary_row {
+#cegkmakatc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2616,7 +2617,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#fvvbghlpmn .gt_first_summary_row {
+#cegkmakatc .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2626,7 +2627,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_grand_summary_row {
+#cegkmakatc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2636,7 +2637,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#fvvbghlpmn .gt_first_grand_summary_row {
+#cegkmakatc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2646,11 +2647,11 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_striped {
+#cegkmakatc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#fvvbghlpmn .gt_table_body {
+#cegkmakatc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2659,7 +2660,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_footnotes {
+#cegkmakatc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2673,13 +2674,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_footnote {
+#cegkmakatc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#fvvbghlpmn .gt_sourcenotes {
+#cegkmakatc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2693,41 +2694,41 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#fvvbghlpmn .gt_sourcenote {
+#cegkmakatc .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#fvvbghlpmn .gt_left {
+#cegkmakatc .gt_left {
   text-align: left;
 }
 
-#fvvbghlpmn .gt_center {
+#cegkmakatc .gt_center {
   text-align: center;
 }
 
-#fvvbghlpmn .gt_right {
+#cegkmakatc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#fvvbghlpmn .gt_font_normal {
+#cegkmakatc .gt_font_normal {
   font-weight: normal;
 }
 
-#fvvbghlpmn .gt_font_bold {
+#cegkmakatc .gt_font_bold {
   font-weight: bold;
 }
 
-#fvvbghlpmn .gt_font_italic {
+#cegkmakatc .gt_font_italic {
   font-style: italic;
 }
 
-#fvvbghlpmn .gt_super {
+#cegkmakatc .gt_super {
   font-size: 65%;
 }
 
-#fvvbghlpmn .gt_footnote_marks {
+#cegkmakatc .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -2962,12 +2963,12 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="npwcicscfz" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="sutymhtxox" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#npwcicscfz .gt_table {
+#sutymhtxox .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2992,7 +2993,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-left-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_heading {
+#sutymhtxox .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3004,7 +3005,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_title {
+#sutymhtxox .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3014,7 +3015,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-width: 0;
 }
 
-#npwcicscfz .gt_subtitle {
+#sutymhtxox .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3024,13 +3025,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-width: 0;
 }
 
-#npwcicscfz .gt_bottom_border {
+#sutymhtxox .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_col_headings {
+#sutymhtxox .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3045,7 +3046,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_col_heading {
+#sutymhtxox .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3065,7 +3066,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#npwcicscfz .gt_column_spanner_outer {
+#sutymhtxox .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3077,15 +3078,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 4px;
 }
 
-#npwcicscfz .gt_column_spanner_outer:first-child {
+#sutymhtxox .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#npwcicscfz .gt_column_spanner_outer:last-child {
+#sutymhtxox .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#npwcicscfz .gt_column_spanner {
+#sutymhtxox .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3097,7 +3098,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   width: 100%;
 }
 
-#npwcicscfz .gt_group_heading {
+#sutymhtxox .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3119,7 +3120,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#npwcicscfz .gt_empty_group_heading {
+#sutymhtxox .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3134,15 +3135,15 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   vertical-align: middle;
 }
 
-#npwcicscfz .gt_from_md > :first-child {
+#sutymhtxox .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#npwcicscfz .gt_from_md > :last-child {
+#sutymhtxox .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#npwcicscfz .gt_row {
+#sutymhtxox .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3161,7 +3162,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   overflow-x: hidden;
 }
 
-#npwcicscfz .gt_stub {
+#sutymhtxox .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3173,7 +3174,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-left: 12px;
 }
 
-#npwcicscfz .gt_summary_row {
+#sutymhtxox .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3183,7 +3184,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#npwcicscfz .gt_first_summary_row {
+#sutymhtxox .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3193,7 +3194,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_grand_summary_row {
+#sutymhtxox .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3203,7 +3204,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   padding-right: 5px;
 }
 
-#npwcicscfz .gt_first_grand_summary_row {
+#sutymhtxox .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3213,11 +3214,11 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-top-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_striped {
+#sutymhtxox .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#npwcicscfz .gt_table_body {
+#sutymhtxox .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3226,7 +3227,7 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-bottom-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_footnotes {
+#sutymhtxox .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3240,13 +3241,13 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_footnote {
+#sutymhtxox .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#npwcicscfz .gt_sourcenotes {
+#sutymhtxox .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3260,41 +3261,41 @@ $ race                                     &lt;chr&gt; &quot;White&quot;, &quot;
   border-right-color: #D3D3D3;
 }
 
-#npwcicscfz .gt_sourcenote {
+#sutymhtxox .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#npwcicscfz .gt_left {
+#sutymhtxox .gt_left {
   text-align: left;
 }
 
-#npwcicscfz .gt_center {
+#sutymhtxox .gt_center {
   text-align: center;
 }
 
-#npwcicscfz .gt_right {
+#sutymhtxox .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#npwcicscfz .gt_font_normal {
+#sutymhtxox .gt_font_normal {
   font-weight: normal;
 }
 
-#npwcicscfz .gt_font_bold {
+#sutymhtxox .gt_font_bold {
   font-weight: bold;
 }
 
-#npwcicscfz .gt_font_italic {
+#sutymhtxox .gt_font_italic {
   font-style: italic;
 }
 
-#npwcicscfz .gt_super {
+#sutymhtxox .gt_super {
   font-size: 65%;
 }
 
-#npwcicscfz .gt_footnote_marks {
+#sutymhtxox .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3963,22 +3964,77 @@ $ total_salary_usd &lt;dbl&gt; 74000.00, 65000.00, 80000.00, 100000.00, 62~</cod
 </div>
 <p><img src="tidytuesday-week-21-ask-a-manager-salary-survey_files/figure-html5/unnamed-chunk-46-1.png" width="624" /></p>
 </div>
+<p>Finally, plot the salaries by job title, ordered by sample size:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>survey_data</span> <span class='op'>%&gt;%</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://wilkelab.org/ggtext/'>ggtext</a></span><span class='op'>)</span>
+<span class='va'>p_subtitle</span> <span class='op'>&lt;-</span>
+  <span class='fu'>glue</span><span class='fu'>::</span><span class='fu'><a href='https://glue.tidyverse.org/reference/glue.html'>glue</a></span><span class='op'>(</span>
+    <span class='st'>"From &lt;span style='color:{country_colors[2]}; font-weight:bold'&gt;"</span>,
+    <span class='st'>"{sum(survey_data$country == 'USA')} American&lt;/span&gt; and "</span>,
+    <span class='st'>"&lt;span style='color:{country_colors[1]}; font-weight:bold'&gt;"</span>,
+    <span class='st'>"{sum(survey_data$country == 'Canada')} Canadian&lt;/span&gt; "</span>,
+    <span class='st'>"survey respondents"</span>
+  <span class='op'>)</span>
+
+<span class='va'>survey_data</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>add_count</span><span class='op'>(</span><span class='va'>job_title_factor</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>mutate</span><span class='op'>(</span>job_title_factor <span class='op'>=</span> <span class='fu'>fct_reorder</span><span class='op'>(</span><span class='va'>job_title_factor</span>, <span class='va'>n</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>ggplot</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>y <span class='op'>=</span> <span class='va'>job_title_factor</span>, x <span class='op'>=</span> <span class='va'>total_salary_cad</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'>geom_boxplot</span><span class='op'>(</span>outlier.shape <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'>geom_jitter</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>country</span><span class='op'>)</span>, width <span class='op'>=</span> <span class='fl'>0</span>, height <span class='op'>=</span> <span class='fl'>0.25</span>,
               alpha <span class='op'>=</span> <span class='fl'>0.5</span>, show.legend <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>labs</span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>"Salary distributions by job title"</span>,
+       subtitle <span class='op'>=</span> <span class='va'>p_subtitle</span>,
+       caption <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"data from Ask a Manager | "</span>,
+                        <span class='st'>"plot by @TDunn12 for #TidyTuesday"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
   <span class='fu'>scale_fill_manual</span><span class='op'>(</span><span class='cn'>NULL</span>, values <span class='op'>=</span> <span class='va'>country_colors</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'>labs</span><span class='op'>(</span>y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'>scale_x_log10</span><span class='op'>(</span><span class='st'>"Total salary in CAD"</span>, labels <span class='op'>=</span> <span class='fu'>scales</span><span class='fu'>::</span><span class='va'><a href='https://scales.r-lib.org/reference/label_dollar.html'>dollar</a></span>,
-                breaks <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>30000</span>, <span class='fl'>50000</span>, <span class='fl'>100000</span>, <span class='fl'>200000</span>, <span class='fl'>300000</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'>scale_x_log10</span><span class='op'>(</span><span class='st'>"Total salary in CAD (log scale)"</span>, labels <span class='op'>=</span> <span class='fu'>scales</span><span class='fu'>::</span><span class='va'><a href='https://scales.r-lib.org/reference/label_dollar.html'>dollar</a></span>,
+                breaks <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>30000</span>, <span class='fl'>50000</span>, <span class='fl'>100000</span>, <span class='fl'>200000</span>, <span class='fl'>300000</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>scale_y_discrete</span><span class='op'>(</span><span class='cn'>NULL</span>, labels <span class='op'>=</span> <span class='op'>~</span><span class='fu'>str_wrap</span><span class='op'>(</span><span class='va'>.</span>, width <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'>theme</span><span class='op'>(</span>panel.grid.major.x <span class='op'>=</span> <span class='fu'>element_line</span><span class='op'>(</span>color <span class='op'>=</span> <span class='st'>"grey95"</span><span class='op'>)</span>,
+        plot.subtitle <span class='op'>=</span> <span class='fu'><a href='https://wilkelab.org/ggtext/reference/element_markdown.html'>element_markdown</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 <p><img src="tidytuesday-week-21-ask-a-manager-salary-survey_files/figure-html5/unnamed-chunk-47-1.png" width="624" data-distill-preview=1 /></p>
 </div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h1 class="appendix" id="reproducibility">Reproducibility</h1>
+<details>
+<summary>
+Session info
+</summary>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code> setting  value                       
+ version  R version 4.1.1 (2021-08-10)
+ os       Windows 10 x64              
+ system   x86_64, mingw32             
+ ui       RTerm                       
+ language (EN)                        
+ collate  English_Canada.1252         
+ ctype    English_Canada.1252         
+ tz       America/Curacao             
+ date     2021-09-15                  </code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.8","3":"0.7.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.5","3":"1.0.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-05-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"checkmate","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","6":"FALSE","7":"FALSE","8":"2020-02-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"checkmate"},{"1":"cli","2":"3.0.1","3":"3.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-07-17","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.1","3":"1.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-02-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.3.0","3":"1.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-03-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-06-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"digest","2":"0.6.27","3":"0.6.27","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2020-10-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.2","3":"1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-01-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2020-11-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2021-09-15","9":"Github (taylordunn/dunnr@4c656c6)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"farver","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","5":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"farver"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.0","3":"0.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2020-10-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"ggtext","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggtext","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggtext","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggtext"},{"1":"glue","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2020-08-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gridtext","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gridtext","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gridtext","6":"FALSE","7":"FALSE","8":"2020-12-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gridtext"},{"1":"gt","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","6":"TRUE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gt"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"highr","2":"0.9","3":"0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","6":"FALSE","7":"FALSE","8":"2021-04-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"highr"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.1.1","3":"0.5.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-01-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"FALSE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.33","3":"1.33","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-04-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"labeling","2":"0.4.2","3":"0.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","6":"FALSE","7":"FALSE","8":"2020-10-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labeling"},{"1":"lifecycle","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-02-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.7.10","3":"1.7.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"TRUE","7":"FALSE","8":"2021-02-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"markdown","2":"1.1","3":"1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/markdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/markdown","6":"FALSE","7":"FALSE","8":"2019-08-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"markdown"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"pillar","2":"1.6.2","3":"1.6.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-07-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"remotes","2":"2.4.0","3":"2.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-06-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"0.4.11","3":"0.4.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.9","3":"2.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-06-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.9","3":"1.3.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2021-07-22","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"selectr","2":"0.4.2","3":"0.4-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/selectr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/selectr","6":"FALSE","7":"FALSE","8":"2019-11-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"selectr"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.6.2","3":"1.6.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.0.4","3":"3.0.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-07-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.4","3":"3.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.3","3":"1.1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-03-03","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidytuesdayR","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidytuesdayR","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidytuesdayR","6":"TRUE","7":"FALSE","8":"2020-07-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidytuesdayR"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"usethis","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"viridisLite","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","6":"FALSE","7":"FALSE","8":"2021-04-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"viridisLite"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.24","3":"0.24","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-06-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</details>
+<details>
+<summary>
+Git repository
+</summary>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
+Remote:   main @ origin (https://github.com/taylordunn/tdunn)
+Head:     [65bc00b] 2021-09-15: Trying out utterances, and some different theme elements (smaller font and grey code background)</code></pre>
+</div>
+</details>
+<div class="layout-chunk" data-layout="l-body">
+<p><a href="https://github.com/taylordunn/tdunn/tree/main/_posts/2021-05-18-tidytuesday-week-21">Source code</a></p>
+</div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

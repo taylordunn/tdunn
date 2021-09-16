@@ -5,6 +5,9 @@ description: |
 author:
   - name: Taylor Dunn
 date: 2021-05-18
+params:
+  date: 2021-05-18
+  slug: "tidytuesday-week-21"
 categories:
   - tidytuesday
 draft: false
@@ -698,15 +701,58 @@ survey_data %>%
   theme(legend.position = c(0.6, 0.7))
 ```
 
+Finally, plot the salaries by job title, ordered by sample size:
+
 ```{r preview=TRUE}
+library(ggtext)
+p_subtitle <-
+  glue::glue(
+    "From <span style='color:{country_colors[2]}; font-weight:bold'>",
+    "{sum(survey_data$country == 'USA')} American</span> and ",
+    "<span style='color:{country_colors[1]}; font-weight:bold'>",
+    "{sum(survey_data$country == 'Canada')} Canadian</span> ",
+    "survey respondents"
+  )
+
 survey_data %>%
+  add_count(job_title_factor) %>%
+  mutate(job_title_factor = fct_reorder(job_title_factor, n)) %>%
   ggplot(aes(y = job_title_factor, x = total_salary_cad)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(aes(color = country), width = 0, height = 0.25,
               alpha = 0.5, show.legend = FALSE) +
+  labs(title = "Salary distributions by job title",
+       subtitle = p_subtitle,
+       caption = paste0("data from Ask a Manager | ",
+                        "plot by @TDunn12 for #TidyTuesday")) +
   scale_fill_manual(NULL, values = country_colors) +
-  labs(y = NULL) +
-  scale_x_log10("Total salary in CAD", labels = scales::dollar,
-                breaks = c(30000, 50000, 100000, 200000, 300000))
+  scale_x_log10("Total salary in CAD (log scale)", labels = scales::dollar,
+                breaks = c(30000, 50000, 100000, 200000, 300000)) +
+  scale_y_discrete(NULL, labels = ~str_wrap(., width = 30)) +
+  theme(panel.grid.major.x = element_line(color = "grey95"),
+        plot.subtitle = element_markdown())
 ```
 
+# Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+get_distill_source(date = params$date, slug = params$slug)
+```
