@@ -14,10 +14,8 @@ navbar:
       href: https://twitter.com/TDunn12
     - icon: fa fa-github
       href: https://github.com/taylordunn
-  source_url: https://github.com/taylordunn/tdunn
 collections:
   posts:
-    share: [twitter]
     categories: true
 twitter:
   site: "@TDunn12"
