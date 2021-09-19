@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday Week 21"
+title: "TidyTuesday 2021 Week 21"
 description: |
   #TidyTuesday 2021-05-18: Ask a Manager Salary Survey
 author:
@@ -7,9 +7,9 @@ author:
 date: 2021-05-18
 params:
   date: 2021-05-18
-  slug: "tidytuesday-week-21"
+  slug: "tidytuesday-2021-week-21"
 categories:
-  - tidytuesday
+  - TidyTuesday
 draft: false
 output:
   distill::distill_article:
@@ -17,7 +17,7 @@ output:
     self_contained: false
 ---
 
-```{r setup, include=TRUE}
+```{r setup, include=TRUE, code_folding="Setup"}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(tidytuesdayR)
