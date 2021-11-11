@@ -24,15 +24,6 @@
       <media:content url="https://tdunn.ca/posts/2021-05-18-tidytuesday-2021-week-21/tidytuesday-2021-week-21_files/figure-html5/unnamed-chunk-47-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
-      <title>test-post</title>
-      <dc:creator>Taylor Dunn</dc:creator>
-      <link>https://tdunn.ca/posts/2021-05-06-test-post</link>
-      <description>A short description of the post.</description>
-      <guid>https://tdunn.ca/posts/2021-05-06-test-post</guid>
-      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
-      <media:content url="https://tdunn.ca/posts/2021-05-06-test-post/test-post_files/figure-html5/unnamed-chunk-1-1.png" medium="image" type="image/png" width="1248" height="768"/>
-    </item>
-    <item>
       <title>Welcome to Taylor Dunn's personal website</title>
       <dc:creator>Nora Jones</dc:creator>
       <link>https://tdunn.ca/posts/welcome</link>
@@ -40,6 +31,19 @@
 reading what we have to say!</description>
       <guid>https://tdunn.ca/posts/welcome</guid>
       <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>TidyTuesday 2020 Week 45</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2020-11-08-tidytuesday-2020-week-45</link>
+      <description>#TidyTuesday 2020-11-03: Ikea Furniture.</description>
+      <category>TidyTuesday</category>
+      <category>tidymodels</category>
+      <category>machine learning</category>
+      <category>random forest</category>
+      <guid>https://tdunn.ca/posts/2020-11-08-tidytuesday-2020-week-45</guid>
+      <pubDate>Sun, 08 Nov 2020 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2020-11-08-tidytuesday-2020-week-45/tidytuesday-2020-week-45_files/figure-html5/unnamed-chunk-66-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
   </channel>
 </rss>
