@@ -1,0 +1,151 @@
+---
+title: "TidyTuesday 2020 Week 28"
+description: |
+  #TidyTuesday 2020-07-07: Coffee Ratings.
+author:
+  - name: Taylor Dunn
+date: 2020-07-12
+params:
+  date: 2020-07-12
+  slug: "tidytuesday-2020-week-28"
+categories:
+  - TidyTuesday
+  - tidymodels
+  - machine learning
+  - random forest
+draft: true
+output:
+  distill::distill_article:
+    toc: true
+    self_contained: false
+bibliography: references.bib
+---
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidytuesdayR)
+library(gt)
+library(rmarkdown)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+# A coffee themed palette I found here: https://colorpalettes.net/color-palette-4281/
+#set_palette()
+coffee_pal <- c("#a0583c", "#c08267", "ccb9b1", "#616063", "#212123")
+options(ggplot2.discrete.color = coffee_pal,
+        ggplot2.discrete.fill = coffee_pal)
+```
+
+```{r}
+tt <- tidytuesdayR::tt_load("2020-07-07")
+```
+
+```{r eval=FALSE}
+# Check out the README
+tt
+```
+
+These data were scraped by James LeDoux in 2018 from the Coffee Quality Institute (see the original data [here](https://github.com/jldbc/coffee-quality-database)).
+
+# Data exploration
+
+```{r}
+coffee <- tt$coffee_ratings
+```
+
+For my own convenience, I've copied [data dictionary](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-07-07/readme.md) below:
+
+|variable              |class     |description |
+|:---------------------|:---------|:-----------|
+|total_cup_points      |double    | Total rating/points (0 - 100 scale) |
+|species               |character | Species of coffee bean (arabica or robusta) |
+|owner                 |character | Owner of the farm |
+|country_of_origin     |character | Where the bean came from |
+|farm_name             |character | Name of the farm |
+|lot_number            |character | Lot number of the beans tested |
+|mill                  |character | Mill where the beans were processed |
+|ico_number            |character | International Coffee Organization number |
+|company               |character | Company name |
+|altitude              |character | Altitude - this is a messy column - I've left it for some cleaning  |
+|region                |character | Region where bean came from |
+|producer              |character | Producer of the roasted bean |
+|number_of_bags        |double    | Number of bags tested |
+|bag_weight            |character | Bag weight tested |
+|in_country_partner    |character | Partner for the country |
+|harvest_year          |character | When the beans were harvested (year) |
+|grading_date          |character | When the beans were graded|
+|owner_1               |character | Who owns the beans|
+|variety               |character | Variety of the beans |
+|processing_method     |character | Method for processing|
+|aroma                 |double    | Aroma grade |
+|flavor                |double    | Flavor grade |
+|aftertaste            |double    | Aftertaste grade |
+|acidity               |double    | Acidity grade |
+|body                  |double    | Body grade |
+|balance               |double    | Balance grade |
+|uniformity            |double    | Uniformity grade |
+|clean_cup             |double    | Clean cup grade |
+|sweetness             |double    | Sweetness grade |
+|cupper_points         |double    | Cupper Points|
+|moisture              |double    | Moisture Grade|
+|category_one_defects  |double    | Category one defects (count) |
+|quakers               |double    | quakers|
+|color                 |character | Color of bean |
+|category_two_defects  |double    |Category two defects (count)  |
+|expiration            |character | Expiration date of the beans |
+|certification_body    |character | Who certified it |
+|certification_address |character | Certification body address |
+|certification_contact |character | Certification contact |
+|unit_of_measurement   |character | Unit of measurement |
+|altitude_low_meters   |double    | Altitude low meters|
+|altitude_high_meters  |double    | Altitude high meters |
+|altitude_mean_meters  |double    | Altitude mean meters |
+
+A lot of variables to consider here.
+
+The key outcome variable is `total_cup_points`, which is a quality rating 0-100
+
+```{r}
+coffee$total_cup_points %>% summary()
+```
+
+```{r fig.height=2, fig.width=4}
+coffee %>%
+  ggplot(aes(x = total_cup_points)) +
+  geom_boxplot(y = 0, fill = coffee_pal[1], outlier.shape = NA) +
+  geom_jitter(aes(y = 1), color = coffee_pal[2],
+              alpha = 0.3, height = 0.3, width = 0) +
+  remove_axis("y")
+```
+
+A very obvious outlier at `total_cup_points` = `r min(coffee$total_cup_points)`
+
+
+# Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+get_distill_source(date = params$date, slug = params$slug)
+```
+
+
