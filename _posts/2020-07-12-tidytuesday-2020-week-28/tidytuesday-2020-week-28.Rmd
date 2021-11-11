@@ -123,6 +123,13 @@ coffee %>%
 
 A very obvious outlier at `total_cup_points` = `r min(coffee$total_cup_points)`
 
+```{r}
+coffee %>%
+  filter(total_cup_points == min(total_cup_points)) %>%
+  glimpse()
+```
+
+
 
 # Reproducibility {.appendix}
 
