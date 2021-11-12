@@ -34,10 +34,12 @@ theme_set(theme_td())
 set_geom_fonts()
 # A coffee themed palette I found here: https://colorpalettes.net/color-palette-4281/
 #set_palette()
-coffee_pal <- c("#a0583c", "#c08267", "ccb9b1", "#616063", "#212123")
+coffee_pal <- c("#a0583c", "#c08267", "#ccb9b1", "#616063", "#212123")
 options(ggplot2.discrete.color = coffee_pal,
         ggplot2.discrete.fill = coffee_pal)
 ```
+
+# Load the data
 
 ```{r}
 tt <- tidytuesdayR::tt_load("2020-07-07")
@@ -105,6 +107,13 @@ For my own convenience, I've copied [data dictionary](https://github.com/rfordat
 |altitude_mean_meters  |double    | Altitude mean meters |
 
 A lot of variables to consider here.
+Summarize them with `skimr`:
+
+```{r}
+skimr::skim(coffee)
+```
+
+## Ratings
 
 The key outcome variable is `total_cup_points`, which is a quality rating 0-100
 
@@ -159,11 +168,105 @@ coffee %>%
   remove_axis("y")
 ```
 
+What is the relationship between the individual gradings and the overall `total_cup_points`?
+There are 10 gradings with scores 0-10, so I assume adding them together gives `total_cup_points`, which ranges 0-100:
+
+```{r fig.height=3, fig.width=3}
+coffee %>%
+  rowwise() %>%
+  transmute(
+    total_cup_points,
+    sum_gradings = sum(c_across(aroma:cupper_points))
+  ) %>%
+  ggplot(aes(x = total_cup_points, y = sum_gradings)) +
+  geom_point(color = coffee_pal[1], size = 2) +
+  geom_abline(size = 1)
+```
+
+Some very slight deviations, but yes my assumption is correct.
+A second assumption: there will be mostly positive associations among the individual gradings (e.g. a coffee with high `flavor` will have high `body` on average).
+Compute and plot the pairwise correlations with `GGally`:
+
+```{r message=FALSE, fig.width=6}
+coffee %>%
+  select(aroma:cupper_points) %>%
+  corrr::correlate(method = "pearson", use = "everything") %>%
+  corrr::rplot() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.7))
+```
+
+Yes, lots of high correlations.
+Interestingly, there are three variables in particular (`uniformity`, `clean_cup` and `sweetness`) which correlate moderately with eachother, and weakly with the others.
+
+## Categorical variables
+
+There are two `species`, though Arabica makes up the large majority:
+
+```{r}
+coffee %>% count(species)
+```
+
+There are `r n_distinct(coffee$country_of_origin, na.rm = T)` countries of origin (`r sum(is.na(coffee$country_of_origin))` value missing):
+
+```{r fig.height=6}
+coffee %>%
+  count(country_of_origin, sort = TRUE) %>%
+  mutate(
+    country_of_origin = country_of_origin %>%
+      fct_explicit_na() %>%
+      fct_reorder(n)
+  ) %>%
+  ggplot(aes(y = country_of_origin, x = n)) +
+  geom_col(fill = coffee_pal[1]) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(y = NULL)
+```
+
+For the most frequent countries, show the distribution of ratings:
+
+```{r}
+coffee %>%
+  mutate(
+    country_of_origin  = country_of_origin %>%
+      fct_explicit_na() %>%
+      fct_lump(n = 10) %>%
+      fct_reorder(total_cup_points)
+  ) %>%
+  ggplot(aes(y = country_of_origin, x = total_cup_points)) +
+  geom_boxplot(fill = coffee_pal[3]) +
+  labs(y = NULL)
+```
+
+Ethopia coffee has a very clear lead in terms of ratings, while Colombia has very consistently high ratings.
+
+```{r}
+coffee %>%
+  mutate(
+    variety = variety %>%
+      fct_explicit_na() %>%
+      fct_lump_min(10, other_level = "Other (n<10)")
+  ) %>%
+  count(variety) %>%
+  mutate(variety = fct_reorder(variety, n)) %>%
+  ggplot(aes(y = variety, x = n)) +
+  geom_col(fill = coffee_pal[2]) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(y = NULL)
+```
+
+There are two unknown values for `variety`: "Other" and `NA` (Missing).
+These have different meanings (e.g. an `NA` value could be a common variety but is just missing) but I will combine both:
+
+```{r}
+coffee 
+```
+
 
 
 ```{r}
-
+coffee %>% count(harvest_year)
 ```
+
 
 
 # Reproducibility {.appendix}
