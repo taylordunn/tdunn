@@ -18,7 +18,7 @@ output:
   distill::distill_article:
     toc: true
     self_contained: false
-bibliography: references.bib
+#bibliography: references.bib
 ---
 
 ```{r setup, include=TRUE, code_folding="Setup"}
@@ -108,17 +108,14 @@ A lot of variables to consider here.
 
 The key outcome variable is `total_cup_points`, which is a quality rating 0-100
 
-```{r}
-coffee$total_cup_points %>% summary()
-```
-
 ```{r fig.height=2, fig.width=4}
-coffee %>%
+p <- coffee %>%
   ggplot(aes(x = total_cup_points)) +
   geom_boxplot(y = 0, fill = coffee_pal[1], outlier.shape = NA) +
   geom_jitter(aes(y = 1), color = coffee_pal[2],
               alpha = 0.3, height = 0.3, width = 0) +
   remove_axis("y")
+p
 ```
 
 A very obvious outlier at `total_cup_points` = `r min(coffee$total_cup_points)`
@@ -127,6 +124,28 @@ A very obvious outlier at `total_cup_points` = `r min(coffee$total_cup_points)`
 coffee %>%
   filter(total_cup_points == min(total_cup_points)) %>%
   glimpse()
+```
+
+All of the gradings (`aroma`, `flavor`, etc.) are also 0.
+Remove it:
+
+```{r fig.height=2, fig.width=4}
+coffee <- coffee %>% filter(total_cup_points > 0)
+p %+% coffee
+```
+
+Show the distribution of the other numerical gradings:
+
+```{r}
+coffee %>%
+  select(aroma:moisture) %>%
+  pivot_longer(cols = everything()) %>%
+  ggplot(aes(x = value)) +
+  geom_boxplot(y = 0, fill = coffee_pal[1], outlier.shape = NA) +
+  geom_jitter(aes(y = 1), color = coffee_pal[2],
+              alpha = 0.3, height = 0.3, width = 0) +
+  remove_axis("y") +
+  facet_wrap(~name, ncol = 3)
 ```
 
 
