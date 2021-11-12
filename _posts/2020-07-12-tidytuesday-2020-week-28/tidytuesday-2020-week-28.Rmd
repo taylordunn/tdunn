@@ -148,6 +148,22 @@ coffee %>%
   facet_wrap(~name, ncol = 3)
 ```
 
+None of the values are missing, and they all seem to range from 0 to 10, except for `moisture`:
+
+```{r fig.height=2, fig.width=4}
+coffee %>%
+  ggplot(aes(x = moisture)) +
+  geom_boxplot(y = 0, fill = coffee_pal[1], outlier.shape = NA) +
+  geom_jitter(aes(y = 1), color = coffee_pal[2],
+              alpha = 0.3, height = 0.3, width = 0) +
+  remove_axis("y")
+```
+
+
+
+```{r}
+
+```
 
 
 # Reproducibility {.appendix}
