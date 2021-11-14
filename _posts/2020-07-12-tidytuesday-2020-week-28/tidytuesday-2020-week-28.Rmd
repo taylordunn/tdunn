@@ -654,7 +654,6 @@ coffee_rec <-
 coffee_rec
 ```
 
-
 Before applying the recipe, we can explore the processing steps with the `recipes::prep()` and `recipes::bake()` functions applied to the training data:
 
 ```{r}
@@ -671,7 +670,7 @@ Load `tidymodels`, setup parallel processing, and convert characters to factors:
 ```
 
 
-# Reproducibility {.appendix}
+## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
 
