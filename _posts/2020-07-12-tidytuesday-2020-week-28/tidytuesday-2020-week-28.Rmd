@@ -583,6 +583,94 @@ coffee %>%
 
 Yes, that looks to be the range of altitudes with the highest ratings on average.
 
+# Model
+
+I want to attempt to predict scores for one of the individual gradings (not the 0-100 total score, or the three that are mostly 10s), but can't decide, so choose randomly:
+
+```{r}
+set.seed(74)
+sample(
+  c("aroma", "flavor", "aftertaste", "acidity", "body",
+    "balance", "cupper_points"),
+  size = 1
+)
+```
+
+`flavor` it is.
+I'll attempt to predict it with the following:
+
+* Categorical: `species`, `country_of_origin`, `processing_method`, `color`, `in_country_partner`, `variety`
+* Numerical: `aroma`, `flavor`, `aftertaste`, `acidity`, `body`, `balance`, `uniformity`, `clean_cup`, `sweetness`, `cupper_points`, `moisture`, `category_one_defects`, `category_two_defects`, `quakers`, `altitude_mean_meters_fixed`
+
+Load `tidymodels`, split the data 3:1 into training and testing (stratified by the outcome `flavor`), and define the cross-validation strategy:
+
+```{r}
+set.seed(42)
+coffee_split <- initial_split(coffee, prop = 3/4, strata = flavor)
+coffee_train <- training(coffee_split)
+coffee_test <- testing(coffee_split)
+
+coffee_splits <- vfold_cv(coffee_train, v = 5, strata = flavor)
+```
+
+Now define the recipe:
+
+* Impute the mode for missing categorical values
+* Lump together categorical values with <10% frequency
+* Impute the mean for missing numerical values
+* Standardize all numerical predictors
+* Given its non-linear relationship, use splines in the `altitude_mean_meters_fixed` predictor
+
+```{r}
+library(tidymodels)
+
+coffee <- coffee %>%
+  mutate(across(where(is.character), factor))
+
+coffee_rec <-
+  recipe(
+    flavor ~ species + country_of_origin + processing_method + color +
+      in_country_partner + variety + aroma + flavor + aftertaste +
+      acidity + body + balance + uniformity + clean_cup + sweetness +
+      cupper_points + moisture + category_one_defects + category_two_defects +
+      quakers + altitude_mean_meters_fixed,
+    data = coffee
+  ) %>%
+  # Where missing, impute categorical variables with the most common value
+  step_impute_mode(all_nominal_predictors()) %>%
+  # Some of these categorical variables have too many levels, group levels
+  #  with <10% frequency 
+  step_other(country_of_origin, variety, in_country_partner,
+             processing_method, threshold = 0.10) %>%
+  # Finally, create the dummy variables
+  step_dummy(all_nominal_predictors()) %>%
+  # These two numerical predictors have some missing value, so impute with mean
+  step_impute_mean(quakers, altitude_mean_meters_fixed) %>%
+  # Normalize (0 mean, 1 SD) all numerical predictors
+  step_normalize(all_numeric_predictors()) %>%
+  # Use splines in the altitude variable to capture it's non-linearity.
+  # 4 degrees of freedom should give 3 knots
+  step_ns(altitude_mean_meters_fixed, deg_free = 4)
+coffee_rec
+```
+
+
+Before applying the recipe, we can explore the processing steps with the `recipes::prep()` and `recipes::bake()` functions applied to the training data:
+
+```{r}
+ikea_baked <- bake(prep(ikea_rec), new_data = NULL)
+ikea_baked %>% paged_table()
+```
+
+
+## Pre-processing
+
+Load `tidymodels`, setup parallel processing, and convert characters to factors:
+
+```{r}
+```
+
+
 # Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
