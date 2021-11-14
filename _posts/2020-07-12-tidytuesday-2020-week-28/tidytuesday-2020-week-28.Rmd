@@ -198,6 +198,24 @@ coffee %>%
 
 Yes, lots of high correlations.
 Interestingly, there are three variables in particular (`uniformity`, `clean_cup` and `sweetness`) which correlate moderately with eachother, and weakly with the others.
+These happen to be the gradings that are almost always 10:
+
+```{r}
+coffee %>%
+  select(uniformity, clean_cup, sweetness) %>%
+  pivot_longer(everything()) %>%
+  group_by(name) %>%
+  mutate(
+    name = glue::glue(
+      "{name} ({scales::percent(mean(value == 10))} values = 10.0)"
+    )
+  ) %>%
+  ggplot(aes(x = value, y = 1)) +
+  geom_jitter(alpha = 0.3, width = 0, color = coffee_pal[3]) +
+  facet_wrap(~name, ncol = 1) +
+  remove_axis("y") +
+  scale_x_continuous(breaks = 0:10)
+```
 
 ## Categorical variables
 
@@ -207,7 +225,7 @@ There are two `species`, though Arabica makes up the large majority:
 coffee %>% count(species)
 ```
 
-Interesting that Arabica makes up `r scales::percent(mean(coffee$species == "Arabica"))` of the data, but ~60% of the coffee produced worldwide.
+Interesting that Arabica makes up `r scales::percent(mean(coffee$species == "Arabica"))` of the data, but ~60% of the coffee produced worldwide, so seems to be over-represented here.
 
 There are `r n_distinct(coffee$country_of_origin, na.rm = T)` countries of origin (`r sum(is.na(coffee$country_of_origin))` value missing):
 
@@ -288,17 +306,282 @@ p2 <- d %>%
 p1 | p2
 ```
 
+The coffee bean `color` is presumably before roasting:
 
-```{r}
-coffee %>% count(farm_name, sort = T)
+```{r fig.height=4, fig.width=6}
+d <- coffee %>%
+  add_count(color) %>%
+  mutate(color = fct_reorder(color, n))
+p1 <- d %>%
+  distinct(color, n) %>%
+  ggplot(aes(y = color, x = n)) +
+  geom_col(fill = coffee_pal[1]) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(y = NULL)
+p2 <- d %>%
+  ggplot(aes(y = color, x = total_cup_points)) +
+  geom_boxplot(fill = coffee_pal[2]) +
+  labs(y = NULL) +
+  theme(axis.text.y = element_blank())
+p1 | p2
 ```
 
+`harvest_year` could use some data processing:
 
 ```{r}
-coffee %>% count(harvest_year)
+d %>%
+  count(harvest_year, sort = T) %>%
+  paged_table()
 ```
 
+For values like "2013/2014" and "2010-2011, I'll extract the first year.
 
+```{r}
+coffee <- coffee %>%
+  mutate(
+    harvest_year_num = harvest_year %>%
+      str_extract("\\d{4}")
+  )
+coffee %>%
+  count(harvest_year, harvest_year_num, sort = T) %>%
+  paged_table()
+```
+
+It doesn't work with values like "08/09" because they are not 4 digits, but those values are very low frequency.
+
+The `r n_distinct(coffee$processing_method, na.rm = TRUE)` `processing_method`s:
+
+```{r}
+coffee %>%
+  count(processing_method)
+```
+
+```{r fig.height=4, fig.width=6}
+d <- coffee %>%
+  add_count(processing_method) %>%
+  mutate(processing_method = fct_reorder(processing_method, n))
+p1 <- d %>%
+  distinct(processing_method, n) %>%
+  ggplot(aes(y = processing_method, x = n)) +
+  geom_col(fill = coffee_pal[1]) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(y = NULL)
+p2 <- d %>%
+  ggplot(aes(y = processing_method, x = total_cup_points)) +
+  geom_boxplot(fill = coffee_pal[2]) +
+  labs(y = NULL) +
+  theme(axis.text.y = element_blank())
+p1 | p2
+```
+
+There are two date variables that I think would be interesting to compare: `grading_date` and `expiration`.
+Parse them as date objects and compute the difference in days:
+
+```{r}
+coffee <- coffee %>%
+  mutate(
+    # Convert both to date objects
+    expiration = lubridate::mdy(expiration),
+    grading_date = lubridate::mdy(grading_date)
+  )
+coffee %>%
+  mutate(
+    days_from_expiration = expiration - grading_date
+  ) %>%
+  count(days_from_expiration)
+```
+
+Every single grading was (supposedly) done 365 days before expiration.
+Maybe it is standard procedure that gradings be done exactly one year before expiration.
+Not sure, but this unfortunately makes it an uninteresting variable for exploration/modeling.
+
+## Defects
+
+There are two defect variables (`category_one_defects` and `category_two_defects`) and the `quakers` variable, which are immature/unripe beans.
+
+```{r fig.height=7, fig.width=6}
+d <- coffee %>%
+  mutate(
+    across(
+      c(category_one_defects, category_two_defects, quakers),
+      # Group counts above 5 together
+      ~cut(., breaks = c(0:5, 100), include.lowest = TRUE, right = FALSE,
+           labels = c(0:4, "5+"))
+    )
+  ) %>%
+  select(where(is.factor), total_cup_points) %>%
+  pivot_longer(cols = -total_cup_points,
+               names_to = "defect", values_to = "n_defects") %>%
+  filter(!is.na(n_defects))
+
+p1 <- d %>%
+  filter(defect == "category_one_defects") %>%
+  ggplot(aes(y = n_defects)) +
+  geom_bar(fill = coffee_pal[1]) +
+  scale_x_continuous(NULL, expand = expansion(c(0, 0.05)))
+p2 <- d %>% 
+  filter(defect == "category_one_defects") %>%
+  ggplot(aes(y = n_defects, x = total_cup_points)) +
+  geom_boxplot(fill = coffee_pal[3]) +
+  labs(x = NULL, y = NULL)
+
+
+(
+  (p1 + labs(y = "Category 1") | p2)
+) /
+  (
+    (p1 %+% filter(d, defect == "category_two_defects") +
+       labs(y = "Category 2") |
+       p2 %+% filter(d, defect == "category_two_defects"))
+  ) /
+  (
+    (p1 %+% filter(d, defect == "quakers") +
+       labs(y = "Quakers", x = "Count") |
+       (p2 %+% filter(d, defect == "quakers") +
+          labs(x = "Total cup points")))
+  )
+```
+
+Looks to be a slight decline in ratings with increasing category 1 and 2 defects.
+Not much of an effect with number of quakers.
+
+## Altitude
+
+The `altitude` variable is messy, but looks like it was cleaned via the `altitude_*_variables`:
+
+```{r}
+coffee %>%
+  count(
+    altitude, altitude_mean_meters, altitude_low_meters, altitude_high_meters,
+    unit_of_measurement, sort = T
+  ) %>%
+  paged_table()
+```
+
+There are some unit conversions from feet to meters, for example:
+
+```{r}
+coffee %>%
+  filter(unit_of_measurement == "ft", !is.na(altitude)) %>%
+  #filter(altitude == "4300") %>%
+  count(altitude, unit_of_measurement, altitude_mean_meters, sort = T) %>%
+  # Re-calculate the altitude in feet to see if it matches
+  mutate(feet_manual = altitude_mean_meters * 3.28) %>%
+  paged_table()
+```
+
+And re-calculating the altitude in feet, everything looks to be correctly converted.
+
+Look for any obvious outliers:
+
+```{r fig.height=2, fig.width=4}
+coffee %>%
+  filter(!is.na(altitude_mean_meters)) %>%
+  ggplot(aes(x = altitude_mean_meters)) +
+  geom_boxplot(y = 0, fill = coffee_pal[2]) +
+  scale_x_log10() +
+  remove_axis("y")
+```
+
+Yes, some pretty clear ones.
+Look at values larger than 3000:
+
+```{r}
+coffee %>%
+  select(country_of_origin, altitude, unit_of_measurement,
+         altitude_mean_meters) %>%
+  arrange(desc(altitude_mean_meters)) %>%
+  filter(altitude_mean_meters > 2000) %>%
+  gt()
+```
+
+Some helpful frames of reference:
+
+* The elevation of Everest is 8849m.
+* The highest point in Guatemala is Tajumulco volcano at 4220m.
+* One of the Myanmar coffee producers claims [here](https://www.geniuscoffee.info/) that their beans are grown at 4000-7000 ft -> 1200-2200m
+* [Coffee elevations by country](https://www.esseloncoffee.com/coffee-terminology/altitude/):
+    * Brazil: 1300-5300 ft -> 400-1600 meters
+    * Guatemala: 3900-6200 ft -> 1200-1900 meters
+    * Colombia: 2600-6200 ft -> 800-1900 meters
+
+Besides the obvious errors (e.g. 190164 meters), my guess is that many of these measurements are still in feet and need to be converted to meters.
+
+A couple decimal values were incorrectly processed:
+
+```{r}
+coffee %>%
+  filter(str_detect(altitude, regex("sea", ignore_case = T))) %>%
+  select(matches("altitu")) %>%
+  gt()
+```
+
+Look at some of the lowest values:
+
+```{r}
+coffee %>%
+  select(country_of_origin, altitude, unit_of_measurement,
+         altitude_mean_meters, producer, country_of_origin) %>%
+  arrange(desc(altitude_mean_meters)) %>%
+  filter(altitude_mean_meters <= 10) %>%
+  gt()
+```
+
+These are almost certainly incorrect, but there are so few values, I won't worry about them.
+
+Make a value of "fixed" mean altitude:
+
+```{r fig.height=2, fig.width=4}
+coffee <- coffee %>%
+  mutate(
+    altitude_mean_meters_fixed = case_when(
+      altitude == "1800 meters (5900" ~ 1800,
+      altitude_mean_meters == 190164 ~ 1901,
+      altitude_mean_meters == 110000 ~ 1100,
+      str_detect(altitude, "^meters above") ~ altitude_mean_meters / 1000.0,
+      # Assume anything above 3000 needs to be converted from feet
+      altitude_mean_meters > 3000 ~ 0.3048 * altitude_mean_meters,
+      TRUE ~ altitude_mean_meters
+    )
+  )
+coffee %>%
+  filter(!is.na(altitude_mean_meters_fixed)) %>%
+  ggplot(aes(x = altitude_mean_meters_fixed)) +
+  geom_boxplot(y = 0, fill = coffee_pal[2]) +
+  #scale_x_log10() +
+  remove_axis("y")
+```
+
+That is looking a bit better.
+Plot the relationship between the uni-dimensional ratings and mean altitude:
+
+```{r fig.height=6, fig.width=6}
+coffee %>%
+  select(aroma:cupper_points, altitude_mean_meters_fixed) %>%
+  filter(!is.na(altitude_mean_meters_fixed)) %>%
+  pivot_longer(cols = -altitude_mean_meters_fixed,
+               names_to = "grading", values_to = "score") %>%
+  ggplot(aes(x = altitude_mean_meters_fixed, y = score)) +
+  geom_point(alpha = 0.3, color = coffee_pal[2]) +
+  geom_smooth(method = "loess", formula = "y ~ x", color = coffee_pal[3]) +
+  facet_wrap(~grading, ncol = 2, scales = "free_y") +
+  scale_y_continuous(breaks = seq(0, 10, 2))
+```
+
+The ratings are so clustered around the 6-9 range, it is hard to see much of a relationship
+but there does seem to be a small bump in ratings around 1500-2000 meters for a few of the variables.
+Can we see it in total scores?
+
+```{r fig.height=3, fig.width=4}
+coffee %>%
+  filter(!is.na(altitude_mean_meters_fixed)) %>%
+  ggplot(aes(x = altitude_mean_meters_fixed, y = total_cup_points)) +
+  geom_point(alpha = 0.3, color = coffee_pal[2]) +
+  geom_smooth(method = "loess", formula = "y ~ x", color = coffee_pal[3]) +
+  scale_y_continuous(breaks = seq(0, 100, 10))
+```
+
+Yes, that looks to be the range of altitudes with the highest ratings on average.
 
 # Reproducibility {.appendix}
 
