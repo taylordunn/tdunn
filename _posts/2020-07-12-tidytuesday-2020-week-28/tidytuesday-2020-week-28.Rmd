@@ -27,6 +27,7 @@ library(tidyverse)
 library(tidytuesdayR)
 library(gt)
 library(rmarkdown)
+library(patchwork)
 
 library(dunnr)
 extrafont::loadfonts(device = "win", quiet = TRUE)
@@ -185,7 +186,7 @@ coffee %>%
 
 Some very slight deviations, but yes my assumption is correct.
 A second assumption: there will be mostly positive associations among the individual gradings (e.g. a coffee with high `flavor` will have high `body` on average).
-Compute and plot the pairwise correlations with `GGally`:
+Compute and plot the pairwise correlations with `corrr`:
 
 ```{r message=FALSE, fig.width=6}
 coffee %>%
@@ -206,6 +207,8 @@ There are two `species`, though Arabica makes up the large majority:
 coffee %>% count(species)
 ```
 
+Interesting that Arabica makes up `r scales::percent(mean(coffee$species == "Arabica"))` of the data, but ~60% of the coffee produced worldwide.
+
 There are `r n_distinct(coffee$country_of_origin, na.rm = T)` countries of origin (`r sum(is.na(coffee$country_of_origin))` value missing):
 
 ```{r fig.height=6}
@@ -222,7 +225,7 @@ coffee %>%
   labs(y = NULL)
 ```
 
-For the most frequent countries, show the distribution of ratings:
+For the most frequent countries, show the distribution of overall ratings:
 
 ```{r}
 coffee %>%
@@ -237,7 +240,7 @@ coffee %>%
   labs(y = NULL)
 ```
 
-Ethopia coffee has a very clear lead in terms of ratings, while Colombia has very consistently high ratings.
+Ethiopian coffee has a very clear lead in terms of ratings, while Colombia has very consistently high ratings.
 
 ```{r}
 coffee %>%
@@ -255,12 +258,40 @@ coffee %>%
 ```
 
 There are two unknown values for `variety`: "Other" and `NA` (Missing).
-These have different meanings (e.g. an `NA` value could be a common variety but is just missing) but I will combine both:
+These could have different meanings (e.g. an `NA` value could be a common variety but is just missing) but I will combine both:
 
 ```{r}
-coffee 
+coffee <- coffee %>%
+  mutate(variety = ifelse(variety == "Other", NA_character_, variety))
 ```
 
+`in_country_partner` has a manageable number of unique values (`r n_distinct(coffee$in_country_partner)`)
+
+```{r}
+d <- coffee %>%
+  mutate(
+    in_country_partner = fct_lump(in_country_partner, 10)
+  ) %>%
+  add_count(in_country_partner) %>%
+  mutate(in_country_partner = fct_reorder(in_country_partner, n))
+p1 <- d %>%
+  distinct(in_country_partner, n) %>%
+  ggplot(aes(y = in_country_partner, x = n)) +
+  geom_col(fill = coffee_pal[1]) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(y = NULL)
+p2 <- d %>%
+  ggplot(aes(y = in_country_partner, x = total_cup_points)) +
+  geom_boxplot(fill = coffee_pal[2]) +
+  labs(y = NULL) +
+  theme(axis.text.y = element_blank())
+p1 | p2
+```
+
+
+```{r}
+coffee %>% count(farm_name, sort = T)
+```
 
 
 ```{r}
