@@ -2547,7 +2547,7 @@ Setup
 </div>
 </details>
 </div>
-<h1 id="load-the-data">Load the data</h1>
+<h2 id="load-the-data">Load the data</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>tt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/tidytuesdayR/man/tt_load.html'>tt_load</a></span><span class='op'>(</span><span class='st'>"2020-11-03"</span><span class='op'>)</span>
@@ -2557,7 +2557,7 @@ Setup
     Downloading file 1 of 1: `ikea.csv`</code></pre>
 </div>
 <p>The data this week comes from the Kaggle, and was the subject of a <a href="https://fivethirtyeight.com/features/the-weird-economics-of-ikea/">FiveThirtyEight article</a>. See <a href="https://www.kaggle.com/ahmedkallam/ikea-sa-furniture-web-scraping">the Kaggle page</a> for a data dictionary.</p>
-<h1 id="data-exploration">Data exploration</h1>
+<h2 id="data-exploration">Data exploration</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>ikea</span> <span class='op'>&lt;-</span> <span class='va'>tt</span><span class='op'>$</span><span class='va'>ikea</span> <span class='op'>%&gt;%</span> <span class='fu'>rename</span><span class='op'>(</span>row_number <span class='op'>=</span> <span class='va'>X1</span><span class='op'>)</span>
@@ -2615,12 +2615,12 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/tab_spanner.html'>tab_spanner</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"row number"</span>, columns <span class='op'>=</span> <span class='op'>-</span><span class='va'>variable</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="iqepvbtksp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="vuadkjznso" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#iqepvbtksp .gt_table {
+#vuadkjznso .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2645,7 +2645,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-left-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_heading {
+#vuadkjznso .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2657,7 +2657,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_title {
+#vuadkjznso .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2667,7 +2667,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-bottom-width: 0;
 }
 
-#iqepvbtksp .gt_subtitle {
+#vuadkjznso .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2677,13 +2677,13 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-width: 0;
 }
 
-#iqepvbtksp .gt_bottom_border {
+#vuadkjznso .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_col_headings {
+#vuadkjznso .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2698,7 +2698,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_col_heading {
+#vuadkjznso .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2718,7 +2718,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   overflow-x: hidden;
 }
 
-#iqepvbtksp .gt_column_spanner_outer {
+#vuadkjznso .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2730,15 +2730,15 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 4px;
 }
 
-#iqepvbtksp .gt_column_spanner_outer:first-child {
+#vuadkjznso .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#iqepvbtksp .gt_column_spanner_outer:last-child {
+#vuadkjznso .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#iqepvbtksp .gt_column_spanner {
+#vuadkjznso .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2750,7 +2750,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   width: 100%;
 }
 
-#iqepvbtksp .gt_group_heading {
+#vuadkjznso .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2772,7 +2772,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   vertical-align: middle;
 }
 
-#iqepvbtksp .gt_empty_group_heading {
+#vuadkjznso .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2787,15 +2787,15 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   vertical-align: middle;
 }
 
-#iqepvbtksp .gt_from_md > :first-child {
+#vuadkjznso .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#iqepvbtksp .gt_from_md > :last-child {
+#vuadkjznso .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#iqepvbtksp .gt_row {
+#vuadkjznso .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2814,7 +2814,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   overflow-x: hidden;
 }
 
-#iqepvbtksp .gt_stub {
+#vuadkjznso .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2826,7 +2826,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-left: 12px;
 }
 
-#iqepvbtksp .gt_summary_row {
+#vuadkjznso .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2836,7 +2836,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 5px;
 }
 
-#iqepvbtksp .gt_first_summary_row {
+#vuadkjznso .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2846,7 +2846,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_grand_summary_row {
+#vuadkjznso .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2856,7 +2856,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 5px;
 }
 
-#iqepvbtksp .gt_first_grand_summary_row {
+#vuadkjznso .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2866,11 +2866,11 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_striped {
+#vuadkjznso .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#iqepvbtksp .gt_table_body {
+#vuadkjznso .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2879,7 +2879,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_footnotes {
+#vuadkjznso .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2893,13 +2893,13 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_footnote {
+#vuadkjznso .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#iqepvbtksp .gt_sourcenotes {
+#vuadkjznso .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2913,41 +2913,41 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#iqepvbtksp .gt_sourcenote {
+#vuadkjznso .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#iqepvbtksp .gt_left {
+#vuadkjznso .gt_left {
   text-align: left;
 }
 
-#iqepvbtksp .gt_center {
+#vuadkjznso .gt_center {
   text-align: center;
 }
 
-#iqepvbtksp .gt_right {
+#vuadkjznso .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#iqepvbtksp .gt_font_normal {
+#vuadkjznso .gt_font_normal {
   font-weight: normal;
 }
 
-#iqepvbtksp .gt_font_bold {
+#vuadkjznso .gt_font_bold {
   font-weight: bold;
 }
 
-#iqepvbtksp .gt_font_italic {
+#vuadkjznso .gt_font_italic {
   font-style: italic;
 }
 
-#iqepvbtksp .gt_super {
+#vuadkjznso .gt_super {
   font-size: 65%;
 }
 
-#iqepvbtksp .gt_footnote_marks {
+#vuadkjznso .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3026,12 +3026,12 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/tab_spanner.html'>tab_spanner</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='st'>"row number"</span>, columns <span class='op'>=</span> <span class='op'>-</span><span class='va'>variable</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="pygmvjtvjl" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ugpuosptcn" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#pygmvjtvjl .gt_table {
+#ugpuosptcn .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3056,7 +3056,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-left-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_heading {
+#ugpuosptcn .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3068,7 +3068,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_title {
+#ugpuosptcn .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3078,7 +3078,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-bottom-width: 0;
 }
 
-#pygmvjtvjl .gt_subtitle {
+#ugpuosptcn .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3088,13 +3088,13 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-width: 0;
 }
 
-#pygmvjtvjl .gt_bottom_border {
+#ugpuosptcn .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_col_headings {
+#ugpuosptcn .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3109,7 +3109,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_col_heading {
+#ugpuosptcn .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3129,7 +3129,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   overflow-x: hidden;
 }
 
-#pygmvjtvjl .gt_column_spanner_outer {
+#ugpuosptcn .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3141,15 +3141,15 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 4px;
 }
 
-#pygmvjtvjl .gt_column_spanner_outer:first-child {
+#ugpuosptcn .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pygmvjtvjl .gt_column_spanner_outer:last-child {
+#ugpuosptcn .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pygmvjtvjl .gt_column_spanner {
+#ugpuosptcn .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3161,7 +3161,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   width: 100%;
 }
 
-#pygmvjtvjl .gt_group_heading {
+#ugpuosptcn .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3183,7 +3183,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   vertical-align: middle;
 }
 
-#pygmvjtvjl .gt_empty_group_heading {
+#ugpuosptcn .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3198,15 +3198,15 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   vertical-align: middle;
 }
 
-#pygmvjtvjl .gt_from_md > :first-child {
+#ugpuosptcn .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pygmvjtvjl .gt_from_md > :last-child {
+#ugpuosptcn .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pygmvjtvjl .gt_row {
+#ugpuosptcn .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3225,7 +3225,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   overflow-x: hidden;
 }
 
-#pygmvjtvjl .gt_stub {
+#ugpuosptcn .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3237,7 +3237,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-left: 12px;
 }
 
-#pygmvjtvjl .gt_summary_row {
+#ugpuosptcn .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3247,7 +3247,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 5px;
 }
 
-#pygmvjtvjl .gt_first_summary_row {
+#ugpuosptcn .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3257,7 +3257,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_grand_summary_row {
+#ugpuosptcn .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3267,7 +3267,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 5px;
 }
 
-#pygmvjtvjl .gt_first_grand_summary_row {
+#ugpuosptcn .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3277,11 +3277,11 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_striped {
+#ugpuosptcn .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pygmvjtvjl .gt_table_body {
+#ugpuosptcn .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3290,7 +3290,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_footnotes {
+#ugpuosptcn .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3304,13 +3304,13 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_footnote {
+#ugpuosptcn .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#pygmvjtvjl .gt_sourcenotes {
+#ugpuosptcn .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3324,41 +3324,41 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#pygmvjtvjl .gt_sourcenote {
+#ugpuosptcn .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#pygmvjtvjl .gt_left {
+#ugpuosptcn .gt_left {
   text-align: left;
 }
 
-#pygmvjtvjl .gt_center {
+#ugpuosptcn .gt_center {
   text-align: center;
 }
 
-#pygmvjtvjl .gt_right {
+#ugpuosptcn .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pygmvjtvjl .gt_font_normal {
+#ugpuosptcn .gt_font_normal {
   font-weight: normal;
 }
 
-#pygmvjtvjl .gt_font_bold {
+#ugpuosptcn .gt_font_bold {
   font-weight: bold;
 }
 
-#pygmvjtvjl .gt_font_italic {
+#ugpuosptcn .gt_font_italic {
   font-style: italic;
 }
 
-#pygmvjtvjl .gt_super {
+#ugpuosptcn .gt_super {
   font-size: 65%;
 }
 
-#pygmvjtvjl .gt_footnote_marks {
+#ugpuosptcn .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3472,12 +3472,12 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="ftpmiokwjw" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="agkwmalkyd" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#ftpmiokwjw .gt_table {
+#agkwmalkyd .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3502,7 +3502,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-left-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_heading {
+#agkwmalkyd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3514,7 +3514,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_title {
+#agkwmalkyd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3524,7 +3524,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-bottom-width: 0;
 }
 
-#ftpmiokwjw .gt_subtitle {
+#agkwmalkyd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3534,13 +3534,13 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-width: 0;
 }
 
-#ftpmiokwjw .gt_bottom_border {
+#agkwmalkyd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_col_headings {
+#agkwmalkyd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3555,7 +3555,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_col_heading {
+#agkwmalkyd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3575,7 +3575,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   overflow-x: hidden;
 }
 
-#ftpmiokwjw .gt_column_spanner_outer {
+#agkwmalkyd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3587,15 +3587,15 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 4px;
 }
 
-#ftpmiokwjw .gt_column_spanner_outer:first-child {
+#agkwmalkyd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ftpmiokwjw .gt_column_spanner_outer:last-child {
+#agkwmalkyd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ftpmiokwjw .gt_column_spanner {
+#agkwmalkyd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3607,7 +3607,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   width: 100%;
 }
 
-#ftpmiokwjw .gt_group_heading {
+#agkwmalkyd .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3629,7 +3629,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   vertical-align: middle;
 }
 
-#ftpmiokwjw .gt_empty_group_heading {
+#agkwmalkyd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3644,15 +3644,15 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   vertical-align: middle;
 }
 
-#ftpmiokwjw .gt_from_md > :first-child {
+#agkwmalkyd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ftpmiokwjw .gt_from_md > :last-child {
+#agkwmalkyd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ftpmiokwjw .gt_row {
+#agkwmalkyd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3671,7 +3671,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   overflow-x: hidden;
 }
 
-#ftpmiokwjw .gt_stub {
+#agkwmalkyd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3683,7 +3683,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-left: 12px;
 }
 
-#ftpmiokwjw .gt_summary_row {
+#agkwmalkyd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3693,7 +3693,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 5px;
 }
 
-#ftpmiokwjw .gt_first_summary_row {
+#agkwmalkyd .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3703,7 +3703,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_grand_summary_row {
+#agkwmalkyd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3713,7 +3713,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   padding-right: 5px;
 }
 
-#ftpmiokwjw .gt_first_grand_summary_row {
+#agkwmalkyd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3723,11 +3723,11 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-top-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_striped {
+#agkwmalkyd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ftpmiokwjw .gt_table_body {
+#agkwmalkyd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3736,7 +3736,7 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_footnotes {
+#agkwmalkyd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3750,13 +3750,13 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_footnote {
+#agkwmalkyd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#ftpmiokwjw .gt_sourcenotes {
+#agkwmalkyd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3770,41 +3770,41 @@ $ width             &lt;dbl&gt; 51, 80, NA, 60, 74, 40, 50, 50, 50, NA, 52~</cod
   border-right-color: #D3D3D3;
 }
 
-#ftpmiokwjw .gt_sourcenote {
+#agkwmalkyd .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#ftpmiokwjw .gt_left {
+#agkwmalkyd .gt_left {
   text-align: left;
 }
 
-#ftpmiokwjw .gt_center {
+#agkwmalkyd .gt_center {
   text-align: center;
 }
 
-#ftpmiokwjw .gt_right {
+#agkwmalkyd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ftpmiokwjw .gt_font_normal {
+#agkwmalkyd .gt_font_normal {
   font-weight: normal;
 }
 
-#ftpmiokwjw .gt_font_bold {
+#agkwmalkyd .gt_font_bold {
   font-weight: bold;
 }
 
-#ftpmiokwjw .gt_font_italic {
+#agkwmalkyd .gt_font_italic {
   font-style: italic;
 }
 
-#ftpmiokwjw .gt_super {
+#agkwmalkyd .gt_super {
   font-size: 65%;
 }
 
-#ftpmiokwjw .gt_footnote_marks {
+#agkwmalkyd .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -4035,7 +4035,7 @@ mean in group FALSE  mean in group TRUE
 <p><img src="tidytuesday-2020-week-45_files/figure-html5/unnamed-chunk-19-1.png" width="624" /></p>
 </div>
 <p>Doesn’t really pass the eye test though – the distributions are near identical. The magic of large sample sizes.</p>
-<h2 id="short-description">Short description</h2>
+<h3 id="short-description">Short description</h3>
 <p>There are 1706 unique <code>short_description</code>s with the following counts:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -4239,12 +4239,12 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   <span class='fu'>gtsummary</span><span class='fu'>::</span><span class='fu'><a href='http://www.danieldsjoberg.com/gtsummary//reference/tbl_regression.html'>tbl_regression</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="xqejvotvmn" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="mjalmvyesc" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#xqejvotvmn .gt_table {
+#mjalmvyesc .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -4269,7 +4269,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_heading {
+#mjalmvyesc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -4281,7 +4281,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_title {
+#mjalmvyesc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -4291,7 +4291,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-bottom-width: 0;
 }
 
-#xqejvotvmn .gt_subtitle {
+#mjalmvyesc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -4301,13 +4301,13 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-top-width: 0;
 }
 
-#xqejvotvmn .gt_bottom_border {
+#mjalmvyesc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_col_headings {
+#mjalmvyesc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4322,7 +4322,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_col_heading {
+#mjalmvyesc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4342,7 +4342,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   overflow-x: hidden;
 }
 
-#xqejvotvmn .gt_column_spanner_outer {
+#mjalmvyesc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4354,15 +4354,15 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-right: 4px;
 }
 
-#xqejvotvmn .gt_column_spanner_outer:first-child {
+#mjalmvyesc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xqejvotvmn .gt_column_spanner_outer:last-child {
+#mjalmvyesc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xqejvotvmn .gt_column_spanner {
+#mjalmvyesc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4374,7 +4374,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   width: 100%;
 }
 
-#xqejvotvmn .gt_group_heading {
+#mjalmvyesc .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4396,7 +4396,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   vertical-align: middle;
 }
 
-#xqejvotvmn .gt_empty_group_heading {
+#mjalmvyesc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4411,15 +4411,15 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   vertical-align: middle;
 }
 
-#xqejvotvmn .gt_from_md > :first-child {
+#mjalmvyesc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xqejvotvmn .gt_from_md > :last-child {
+#mjalmvyesc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xqejvotvmn .gt_row {
+#mjalmvyesc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4438,7 +4438,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   overflow-x: hidden;
 }
 
-#xqejvotvmn .gt_stub {
+#mjalmvyesc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4450,7 +4450,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-left: 12px;
 }
 
-#xqejvotvmn .gt_summary_row {
+#mjalmvyesc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4460,7 +4460,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-right: 5px;
 }
 
-#xqejvotvmn .gt_first_summary_row {
+#mjalmvyesc .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4470,7 +4470,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_grand_summary_row {
+#mjalmvyesc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4480,7 +4480,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-right: 5px;
 }
 
-#xqejvotvmn .gt_first_grand_summary_row {
+#mjalmvyesc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4490,11 +4490,11 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_striped {
+#mjalmvyesc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#xqejvotvmn .gt_table_body {
+#mjalmvyesc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4503,7 +4503,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_footnotes {
+#mjalmvyesc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4517,13 +4517,13 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_footnote {
+#mjalmvyesc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#xqejvotvmn .gt_sourcenotes {
+#mjalmvyesc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4537,41 +4537,41 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#xqejvotvmn .gt_sourcenote {
+#mjalmvyesc .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#xqejvotvmn .gt_left {
+#mjalmvyesc .gt_left {
   text-align: left;
 }
 
-#xqejvotvmn .gt_center {
+#mjalmvyesc .gt_center {
   text-align: center;
 }
 
-#xqejvotvmn .gt_right {
+#mjalmvyesc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xqejvotvmn .gt_font_normal {
+#mjalmvyesc .gt_font_normal {
   font-weight: normal;
 }
 
-#xqejvotvmn .gt_font_bold {
+#mjalmvyesc .gt_font_bold {
   font-weight: bold;
 }
 
-#xqejvotvmn .gt_font_italic {
+#mjalmvyesc .gt_font_italic {
   font-style: italic;
 }
 
-#xqejvotvmn .gt_super {
+#mjalmvyesc .gt_super {
   font-size: 65%;
 }
 
-#xqejvotvmn .gt_footnote_marks {
+#mjalmvyesc .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -4739,12 +4739,12 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   <span class='fu'>gtsummary</span><span class='fu'>::</span><span class='fu'><a href='http://www.danieldsjoberg.com/gtsummary//reference/tbl_regression.html'>tbl_regression</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="iyknmggykn" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="gpqidonakw" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#iyknmggykn .gt_table {
+#gpqidonakw .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -4769,7 +4769,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_heading {
+#gpqidonakw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -4781,7 +4781,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_title {
+#gpqidonakw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -4791,7 +4791,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-bottom-width: 0;
 }
 
-#iyknmggykn .gt_subtitle {
+#gpqidonakw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -4801,13 +4801,13 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-top-width: 0;
 }
 
-#iyknmggykn .gt_bottom_border {
+#gpqidonakw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_col_headings {
+#gpqidonakw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4822,7 +4822,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_col_heading {
+#gpqidonakw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4842,7 +4842,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   overflow-x: hidden;
 }
 
-#iyknmggykn .gt_column_spanner_outer {
+#gpqidonakw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4854,15 +4854,15 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-right: 4px;
 }
 
-#iyknmggykn .gt_column_spanner_outer:first-child {
+#gpqidonakw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#iyknmggykn .gt_column_spanner_outer:last-child {
+#gpqidonakw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#iyknmggykn .gt_column_spanner {
+#gpqidonakw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4874,7 +4874,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   width: 100%;
 }
 
-#iyknmggykn .gt_group_heading {
+#gpqidonakw .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4896,7 +4896,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   vertical-align: middle;
 }
 
-#iyknmggykn .gt_empty_group_heading {
+#gpqidonakw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4911,15 +4911,15 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   vertical-align: middle;
 }
 
-#iyknmggykn .gt_from_md > :first-child {
+#gpqidonakw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#iyknmggykn .gt_from_md > :last-child {
+#gpqidonakw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#iyknmggykn .gt_row {
+#gpqidonakw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4938,7 +4938,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   overflow-x: hidden;
 }
 
-#iyknmggykn .gt_stub {
+#gpqidonakw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4950,7 +4950,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-left: 12px;
 }
 
-#iyknmggykn .gt_summary_row {
+#gpqidonakw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4960,7 +4960,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-right: 5px;
 }
 
-#iyknmggykn .gt_first_summary_row {
+#gpqidonakw .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4970,7 +4970,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_grand_summary_row {
+#gpqidonakw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4980,7 +4980,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   padding-right: 5px;
 }
 
-#iyknmggykn .gt_first_grand_summary_row {
+#gpqidonakw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4990,11 +4990,11 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_striped {
+#gpqidonakw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#iyknmggykn .gt_table_body {
+#gpqidonakw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5003,7 +5003,7 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_footnotes {
+#gpqidonakw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5017,13 +5017,13 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_footnote {
+#gpqidonakw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#iyknmggykn .gt_sourcenotes {
+#gpqidonakw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5037,41 +5037,41 @@ $ perc_discount     &lt;dbl&gt; 0</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iyknmggykn .gt_sourcenote {
+#gpqidonakw .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#iyknmggykn .gt_left {
+#gpqidonakw .gt_left {
   text-align: left;
 }
 
-#iyknmggykn .gt_center {
+#gpqidonakw .gt_center {
   text-align: center;
 }
 
-#iyknmggykn .gt_right {
+#gpqidonakw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#iyknmggykn .gt_font_normal {
+#gpqidonakw .gt_font_normal {
   font-weight: normal;
 }
 
-#iyknmggykn .gt_font_bold {
+#gpqidonakw .gt_font_bold {
   font-weight: bold;
 }
 
-#iyknmggykn .gt_font_italic {
+#gpqidonakw .gt_font_italic {
   font-style: italic;
 }
 
-#iyknmggykn .gt_super {
+#gpqidonakw .gt_super {
   font-size: 65%;
 }
 
-#iyknmggykn .gt_footnote_marks {
+#gpqidonakw .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -5198,7 +5198,7 @@ Repeated code
 </div>
 </div>
 </details>
-<h2 id="designer">Designer</h2>
+<h3 id="designer">Designer</h3>
 <p>Check out the <code>designer</code> variable:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -5289,7 +5289,7 @@ Repeated code
 <p><img src="tidytuesday-2020-week-45_files/figure-html5/unnamed-chunk-40-1.png" width="576" /></p>
 </div>
 <p>In general, items designed by IKEA alone are cheaper than items designed by one or more individuals, and items designed in collaboration with IKEA are the most expensive.</p>
-<h2 id="size">Size</h2>
+<h3 id="size">Size</h3>
 <p>The <code>depth</code>, <code>height</code> and <code>width</code> variables are all in centimeters. Summarize the values:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -5306,12 +5306,12 @@ Repeated code
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="rgliuxergk" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="fafnqedwcf" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#rgliuxergk .gt_table {
+#fafnqedwcf .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -5336,7 +5336,7 @@ Repeated code
   border-left-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_heading {
+#fafnqedwcf .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -5348,7 +5348,7 @@ Repeated code
   border-right-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_title {
+#fafnqedwcf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -5358,7 +5358,7 @@ Repeated code
   border-bottom-width: 0;
 }
 
-#rgliuxergk .gt_subtitle {
+#fafnqedwcf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -5368,13 +5368,13 @@ Repeated code
   border-top-width: 0;
 }
 
-#rgliuxergk .gt_bottom_border {
+#fafnqedwcf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_col_headings {
+#fafnqedwcf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5389,7 +5389,7 @@ Repeated code
   border-right-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_col_heading {
+#fafnqedwcf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5409,7 +5409,7 @@ Repeated code
   overflow-x: hidden;
 }
 
-#rgliuxergk .gt_column_spanner_outer {
+#fafnqedwcf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5421,15 +5421,15 @@ Repeated code
   padding-right: 4px;
 }
 
-#rgliuxergk .gt_column_spanner_outer:first-child {
+#fafnqedwcf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rgliuxergk .gt_column_spanner_outer:last-child {
+#fafnqedwcf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rgliuxergk .gt_column_spanner {
+#fafnqedwcf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -5441,7 +5441,7 @@ Repeated code
   width: 100%;
 }
 
-#rgliuxergk .gt_group_heading {
+#fafnqedwcf .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -5463,7 +5463,7 @@ Repeated code
   vertical-align: middle;
 }
 
-#rgliuxergk .gt_empty_group_heading {
+#fafnqedwcf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -5478,15 +5478,15 @@ Repeated code
   vertical-align: middle;
 }
 
-#rgliuxergk .gt_from_md > :first-child {
+#fafnqedwcf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rgliuxergk .gt_from_md > :last-child {
+#fafnqedwcf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rgliuxergk .gt_row {
+#fafnqedwcf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5505,7 +5505,7 @@ Repeated code
   overflow-x: hidden;
 }
 
-#rgliuxergk .gt_stub {
+#fafnqedwcf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -5517,7 +5517,7 @@ Repeated code
   padding-left: 12px;
 }
 
-#rgliuxergk .gt_summary_row {
+#fafnqedwcf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -5527,7 +5527,7 @@ Repeated code
   padding-right: 5px;
 }
 
-#rgliuxergk .gt_first_summary_row {
+#fafnqedwcf .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5537,7 +5537,7 @@ Repeated code
   border-top-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_grand_summary_row {
+#fafnqedwcf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -5547,7 +5547,7 @@ Repeated code
   padding-right: 5px;
 }
 
-#rgliuxergk .gt_first_grand_summary_row {
+#fafnqedwcf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5557,11 +5557,11 @@ Repeated code
   border-top-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_striped {
+#fafnqedwcf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rgliuxergk .gt_table_body {
+#fafnqedwcf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5570,7 +5570,7 @@ Repeated code
   border-bottom-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_footnotes {
+#fafnqedwcf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5584,13 +5584,13 @@ Repeated code
   border-right-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_footnote {
+#fafnqedwcf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#rgliuxergk .gt_sourcenotes {
+#fafnqedwcf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -5604,41 +5604,41 @@ Repeated code
   border-right-color: #D3D3D3;
 }
 
-#rgliuxergk .gt_sourcenote {
+#fafnqedwcf .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#rgliuxergk .gt_left {
+#fafnqedwcf .gt_left {
   text-align: left;
 }
 
-#rgliuxergk .gt_center {
+#fafnqedwcf .gt_center {
   text-align: center;
 }
 
-#rgliuxergk .gt_right {
+#fafnqedwcf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rgliuxergk .gt_font_normal {
+#fafnqedwcf .gt_font_normal {
   font-weight: normal;
 }
 
-#rgliuxergk .gt_font_bold {
+#fafnqedwcf .gt_font_bold {
   font-weight: bold;
 }
 
-#rgliuxergk .gt_font_italic {
+#fafnqedwcf .gt_font_italic {
   font-style: italic;
 }
 
-#rgliuxergk .gt_super {
+#fafnqedwcf .gt_super {
   font-size: 65%;
 }
 
-#rgliuxergk .gt_footnote_marks {
+#fafnqedwcf .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -5752,13 +5752,13 @@ Repeated code
 </div>
 </div>
 <p>Mostly sofas and beds, which makes sense.</p>
-<h1 id="model">Model</h1>
+<h2 id="model">Model</h2>
 <p>I’ll attempt to predict item <code>price</code> with</p>
 <ul>
 <li><code>category</code>, <code>sellable_online</code>, <code>other_colors</code>, <code>depth</code>, <code>height</code>, <code>width</code> from the original data, and</li>
 <li><code>perc_discount</code>, <code>chairs</code>, <code>stools</code>, <code>tables</code>, <code>sofa_seats</code>, <code>sofa_bed</code>, <code>sofa_sectional</code> and <code>designer_group</code> from feature engineering.</li>
 </ul>
-<h2 id="pre-processing">Pre-processing</h2>
+<h3 id="pre-processing">Pre-processing</h3>
 <p>Convert the categorical variables to factors, and add log <code>price</code> as the outcome variable:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -6710,7 +6710,7 @@ Cleaning factor levels for category, designer_group [trained]
 Dummy variables from category, designer_group [trained]
 Zero variance filter removed no terms [trained]</code></pre>
 </div>
-<h2 id="linear-regression">Linear regression</h2>
+<h3 id="linear-regression">Linear regression</h3>
 <p>I’ll start with a simple linear regression, which I expect will be outperformed by a more flexible method.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -6763,7 +6763,7 @@ Zero variance filter removed no terms [trained]</code></pre>
 <p><img src="tidytuesday-2020-week-45_files/figure-html5/unnamed-chunk-58-1.png" width="624" /></p>
 </div>
 <p>Not as bad as I was expecting, but we can definitely improve on this:</p>
-<h2 id="random-forest">Random forest</h2>
+<h3 id="random-forest">Random forest</h3>
 <p>Following along with <a href="https://juliasilge.com/blog/ikea-prices/">Julia Silge’s approach</a>, I will attempt to tune a random forest model via <code>ranger</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -6792,7 +6792,7 @@ Zero variance filter removed no terms [trained]</code></pre>
 <span class='fu'><a href='https://rdrr.io/pkg/tictoc/man/tic.html'>toc</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>252.75 sec elapsed</code></pre>
+<pre><code>242.37 sec elapsed</code></pre>
 </div>
 <p>The 5 best fits to the training data by RMSE:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -6857,8 +6857,8 @@ Computational engine: ranger </code></pre>
 <pre><code># A tibble: 2 x 4
   .metric .estimator .estimate .config             
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-1 rmse    standard       0.263 Preprocessor1_Model1
-2 rsq     standard       0.833 Preprocessor1_Model1</code></pre>
+1 rmse    standard       0.264 Preprocessor1_Model1
+2 rsq     standard       0.832 Preprocessor1_Model1</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>collect_predictions</span><span class='op'>(</span><span class='va'>ranger_fit</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>ggplot</span><span class='op'>(</span><span class='fu'>aes</span><span class='op'>(</span><span class='va'>log_price</span>, <span class='va'>.pred</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
@@ -6914,7 +6914,7 @@ $ log_price             &lt;dbl&gt; 3.254064</code></pre>
 <pre><code># A tibble: 1 x 1
   .pred
   &lt;dbl&gt;
-1  3.16</code></pre>
+1  3.17</code></pre>
 </div>
 <p>Which is pretty close.</p>
 <p>Lastly, I am interested to see the variable importance of this model, particularly for the engineered features:</p>
@@ -6944,7 +6944,7 @@ $ log_price             &lt;dbl&gt; 3.254064</code></pre>
 <p><img src="tidytuesday-2020-week-45_files/figure-html5/unnamed-chunk-66-1.png" width="624" data-distill-preview=1 /></p>
 </div>
 <p>As with Julie Silge’s model, the <code>width</code>/<code>depth</code>/<code>height</code> variables are the most important predictors. The <code>chairs</code> feature, which took some fancy regex to engineer, turned out to be worthwhile as it was the 4th most important predictor here. <code>designer_group</code> ended up being more important than <code>category</code>.</p>
-<h1 class="appendix" id="reproducibility">Reproducibility</h1>
+<h2 class="appendix" id="reproducibility">Reproducibility</h2>
 <details>
 <summary>
 Session info
@@ -6959,7 +6959,7 @@ Session info
  collate  English_Canada.1252         
  ctype    English_Canada.1252         
  tz       America/Curacao             
- date     2021-11-10                  </code></pre>
+ date     2021-11-14                  </code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.9","3":"0.7.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"TRUE","7":"FALSE","8":"2021-07-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"broom.helpers","2":"1.3.0","3":"1.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom.helpers","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom.helpers","6":"FALSE","7":"FALSE","8":"2021-04-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom.helpers"},{"1":"broom.mixed","2":"0.2.7","3":"0.2.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom.mixed","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom.mixed","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom.mixed"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.5","3":"1.0.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-05-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"checkmate","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","6":"FALSE","7":"FALSE","8":"2020-02-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"checkmate"},{"1":"class","2":"7.3.19","3":"7.3-19","4":"C:/Program Files/R/R-4.1.1/library/class","5":"C:/Program Files/R/R-4.1.1/library/class","6":"FALSE","7":"FALSE","8":"2021-05-03","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"class"},{"1":"cli","2":"3.0.1","3":"3.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-07-17","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"codetools","2":"0.2.18","3":"0.2-18","4":"C:/Program Files/R/R-4.1.1/library/codetools","5":"C:/Program Files/R/R-4.1.1/library/codetools","6":"FALSE","7":"FALSE","8":"2020-11-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"codetools"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"commonmark","2":"1.7","3":"1.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/commonmark","5":"C:/Users/tdunn/Documents/R/win-library/4.1/commonmark","6":"FALSE","7":"FALSE","8":"2018-12-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"commonmark"},{"1":"crayon","2":"1.4.1","3":"1.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-02-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-06-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"dials","2":"0.0.10","3":"0.0.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dials","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dials","6":"TRUE","7":"FALSE","8":"2021-09-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dials"},{"1":"DiceDesign","2":"1.9","3":"1.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DiceDesign","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DiceDesign","6":"FALSE","7":"FALSE","8":"2021-02-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DiceDesign"},{"1":"digest","2":"0.6.27","3":"0.6.27","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2020-10-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.2","3":"1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-01-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"doParallel","2":"1.0.16","3":"1.0.16","4":"C:/Users/tdunn/Documents/R/win-library/4.1/doParallel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/doParallel","6":"TRUE","7":"FALSE","8":"2020-10-16","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"doParallel"},{"1":"downlit","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2020-11-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.3","3":"0.2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2021-10-02","9":"Github (taylordunn/dunnr@0f2ba6e)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"farver","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","5":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"farver"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"foreach","2":"1.5.1","3":"1.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/foreach","5":"C:/Users/tdunn/Documents/R/win-library/4.1/foreach","6":"TRUE","7":"FALSE","8":"2020-10-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"foreach"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"furrr","2":"0.2.3","3":"0.2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/furrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/furrr","6":"FALSE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"furrr"},{"1":"future","2":"1.21.0","3":"1.21.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/future","5":"C:/Users/tdunn/Documents/R/win-library/4.1/future","6":"FALSE","7":"FALSE","8":"2020-12-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"future"},{"1":"generics","2":"0.1.0","3":"0.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2020-10-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"globals","2":"0.14.0","3":"0.14.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/globals","5":"C:/Users/tdunn/Documents/R/win-library/4.1/globals","6":"FALSE","7":"FALSE","8":"2020-11-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"globals"},{"1":"glue","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2020-08-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gower","2":"0.2.2","3":"0.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gower","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gower","6":"FALSE","7":"FALSE","8":"2020-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gower"},{"1":"GPfit","2":"1.0.8","3":"1.0-8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/GPfit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/GPfit","6":"FALSE","7":"FALSE","8":"2019-02-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"GPfit"},{"1":"gridExtra","2":"2.3","3":"2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gridExtra","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gridExtra","6":"FALSE","7":"FALSE","8":"2017-09-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gridExtra"},{"1":"gt","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","6":"TRUE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gt"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"gtsummary","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtsummary","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtsummary","6":"FALSE","7":"FALSE","8":"2021-07-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtsummary"},{"1":"hardhat","2":"0.1.6","3":"0.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hardhat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hardhat","6":"FALSE","7":"FALSE","8":"2021-07-14","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hardhat"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"highr","2":"0.9","3":"0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","6":"FALSE","7":"FALSE","8":"2021-04-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"highr"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"FALSE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"infer","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/infer","5":"C:/Users/tdunn/Documents/R/win-library/4.1/infer","6":"TRUE","7":"FALSE","8":"2021-08-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"infer"},{"1":"ipred","2":"0.9.12","3":"0.9-12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ipred","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ipred","6":"FALSE","7":"FALSE","8":"2021-09-15","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ipred"},{"1":"iterators","2":"1.0.13","3":"1.0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/iterators","5":"C:/Users/tdunn/Documents/R/win-library/4.1/iterators","6":"TRUE","7":"FALSE","8":"2020-10-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"iterators"},{"1":"janitor","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/janitor","5":"C:/Users/tdunn/Documents/R/win-library/4.1/janitor","6":"FALSE","7":"FALSE","8":"2021-01-05","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"janitor"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"labeling","2":"0.4.2","3":"0.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","6":"FALSE","7":"FALSE","8":"2020-10-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labeling"},{"1":"labelled","2":"2.8.0","3":"2.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labelled","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labelled","6":"FALSE","7":"FALSE","8":"2021-03-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labelled"},{"1":"lattice","2":"0.20.44","3":"0.20-44","4":"C:/Program Files/R/R-4.1.1/library/lattice","5":"C:/Program Files/R/R-4.1.1/library/lattice","6":"FALSE","7":"FALSE","8":"2021-05-02","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"lattice"},{"1":"lava","2":"1.6.9","3":"1.6.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lava","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lava","6":"FALSE","7":"FALSE","8":"2021-03-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lava"},{"1":"lhs","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lhs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lhs","6":"FALSE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lhs"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"listenv","2":"0.8.0","3":"0.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/listenv","5":"C:/Users/tdunn/Documents/R/win-library/4.1/listenv","6":"FALSE","7":"FALSE","8":"2019-12-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"listenv"},{"1":"lubridate","2":"1.7.10","3":"1.7.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-02-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"MASS","2":"7.3.54","3":"7.3-54","4":"C:/Program Files/R/R-4.1.1/library/MASS","5":"C:/Program Files/R/R-4.1.1/library/MASS","6":"FALSE","7":"FALSE","8":"2021-05-03","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"MASS"},{"1":"Matrix","2":"1.3.4","3":"1.3-4","4":"C:/Program Files/R/R-4.1.1/library/Matrix","5":"C:/Program Files/R/R-4.1.1/library/Matrix","6":"FALSE","7":"FALSE","8":"2021-06-01","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"Matrix"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"mgcv","2":"1.8.36","3":"1.8-36","4":"C:/Program Files/R/R-4.1.1/library/mgcv","5":"C:/Program Files/R/R-4.1.1/library/mgcv","6":"FALSE","7":"FALSE","8":"2021-06-01","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"mgcv"},{"1":"modeldata","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modeldata","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modeldata","6":"TRUE","7":"FALSE","8":"2021-07-14","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modeldata"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"nlme","2":"3.1.152","3":"3.1-152","4":"C:/Program Files/R/R-4.1.1/library/nlme","5":"C:/Program Files/R/R-4.1.1/library/nlme","6":"FALSE","7":"FALSE","8":"2021-02-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"nlme"},{"1":"nnet","2":"7.3.16","3":"7.3-16","4":"C:/Program Files/R/R-4.1.1/library/nnet","5":"C:/Program Files/R/R-4.1.1/library/nnet","6":"FALSE","7":"FALSE","8":"2021-05-03","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"nnet"},{"1":"parallelly","2":"1.27.0","3":"1.27.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/parallelly","5":"C:/Users/tdunn/Documents/R/win-library/4.1/parallelly","6":"FALSE","7":"FALSE","8":"2021-07-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"parallelly"},{"1":"parsnip","2":"0.1.7","3":"0.1.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/parsnip","5":"C:/Users/tdunn/Documents/R/win-library/4.1/parsnip","6":"TRUE","7":"FALSE","8":"2021-07-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"parsnip"},{"1":"pillar","2":"1.6.3","3":"1.6.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-09-26","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"plyr","2":"1.8.6","3":"1.8.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/plyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/plyr","6":"FALSE","7":"FALSE","8":"2020-03-03","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"plyr"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"pROC","2":"1.17.0.1","3":"1.17.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pROC","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pROC","6":"FALSE","7":"FALSE","8":"2021-01-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pROC"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"prodlim","2":"2019.11.13","3":"2019.11.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prodlim","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prodlim","6":"FALSE","7":"FALSE","8":"2019-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prodlim"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"ranger","2":"0.13.1","3":"0.13.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ranger","6":"FALSE","7":"FALSE","8":"2021-07-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ranger"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"recipes","2":"0.1.17","3":"0.1.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/recipes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/recipes","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"recipes"},{"1":"remotes","2":"2.4.0","3":"2.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-06-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"0.4.11","3":"0.4.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"TRUE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"TRUE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rpart","2":"4.1.15","3":"4.1-15","4":"C:/Program Files/R/R-4.1.1/library/rpart","5":"C:/Program Files/R/R-4.1.1/library/rpart","6":"FALSE","7":"FALSE","8":"2019-04-12","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"rpart"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rsample","2":"0.1.0","3":"0.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rsample","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rsample","6":"TRUE","7":"FALSE","8":"2021-05-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rsample"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.9","3":"1.3.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2021-07-22","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"TRUE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"selectr","2":"0.4.2","3":"0.4-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/selectr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/selectr","6":"FALSE","7":"FALSE","8":"2019-11-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"selectr"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"snakecase","2":"0.11.0","3":"0.11.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/snakecase","5":"C:/Users/tdunn/Documents/R/win-library/4.1/snakecase","6":"FALSE","7":"FALSE","8":"2019-05-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"snakecase"},{"1":"stringi","2":"1.7.4","3":"1.7.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"survival","2":"3.2.11","3":"3.2-11","4":"C:/Program Files/R/R-4.1.1/library/survival","5":"C:/Program Files/R/R-4.1.1/library/survival","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"survival"},{"1":"testthat","2":"3.0.4","3":"3.0.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-07-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"textrecipes","2":"0.4.1","3":"0.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/textrecipes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/textrecipes","6":"TRUE","7":"FALSE","8":"2021-07-11","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"textrecipes"},{"1":"tibble","2":"3.1.5","3":"3.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-09-30","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tictoc","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tictoc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tictoc","6":"TRUE","7":"FALSE","8":"2021-04-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tictoc"},{"1":"tidymodels","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidymodels","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidymodels","6":"TRUE","7":"FALSE","8":"2021-10-01","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidymodels"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidytuesdayR","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidytuesdayR","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidytuesdayR","6":"TRUE","7":"FALSE","8":"2020-07-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidytuesdayR"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"timeDate","2":"3043.102","3":"3043.102","4":"C:/Users/tdunn/Documents/R/win-library/4.1/timeDate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/timeDate","6":"FALSE","7":"FALSE","8":"2018-02-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"timeDate"},{"1":"tune","2":"0.1.6","3":"0.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tune","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tune","6":"TRUE","7":"FALSE","8":"2021-07-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tune"},{"1":"usethis","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"TRUE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"vip","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vip","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vip","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vip"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"workflows","2":"0.2.3","3":"0.2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/workflows","5":"C:/Users/tdunn/Documents/R/win-library/4.1/workflows","6":"TRUE","7":"FALSE","8":"2021-07-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"workflows"},{"1":"workflowsets","2":"0.1.0","3":"0.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/workflowsets","5":"C:/Users/tdunn/Documents/R/win-library/4.1/workflowsets","6":"TRUE","7":"FALSE","8":"2021-07-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"workflowsets"},{"1":"xfun","2":"0.26","3":"0.26","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"},{"1":"yardstick","2":"0.0.8","3":"0.0.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yardstick","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yardstick","6":"TRUE","7":"FALSE","8":"2021-03-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yardstick"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -6974,7 +6974,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [f2f5def] 2021-09-20: Added Linkedin to navbar</code></pre>
+Head:     [31c5574] 2021-11-14: Using smaller section headers</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">

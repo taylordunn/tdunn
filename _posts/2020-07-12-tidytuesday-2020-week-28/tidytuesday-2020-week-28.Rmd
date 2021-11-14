@@ -40,7 +40,7 @@ options(ggplot2.discrete.color = coffee_pal,
         ggplot2.discrete.fill = coffee_pal)
 ```
 
-# Load the data
+## Load the data
 
 ```{r}
 tt <- tidytuesdayR::tt_load("2020-07-07")
@@ -53,7 +53,7 @@ tt
 
 These data were scraped by James LeDoux in 2018 from the Coffee Quality Institute (see the original data [here](https://github.com/jldbc/coffee-quality-database)).
 
-# Data exploration
+## Data exploration
 
 ```{r}
 coffee <- tt$coffee_ratings
@@ -114,7 +114,7 @@ Summarize them with `skimr`:
 skimr::skim(coffee)
 ```
 
-## Ratings
+### Ratings
 
 The key outcome variable is `total_cup_points`, which is a quality rating 0-100
 
@@ -217,7 +217,7 @@ coffee %>%
   scale_x_continuous(breaks = 0:10)
 ```
 
-## Categorical variables
+### Categorical variables
 
 There are two `species`, though Arabica makes up the large majority:
 
@@ -395,7 +395,7 @@ Every single grading was (supposedly) done 365 days before expiration.
 Maybe it is standard procedure that gradings be done exactly one year before expiration.
 Not sure, but this unfortunately makes it an uninteresting variable for exploration/modeling.
 
-## Defects
+### Defects
 
 There are two defect variables (`category_one_defects` and `category_two_defects`) and the `quakers` variable, which are immature/unripe beans.
 
@@ -445,7 +445,7 @@ p2 <- d %>%
 Looks to be a slight decline in ratings with increasing category 1 and 2 defects.
 Not much of an effect with number of quakers.
 
-## Altitude
+### Altitude
 
 The `altitude` variable is messy, but looks like it was cleaned via the `altitude_*_variables`:
 
@@ -583,7 +583,7 @@ coffee %>%
 
 Yes, that looks to be the range of altitudes with the highest ratings on average.
 
-# Model
+## Model
 
 I want to attempt to predict scores for one of the individual gradings (not the 0-100 total score, or the three that are mostly 10s), but can't decide, so choose randomly:
 
@@ -663,7 +663,7 @@ ikea_baked %>% paged_table()
 ```
 
 
-## Pre-processing
+### Pre-processing
 
 Load `tidymodels`, setup parallel processing, and convert characters to factors:
 

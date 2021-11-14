@@ -37,7 +37,7 @@ set_palette()
 ikea_colors <- c("#0051BA", "#FFDA1A")
 ```
 
-# Load the data
+## Load the data
 
 ```{r}
 tt <- tt_load("2020-11-03")
@@ -51,7 +51,7 @@ tt
 The data this week comes from the Kaggle, and was the subject of a [FiveThirtyEight article](https://fivethirtyeight.com/features/the-weird-economics-of-ikea/).
 See [the Kaggle page](https://www.kaggle.com/ahmedkallam/ikea-sa-furniture-web-scraping) for a data dictionary.
 
-# Data exploration
+## Data exploration
 
 ```{r}
 ikea <- tt$ikea %>% rename(row_number = X1)
@@ -251,7 +251,7 @@ ikea %>%
 Doesn't really pass the eye test though -- the distributions are near identical.
 The magic of large sample sizes.
 
-## Short description
+### Short description
 
 There are `r n_distinct(ikea$short_description)` unique `short_description`s with the following counts:
 
@@ -546,7 +546,7 @@ ikea <- ikea %>%
 
 </details>
 
-## Designer
+### Designer
 
 Check out the `designer` variable:
 
@@ -628,7 +628,7 @@ ikea %>%
 
 In general, items designed by IKEA alone are cheaper than items designed by one or more individuals, and items designed in collaboration with IKEA are the most expensive.
 
-## Size
+### Size
 
 The `depth`, `height` and `width` variables are all in centimeters.
 Summarize the values:
@@ -717,14 +717,14 @@ ikea %>%
 
 Mostly sofas and beds, which makes sense.
 
-# Model
+## Model
 
 I'll attempt to predict item `price` with
 
 * `category`, `sellable_online`, `other_colors`, `depth`, `height`, `width` from the original data, and
 * `perc_discount`, `chairs`, `stools`, `tables`, `sofa_seats`, `sofa_bed`, `sofa_sectional` and `designer_group` from feature engineering.
 
-## Pre-processing
+### Pre-processing
 
 Convert the categorical variables to factors, and add log `price` as the outcome variable:
 
@@ -846,7 +846,7 @@ prep(ikea_rec)
 ```
 
 
-## Linear regression
+### Linear regression
 
 I'll start with a simple linear regression, which I expect will be outperformed by a more flexible method.
 ^[See ISLR section 2.2.2 [@James2013] on the bias-variance trade-off for an accessible explanation of this idea.]
@@ -885,7 +885,7 @@ collect_predictions(lm_fit) %>%
 
 Not as bad as I was expecting, but we can definitely improve on this:
 
-## Random forest
+### Random forest
 
 Following along with [Julia Silge's approach](https://juliasilge.com/blog/ikea-prices/), I will attempt to tune a random forest model via `ranger`:
 
@@ -993,7 +993,7 @@ As with Julie Silge's model, the `width`/`depth`/`height` variables are the most
 The `chairs` feature, which took some fancy regex to engineer, turned out to be worthwhile as it was the 4th most important predictor here.
 `designer_group` ended up being more important than `category`.
 
-# Reproducibility {.appendix}
+## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
 
