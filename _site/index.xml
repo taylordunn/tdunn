@@ -45,5 +45,18 @@ reading what we have to say!</description>
       <pubDate>Sun, 08 Nov 2020 00:00:00 +0000</pubDate>
       <media:content url="https://tdunn.ca/posts/2020-11-08-tidytuesday-2020-week-45/tidytuesday-2020-week-45_files/figure-html5/unnamed-chunk-66-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
+    <item>
+      <title>TidyTuesday 2020 Week 28</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2020-07-12-tidytuesday-2020-week-28</link>
+      <description>#TidyTuesday 2020-07-07: Coffee Ratings.</description>
+      <category>TidyTuesday</category>
+      <category>tidymodels</category>
+      <category>machine learning</category>
+      <category>random forest</category>
+      <category>LASSO</category>
+      <guid>https://tdunn.ca/posts/2020-07-12-tidytuesday-2020-week-28</guid>
+      <pubDate>Sun, 12 Jul 2020 00:00:00 +0000</pubDate>
+    </item>
   </channel>
 </rss>

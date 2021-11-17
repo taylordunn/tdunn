@@ -13,7 +13,8 @@ categories:
   - tidymodels
   - machine learning
   - random forest
-draft: true
+  - LASSO
+draft: false
 output:
   distill::distill_article:
     toc: true
@@ -28,13 +29,13 @@ library(tidytuesdayR)
 library(gt)
 library(rmarkdown)
 library(patchwork)
+library(ggtext)
 
 library(dunnr)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 theme_set(theme_td())
 set_geom_fonts()
 # A coffee themed palette I found here: https://colorpalettes.net/color-palette-4281/
-#set_palette()
 coffee_pal <- c("#a0583c", "#c08267", "#ccb9b1", "#616063", "#212123")
 options(ggplot2.discrete.color = coffee_pal,
         ggplot2.discrete.fill = coffee_pal)
@@ -340,7 +341,8 @@ For values like "2013/2014" and "2010-2011, I'll extract the first year.
 coffee <- coffee %>%
   mutate(
     harvest_year_num = harvest_year %>%
-      str_extract("\\d{4}")
+      str_extract("\\d{4}") %>%
+      as.numeric()
   )
 coffee %>%
   count(harvest_year, harvest_year_num, sort = T) %>%
@@ -350,11 +352,6 @@ coffee %>%
 It doesn't work with values like "08/09" because they are not 4 digits, but those values are very low frequency.
 
 The `r n_distinct(coffee$processing_method, na.rm = TRUE)` `processing_method`s:
-
-```{r}
-coffee %>%
-  count(processing_method)
-```
 
 ```{r fig.height=4, fig.width=6}
 d <- coffee %>%
@@ -548,7 +545,6 @@ coffee %>%
   filter(!is.na(altitude_mean_meters_fixed)) %>%
   ggplot(aes(x = altitude_mean_meters_fixed)) +
   geom_boxplot(y = 0, fill = coffee_pal[2]) +
-  #scale_x_log10() +
   remove_axis("y")
 ```
 
@@ -581,11 +577,11 @@ coffee %>%
   scale_y_continuous(breaks = seq(0, 100, 10))
 ```
 
-Yes, that looks to be the range of altitudes with the highest ratings on average.
+Yes, there looks to be the range of altitudes with the highest ratings on average.
 
 ## Model
 
-I want to attempt to predict scores for one of the individual gradings (not the 0-100 total score, or the three that are mostly 10s), but can't decide, so choose randomly:
+I want to attempt to predict scores for one of the individual gradings (not the 0-100 total score, or the three that are mostly 10s), which I will choose randomly:
 
 ```{r}
 set.seed(74)
@@ -618,8 +614,7 @@ coffee_split <- initial_split(coffee, prop = 3/4, strata = flavor)
 coffee_train <- training(coffee_split)
 coffee_test <- testing(coffee_split)
 
-#coffee_resamples <- vfold_cv(coffee_train, v = 5, strata = flavor)
-coffee_resamples <- bootstraps(coffee_train, strata = flavor)
+coffee_resamples <- vfold_cv(coffee_train, v = 5, strata = flavor)
 ```
 
 Now define the recipe:
@@ -634,33 +629,24 @@ Now define the recipe:
 coffee_rec <-
   recipe(
     flavor ~
-      species +
-      country_of_origin +
-      processing_method +
-      color +
-      in_country_partner +
-      variety +
-      aroma + aftertaste +
-      acidity + body + balance + uniformity + clean_cup + sweetness +
-      cupper_points + moisture + category_one_defects + category_two_defects +
-      quakers + altitude_mean_meters_fixed,
+      species + country_of_origin + processing_method + color +
+      in_country_partner + variety + aroma + aftertaste + acidity + body +
+      balance + uniformity + clean_cup + sweetness + cupper_points + moisture +
+      category_one_defects + category_two_defects + quakers +
+      altitude_mean_meters_fixed,
     data = coffee_train
   ) %>%
   # Where missing, impute categorical variables with the most common value
-  #step_impute_mode(all_nominal_predictors(), -variety) %>%
   step_impute_mode(all_nominal_predictors()) %>%
   # Some of these categorical variables have too many levels, group levels
   #  with <5% frequency 
-  #step_other(all_nominal_predictors(),
   step_other(country_of_origin, variety, in_country_partner, processing_method,
              threshold = 0.05) %>%
-  #step_other(variety, threshold = 0.10) %>%
   # These two numerical predictors have some missing value, so impute with mean
   step_impute_mean(quakers, altitude_mean_meters_fixed) %>%
   # Normalize (0 mean, 1 SD) all numerical predictors
   step_normalize(all_numeric_predictors()) %>%
   # Use splines in the altitude variable to capture it's non-linearity.
-  # 4 degrees of freedom should give 3 knots
   step_ns(altitude_mean_meters_fixed, deg_free = 4) %>%
   # Finally, create the dummy variables (note that this step must come *after*
   #  normalizing numerical variables)
@@ -675,190 +661,49 @@ coffee_baked <- bake(prep(coffee_rec), new_data = NULL)
 coffee_baked %>% paged_table()
 ```
 
-### Random forest
+And before fitting any models, register parallel computing to speed up the tuning process:
 
 ```{r}
-ranger_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>%
-  set_mode("regression") %>%
-  set_engine("ranger")
-
-ranger_workflow <- workflow() %>%
-  add_recipe(coffee_rec) %>%
-  add_model(ranger_spec)
-
 # Speed up the tuning with parallel processing
 n_cores <- parallel::detectCores(logical = FALSE)
 library(doParallel)
 cl <- makePSOCKcluster(n_cores - 1)
 registerDoParallel(cl)
-
-set.seed(12)
-
-library(tictoc) # A convenient package for timing
-tic()
-ranger_tune <-
-  tune_grid(ranger_workflow, resamples = coffee_resamples, grid = 11)
-toc()
 ```
 
-```{r}
-show_best(ranger_tune, metric = "rmse")
-```
+### Linear regression
+
+Start simple, with just a linear regression model:
 
 ```{r}
-ranger_best <- ranger_workflow %>%
-  finalize_workflow(select_best(ranger_tune, metric = "rmse"))
-ranger_best
-```
-
-The last step is the `last_fit()` to the training data and evaluating on testing data:
-
-```{r}
-ranger_fit <- last_fit(ranger_best, coffee_split)
-collect_metrics(ranger_fit)
-```
-
-The metrics and predictions to the testing data:
-
-```{r}
-collect_metrics(ranger_fit)
-
-collect_predictions(ranger_fit) %>%
-  ggplot(aes(flavor, .pred)) +
-  geom_point(color = coffee_pal[1], alpha = 0.5) +
-  geom_abline(color = coffee_pal[2], size = 1.5)
-```
-
-As an example of applying this model, here is a random item:
-
-```{r}
-set.seed(23)
-coffee_sample <- coffee %>% slice_sample(n = 1)
-
-coffee_sample %>% glimpse()
-```
-
-The `flavor` rating is `r coffee_sample$flavor`.
-Our model predicts:
-
-```{r}
-predict(ranger_fit$.workflow[[1]], coffee_sample)
-```
-
-Which is pretty close.
-
-
-### LASSO
-
-Define the workflow for a LASSO regression model:
-
-```{r}
-coffee_rec <-
-  recipe(
-    flavor ~ species + country_of_origin + processing_method + color +
-      in_country_partner + variety + aroma + aftertaste +
-      acidity + body + balance + uniformity + clean_cup + sweetness +
-      cupper_points + moisture + category_one_defects + category_two_defects +
-      quakers + altitude_mean_meters_fixed,
-    data = coffee_train
-  ) %>%
-  # Where missing, impute categorical variables with the most common value
-  step_impute_mode(all_nominal_predictors()) %>%
-  # Some of these categorical variables have too many levels, group levels
-  #  with <5% frequency 
-  # step_other(country_of_origin, variety, in_country_partner,
-  #            processing_method, threshold = 0.05) %>%
-  step_string2factor(all_nominal_predictors()) %>%
-  # These two numerical predictors have some missing value, so impute with mean
-  step_impute_mean(quakers, altitude_mean_meters_fixed) %>%
-  # Normalize (0 mean, 1 SD) all numerical predictors
-  step_normalize(all_numeric_predictors()) %>%
-  # Use splines in the altitude variable to capture it's non-linearity.
-  # 4 degrees of freedom should give 3 knots
-  #step_ns(altitude_mean_meters_fixed, deg_free = 4) %>%
-  # Finally, create the dummy variables (note that this step must come *after*
-  #  normalizing numerical variables)
-  step_dummy(all_nominal_predictors()) 
-
-lasso_spec <- linear_reg(penalty = 0.1, mixture = 1) %>%
-  set_engine("glmnet")
-lasso_workflow <- workflow() %>%
+lm_spec <- linear_reg() %>%
+  set_engine("lm")
+lm_workflow <- workflow() %>%
   add_recipe(coffee_rec) %>%
-  add_model(lasso_spec)
-
-lasso_fit_train <- lasso_workflow %>%
+  add_model(lm_spec)
+lm_fit_train <- lm_workflow %>%
   fit(data = coffee_train)
+lm_fit <- last_fit(lm_fit_train, coffee_split)
 
-lasso_fit_train %>%
-  extract_fit_parsnip() %>%
-  tidy() 
+collect_metrics(lm_fit)
 ```
 
+Show the actual vs predicted log price in the testing data:
 
-```{r}
-lasso_fit_train %>%
-  extract_fit_engine() %>%
-  tidy() %>%
-  filter(term != "(Intercept)") %>%
-  ggplot(aes(step, estimate, group = term)) +
-  geom_line()
+```{r fig.height=3, fig.width=4}
+collect_predictions(lm_fit) %>%
+  ggplot(aes(x = flavor, y = .pred)) +
+  geom_point(color = coffee_pal[1], alpha = 0.5) +
+  geom_abline(slope = 1, intercept = 0, size = 1.5)
 ```
 
+Linear regression does great, which makes me think that the more complicated models to follow will be overkill.
+
+### LASSO regression
+
+We will tune (i.e. allow the penalty term $\lambda$ to vary) a LASSO regression model to see if it can outperform a basic linear regression:
 
 ```{r}
-coffee_rec <-
-  recipe(
-    flavor ~ species + country_of_origin + processing_method + color +
-      in_country_partner + variety + aroma + aftertaste +
-      acidity + body + balance + uniformity + clean_cup + sweetness +
-      cupper_points + moisture + category_one_defects + category_two_defects +
-      quakers + altitude_mean_meters_fixed,
-    data = coffee_train
-  ) %>%
-  # Where missing, impute categorical variables with the most common value
-  step_impute_mode(all_nominal_predictors()) %>%
-  # Some of these categorical variables have too many levels, group levels
-  #  with <5% frequency 
-  step_other(country_of_origin, variety, in_country_partner,
-             processing_method, threshold = 0.05) %>%
-  #step_string2factor(all_nominal_predictors()) %>%
-  # These two numerical predictors have some missing value, so impute with mean
-  step_impute_mean(quakers, altitude_mean_meters_fixed) %>%
-  # Normalize (0 mean, 1 SD) all numerical predictors
-  step_normalize(all_numeric_predictors()) %>%
-  # Use splines in the altitude variable to capture it's non-linearity.
-  # 4 degrees of freedom should give 3 knots
-  #step_ns(altitude_mean_meters_fixed, deg_free = 4) %>%
-  # Finally, create the dummy variables (note that this step must come *after*
-  #  normalizing numerical variables)
-  step_dummy(all_nominal_predictors())
-```
-
-
-```{r}
-coffee_subset <- coffee %>%
-  select(
-    flavor, aroma, aftertaste, acidity, body, balance, uniformity, clean_cup, sweetness, cupper_points, moisture,
-    category_one_defects, category_two_defects, quakers, altitude_mean_meters_fixed
-  )
-set.seed(42)
-coffee_split <- initial_split(coffee_subset, prop = 3/4, strata = flavor)
-coffee_train <- training(coffee_split)
-coffee_test <- testing(coffee_split)
-
-#coffee_resamples <- vfold_cv(coffee_train, v = 5, strata = flavor)
-coffee_resamples <- bootstraps(coffee_train, strata = flavor)
-coffee_rec_numerical <-
-  recipe(
-    flavor ~ aroma + aftertaste +
-      acidity + body + balance + uniformity + clean_cup + sweetness +
-      cupper_points + moisture + category_one_defects + category_two_defects +
-      quakers + altitude_mean_meters_fixed,
-    data = coffee_train
-  ) %>%
-  step_impute_mean(quakers, altitude_mean_meters_fixed) %>%
-  step_normalize(all_numeric_predictors())
-
 lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>%
   set_engine("glmnet")
 
@@ -866,16 +711,8 @@ lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>%
 lasso_lambda_grid <- grid_regular(penalty(), levels = 50)
 
 lasso_workflow <- workflow() %>%
-  add_recipe(coffee_rec_numerical) %>%
+  add_recipe(coffee_rec) %>%
   add_model(lasso_spec)
-
-# Speed up the tuning with parallel processing
-# n_cores <- parallel::detectCores(logical = FALSE)
-# library(doParallel)
-# cl <- makePSOCKcluster(n_cores - 1)
-# registerDoParallel(cl)
-
-set.seed(801)
 
 library(tictoc) # A convenient package for timing
 tic()
@@ -886,18 +723,156 @@ lasso_tune <-
     grid = lasso_lambda_grid
   )
 toc()
-
-collect_metrics(lasso_tune) %>%
-  filter(!is.na(std_err)) %>%
-  ggplot(aes(x = penalty, y = mean)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = mean - std_err, ymax = mean + std_err)) +
-  facet_wrap(~.metric, ncol = 1, scales = "free_y")
-
-# Can't seem to get LASSO working properly
 ```
 
+```{r}
+show_best(lasso_tune, metric = "rmse")
+```
 
+LASSO regression was un-needed in this case, as it did not perform differently than basic linear regression.
+We can see this by looking at the behaviour of the metrics with $\lambda$:
+
+```{r warning=FALSE}
+collect_metrics(lasso_tune) %>%
+  #filter(!is.na(std_err)) %>%
+  ggplot(aes(x = penalty, y = mean)) +
+  geom_line(size = 1, color = coffee_pal[1]) +
+  geom_point(color = coffee_pal[1]) +
+  geom_ribbon(aes(ymin = mean - std_err, ymax = mean + std_err),
+              alpha = 0.5, fill = coffee_pal[3]) +
+  facet_wrap(~.metric, ncol = 1, scales = "free_y") +
+  scale_x_log10()
+```
+
+Lower levels of regularization gave better metrics.
+Regardless, finalize the workflow.
+
+```{r}
+lasso_best_workflow <- lasso_workflow %>%
+  finalize_workflow(select_best(lasso_tune, metric = "rmse"))
+lasso_fit <- last_fit(lasso_best_workflow, coffee_split)
+
+collect_metrics(lasso_fit)
+```
+
+Also look at variable importance:
+
+```{r fig.height=6}
+library(vip)
+lasso_fit %>%
+  extract_fit_engine() %>%
+  vi(
+    # This step seems to be necessary for glmnet objects
+    lambda =  select_best(lasso_tune, metric = "rmse")$penalty
+  ) %>%
+  mutate(Variable = fct_reorder(Variable, Importance)) %>%
+  ggplot(aes(x = Importance, y = Variable, fill = Sign)) +
+  geom_col() +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(y = NULL) +
+  theme(legend.position = c(0.3, 0.3))
+```
+
+### Random forest
+
+Lastly, try a random forest model:
+
+```{r}
+ranger_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>%
+  set_mode("regression") %>%
+  # The importance argument allows us to compute variable importance afterwards
+  set_engine("ranger", importance = "permutation")
+
+ranger_workflow <- workflow() %>%
+  add_recipe(coffee_rec) %>%
+  add_model(ranger_spec)
+
+set.seed(12)
+
+tic()
+ranger_tune <-
+  tune_grid(ranger_workflow, resamples = coffee_resamples, grid = 11)
+toc()
+```
+
+Tuning results:
+
+```{r}
+show_best(ranger_tune, metric = "rmse")
+```
+
+And plotting those same results:
+
+```{r}
+autoplot(ranger_tune) +
+  add_facet_borders()
+```
+
+We see that (besdies that first point) the tuning process did not amount to significantly improved metrics.
+Choose the best and fit to the test data:
+
+```{r}
+ranger_best <- ranger_workflow %>%
+  finalize_workflow(select_best(ranger_tune, metric = "rmse"))
+ranger_fit <- last_fit(ranger_best, coffee_split)
+collect_metrics(ranger_fit)
+```
+
+Check out variable importance:
+
+```{r fig.height=6}
+ranger_fit %>%
+  extract_fit_engine() %>%
+  vi() %>%
+  mutate(Variable = fct_reorder(Variable, Importance)) %>%
+  ggplot(aes(x = Importance, y = Variable)) +
+  geom_col() +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(y = NULL) +
+  theme(legend.position = c(0.3, 0.3))
+```
+
+Even fewer variables were deemed important in this model compared to LASSO.
+
+## Conclusion
+
+The random forest model was very slightly better in predicting coffee `flavor`, which I'll summarize with a plot:
+
+```{r preview=TRUE}
+bind_rows(
+  mutate(collect_metrics(lm_fit), fit = "linear"),
+  mutate(collect_metrics(lasso_fit), fit = "LASSO"),
+  mutate(collect_metrics(ranger_fit), fit = "random forest")
+) %>%
+  group_by(fit) %>%
+  summarise(
+    fit_metrics = glue::glue(
+      "RMSE = {round(.estimate[.metric == 'rmse'], 3)}\n",
+      "R2 = {round(.estimate[.metric == 'rsq'], 3)}"
+    ),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    bind_rows(
+      mutate(collect_predictions(lm_fit), fit = "linear"),
+      mutate(collect_predictions(lasso_fit), fit = "LASSO"),
+      mutate(collect_predictions(ranger_fit), fit = "random forest")
+    ),
+    by = "fit"
+  ) %>%
+  mutate(fit = factor(fit, levels = c("linear", "LASSO", "random forest"))) %>%
+  ggplot(aes(x = flavor, y = .pred)) +
+  geom_point(color = coffee_pal[1], alpha = 0.5) +
+  geom_abline(slope = 1, intercept = 0, size = 1.5, lty = 2) +
+  geom_text(data = . %>% distinct(fit, fit_metrics),
+            aes(label = fit_metrics, x = 6.5, y = 8.3), hjust = 0) +
+  facet_wrap(~fit, nrow = 1) +
+  add_facet_borders() +
+  labs(y = "Predicted flavor score", x = "Flavor score",
+       title = "Model performance in predicting coffee flavor ratings",
+       caption = paste0("data from the Coffee Quality Database | ",
+                        "plot by @TDunn12 for #TidyTuesday"))
+```
 
 ## Reproducibility {.appendix}
 
