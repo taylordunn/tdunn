@@ -6,14 +6,14 @@
       "description": "Some additional details about the blog",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-11-14T19:36:59-04:00"
+      "last_modified": "2021-11-16T21:09:03-04:00"
     },
     {
       "path": "index.html",
       "title": "Taylor Dunn's personal website",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-11-14T19:37:00-04:00"
+      "last_modified": "2021-11-16T21:09:04-04:00"
     }
   ],
   "collections": ["posts/posts.json"]

@@ -19,7 +19,6 @@ output:
   distill::distill_article:
     toc: true
     self_contained: false
-#bibliography: references.bib
 ---
 
 ```{r setup, include=TRUE, code_folding="Setup"}
@@ -568,7 +567,7 @@ The ratings are so clustered around the 6-9 range, it is hard to see much of a r
 but there does seem to be a small bump in ratings around 1500-2000 meters for a few of the variables.
 Can we see it in total scores?
 
-```{r fig.height=3, fig.width=4}
+```{r fig.height=3, fig.width=4, preview=TRUE}
 coffee %>%
   filter(!is.na(altitude_mean_meters_fixed)) %>%
   ggplot(aes(x = altitude_mean_meters_fixed, y = total_cup_points)) +
@@ -838,7 +837,7 @@ Even fewer variables were deemed important in this model compared to LASSO.
 
 The random forest model was very slightly better in predicting coffee `flavor`, which I'll summarize with a plot:
 
-```{r preview=TRUE}
+```{r}
 bind_rows(
   mutate(collect_metrics(lm_fit), fit = "linear"),
   mutate(collect_metrics(lasso_fit), fit = "LASSO"),

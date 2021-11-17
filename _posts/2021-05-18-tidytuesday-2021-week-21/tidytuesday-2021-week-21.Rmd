@@ -1,7 +1,7 @@
 ---
 title: "TidyTuesday 2021 Week 21"
 description: |
-  #TidyTuesday 2021-05-18: Ask a Manager Salary Survey
+  #TidyTuesday 2021-05-18: Ask a Manager Salary Survey.
 author:
   - name: Taylor Dunn
 date: 2021-05-18
