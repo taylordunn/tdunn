@@ -837,7 +837,7 @@ Even fewer variables were deemed important in this model compared to LASSO.
 
 The random forest model was very slightly better in predicting coffee `flavor`, which I'll summarize with a plot:
 
-```{r preview=TRUE}
+```{r}
 d <- bind_rows(
   mutate(collect_metrics(lm_fit), fit = "linear"),
   mutate(collect_metrics(lasso_fit), fit = "LASSO"),
