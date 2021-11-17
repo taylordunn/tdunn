@@ -897,5 +897,3 @@ git2r::repository()
 ```{r echo=FALSE}
 get_distill_source(date = params$date, slug = params$slug)
 ```
-
-
