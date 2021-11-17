@@ -863,7 +863,7 @@ d <- bind_rows(
 ```
 
 
-```{r preview=TRUE}
+```{r model-performance, preview=TRUE}
 d %>%
   ggplot(aes(x = flavor, y = .pred)) +
   geom_point(color = coffee_pal[1], alpha = 0.5) +
