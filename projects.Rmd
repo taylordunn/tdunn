@@ -1,0 +1,32 @@
+---
+title: "Projects"
+description: |
+  A collection of my projects.
+base_url: https://tdunn.ca
+output:
+  distill::distill_article:
+    toc: false
+twitter:
+  creator: "@TDunn12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+
+projects <- read_csv("content/projects.csv", col_types = "cccc")
+```
+
+
+```{r echo=FALSE}
+projects %>%
+  bs4cards::cards(
+    title = title,
+    text = text,
+    link = link,
+    image = image
+  )
+```
+
+
+

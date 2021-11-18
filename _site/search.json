@@ -6,14 +6,22 @@
       "description": "Some additional details about the blog",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-11-16T22:49:28-04:00"
+      "last_modified": "2021-11-18T14:39:14-04:00"
     },
     {
       "path": "index.html",
       "title": "Taylor Dunn's personal website",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-11-16T22:49:29-04:00"
+      "last_modified": "2021-11-18T14:39:15-04:00"
+    },
+    {
+      "path": "projects.html",
+      "title": "Projects",
+      "description": "A collection of my projects.\n",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\ndunnr\r\n\r\nMy personal R package of commonly used functions and templates.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nTidyTuesday\r\n\r\nTo practice my data science skills, I like to participate in the [TidyTuesday(https://github.com/rfordatascience/tidytuesday) project.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+      "last_modified": "2021-11-18T14:39:17-04:00"
     }
   ],
   "collections": ["posts/posts.json"]

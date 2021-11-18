@@ -10,6 +10,8 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+    - text: "Projects"
+      href: projects.html
     - icon: fa fa-twitter
       href: https://twitter.com/TDunn12
     - icon: fa fa-github
@@ -23,7 +25,7 @@ twitter:
   site: "@TDunn12"
   creator: "@TDunn12"
 google_analytics: "UA-196523553-1"
-favicon: images/td.ico
+favicon: content/images/td.ico
 output:
   distill::distill_article:
     includes:
