@@ -1,3 +1,8 @@
 # tdunn
 
-My personal website, which can be found at [tdunn.ca](https://tdunn.ca/).
+<!-- badges: start -->
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0372057b-6aab-4906-a674-584133a10e0c/deploy-status)](https://app.netlify.com/sites/tdunn/deploys)
+<!-- badges: end -->
+
+My [personal website](https://tdunn.ca), built with [{distill}](https://rstudio.github.io/distill/) and deployed
+with [netlify](https://www.netlify.com/).
