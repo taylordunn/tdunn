@@ -1,0 +1,165 @@
+---
+title: "Advent of Code 2021"
+description: |
+  My solutions to the #AdventOfCode 2021 coding challenges.
+author:
+  - name: Taylor Dunn
+date: 2021-12-01
+params:
+  date: 2021-12-01
+  slug: "advent-of-code-2021"
+categories:
+  - Advent of Code
+  - Python
+draft: false
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+#bibliography: references.bib
+---
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dunnr)
+library(here)
+
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+
+The [Advent of Code](https://adventofcode.com/) has begun for 2021, and I decided to participate this year to work on my programming and problem solving skills in R and, where possible, I'll try to translate the solutions to Python.
+Load the `reticulate` package:
+
+```{r python-setup}
+Sys.setenv(
+  RETICULATE_PYTHON = here("..", "python", ".venv", "Scripts", "python.exe")
+)
+library(reticulate)
+py_config()
+```
+
+
+To keep me motivated, I'll also be "competing" in a private leaderboard started by [Tan Ho](https://twitter.com/_TanHo/status/1465310512716173313).
+There are 25 days of challenges, so my current plan is to split up the posts into 5-day chunks.
+
+## Day 1
+
+### Part 1
+
+>The first order of business is to figure out how quickly the depth increases, just so you know what you're dealing with - you never know if the keys will get carried into deeper water by an ocean current or a fish or something.
+To do this, count the number of times a depth measurement increases from the previous measurement. (There is no measurement before the first measurement.)
+
+Import the measurements:
+
+```{r}
+day1 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+                     "day01-input.txt")) %>%
+  as.integer()
+head(day1)
+```
+
+The `tidyverse` solution to this problem is to use the `dplyr::lag()`/`lead()` function to refer to previous/next values.
+For example, for a vector of values 1-10 (in random order), I can show the cases where the value has increased like this:
+
+```{r}
+d <- sample(1:10)
+bind_cols(
+  value = d,
+  increased = d > dplyr::lag(d)
+)
+```
+
+Excluding the `NA` value, which occurs due to being the first element, `sum()` up the cases of larger measurements:
+
+```{r}
+sum(lag(day1) < day1, na.rm = TRUE)
+```
+
+For the Python solution, I will make sure of the `numpy.diff` function to calculate the difference between consecutive values:
+
+```{python}
+import numpy as np
+
+# Reference an object from the R session with r.obj
+(np.diff(r.day1) > 0)
+```
+
+Then chain the `.sum()` function to add up the `True` values:
+
+```{python}
+(np.diff(r.day1) > 0).sum()
+```
+
+Note that this method is also possible in base R, and is a bit simpler than the `tidyverse` solution:
+
+```{r}
+sum(diff(day1) > 0)
+```
+
+### Part 2
+
+>Your goal now is to count the number of times the sum of measurements in this sliding window increases from the previous sum. So, compare A with B, then compare B with C, then C with D, and so on. Stop when there aren't enough measurements left to create a new three-measurement sum.
+
+Here, I will use both `lag` and `lead` to compute the sum of the window:
+
+```{r}
+d_sum3 <- lag(d) + d + lead(d)
+bind_cols(
+  value = d,
+  sum3 = d_sum3,
+  increased = lag(d_sum3) < d_sum3
+)
+```
+
+Now `sum` the number of increases in the day 1 data:
+
+```{r}
+day1_sum3 <- lag(day1) + day1 + lead(day1)
+sum(day1_sum3 > lag(day1_sum3), na.rm = TRUE)
+```
+
+In Python, the `np.convolve` function allows computation in sliding windows:
+
+```{python}
+np.convolve(r.day1, np.ones(3, dtype = int))
+```
+
+Above, we provided the `np.ones(3, dtype = int)` array which is simply `[1, 1, 1]` and works as the convolution operator that slides along the `r.day1` array.
+Note that the first two elements are not correct, however, because the boundaries (with fewer than 3 values) were returned.
+Fix this with the `mode` argument:
+
+```{python}
+np.convolve(r.day1, np.ones(3, dtype = int), mode = 'valid')
+(np.diff(np.convolve(r.day1, np.ones(3, dtype = int), mode = 'valid')) > 0) \
+  .sum()
+```
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+get_distill_source(date = params$date, slug = params$slug)
+```
+

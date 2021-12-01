@@ -12,7 +12,17 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Tue, 18 May 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Advent of Code 2021</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2021-12-01-advent-of-code-2021</link>
+      <description>My solutions to the #AdventOfCode 2021 coding challenges.</description>
+      <category>Advent of Code</category>
+      <category>Python</category>
+      <guid>https://tdunn.ca/posts/2021-12-01-advent-of-code-2021</guid>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+    </item>
     <item>
       <title>TidyTuesday 2021 Week 21</title>
       <dc:creator>Taylor Dunn</dc:creator>
