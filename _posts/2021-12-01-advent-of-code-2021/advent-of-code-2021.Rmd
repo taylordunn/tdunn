@@ -1,7 +1,7 @@
 ---
 title: "Advent of Code 2021"
 description: |
-  My solutions to the #AdventOfCode 2021 coding challenges.
+  My solutions to the #AdventOfCode2021 coding challenges.
 author:
   - name: Taylor Dunn
 date: 2021-12-01
@@ -44,7 +44,8 @@ py_config()
 ```
 
 
-To keep me motivated, I'll also be "competing" in a private leaderboard started by [Tan Ho](https://twitter.com/_TanHo/status/1465310512716173313).
+I'll also be "competing" in a private leaderboard started by [Tan Ho](https://twitter.com/_TanHo/status/1465310512716173313).
+I don't expect to rank highly here because the puzzles are released at 1AM my time (and scores are based on time from release) but it'll be a good source of motivation throughout the month.
 There are 25 days of challenges, so my current plan is to split up the posts into 5-day chunks.
 
 ## Day 1
@@ -80,7 +81,7 @@ Excluding the `NA` value, which occurs due to being the first element, `sum()` u
 sum(lag(day1) < day1, na.rm = TRUE)
 ```
 
-For the Python solution, I will make sure of the `numpy.diff` function to calculate the difference between consecutive values:
+For the Python solution, I will use the `numpy.diff` function to calculate the difference between consecutive values:
 
 ```{python}
 import numpy as np
@@ -137,6 +138,163 @@ Fix this with the `mode` argument:
 np.convolve(r.day1, np.ones(3, dtype = int), mode = 'valid')
 (np.diff(np.convolve(r.day1, np.ones(3, dtype = int), mode = 'valid')) > 0) \
   .sum()
+```
+
+## Day 2
+
+### Part 1
+
+>Your horizontal position and depth both start at 0. The steps above would then modify them as follows:
+
+>* forward 5 adds 5 to your horizontal position, a total of 5.
+* down 5 adds 5 to your depth, resulting in a value of 5.
+* forward 8 adds 8 to your horizontal position, a total of 13.
+* up 3 decreases your depth by 3, resulting in a value of 2.
+* down 8 adds 8 to your depth, resulting in a value of 10.
+* forward 2 adds 2 to your horizontal position, a total of 15.
+
+>Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
+
+Import the steps:
+
+```{r}
+day2 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+                     "day02-input.txt"))
+head(day2)
+```
+
+Put it in a `tibble`, and `tidyr::separate` the instruction and the amount:
+
+```{r}
+d_day2 <- tibble(step = day2) %>%
+  separate(step, into = c("instruction", "amount"), sep = " ", convert = TRUE)
+head(d_day2)
+```
+
+Then summarize the horizontal position and depth, and multiply the result:
+
+```{r}
+d_day2 %>%
+  summarise(
+    horizontal_position = sum(amount[instruction == "forward"]),
+    # Depth is inverse, so down - up
+    depth = sum(amount[instruction == "down"]) -
+      sum(amount[instruction == "up"]),
+    .groups = "drop"
+  ) %>%
+  mutate(product = horizontal_position * depth)
+```
+
+For the Python solution, I'll use `pandas`:
+
+```{python}
+import pandas as pd
+
+day2_df = pd.DataFrame(r.day2, dtype = str, columns = ['step']) \
+  .step.str.split(' ', expand = True) \
+  .rename(columns = {0: 'instruction', 1: 'amount'}) \
+  .astype({'amount': 'int32'})
+day2_df
+```
+
+Then it is easy enough to sum up the different columns:
+
+```{python}
+day2_df[day2_df.instruction == 'forward'].amount.sum()
+day2_df[day2_df.instruction == 'down'].amount.sum() - \
+  day2_df[day2_df.instruction == 'up'].amount.sum()
+```
+
+Here is another way with the `groupby` and `aggregate` functions:
+
+```{python, eval=FALSE}
+day2_df_sum = day2_df \
+  .groupby('instruction', as_index = True) \
+  .aggregate('sum')
+  
+day2_df_sum.loc['forward'].amount
+day2_df_sum.loc['down'].amount - day2_df_sum.loc['up'].amount
+```
+
+### Part 2
+
+>In addition to horizontal position and depth, you'll also need to track a third value, aim, which also starts at 0. The commands also mean something entirely different than you first thought:
+
+>* down X increases your aim by X units.
+* up X decreases your aim by X units.
+* forward X does two things:
+  * It increases your horizontal position by X units.
+  * It increases your depth by your aim multiplied by X.
+  
+>Using this new interpretation of the commands, calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
+
+First, I'll use `cumsum()` to add a running total of the `aim` variable from the "down" and "up" instructions:
+
+```{r}
+d_day2 <- d_day2 %>%
+  mutate(
+    # Have to use a placeholder variable so it has the same length as the
+    #  "aim" variable below
+    aim_placeholder = case_when(
+      instruction == "down" ~ amount,
+      instruction == "up" ~ -amount,
+      TRUE ~ 0L
+    ),
+    aim = cumsum(aim_placeholder)
+  ) %>%
+  select(-aim_placeholder)
+head(d_day2, 9)
+```
+
+Now with the running total of `aim`, I can compute horizontal position and depth:
+
+```{r}
+d_day2 %>%
+  summarise(
+    horizontal_position = sum(amount[instruction == "forward"]),
+    depth = sum(
+      # Depth is forward multiplied by aim
+      aim[instruction == "forward"] * amount[instruction == "forward"]
+    ),
+    .groups = "drop"
+  ) %>%
+  mutate(product = horizontal_position * depth)
+```
+
+In Python, I will `assign` a new aim column, and use the `np.select()` function to conditionally sum the values:
+
+```{python}
+day2_df = day2_df \
+  .assign(
+    aim = np.select(
+      [day2_df.instruction == 'down',
+       day2_df.instruction == 'up',
+       day2_df.instruction == 'forward'],
+      [day2_df.amount, -day2_df.amount, 0]
+    )
+  )
+day2_df.aim = day2_df.aim.cumsum()
+```
+
+The `aggregate` function can only operate on single columns, so need to make a new `depth` column first by multiplying `aim` with `amount` (for `instruction` = 'forward'):
+
+```{python}
+day2_df = day2_df \
+  .assign(
+    depth = np.where(
+      day2_df.instruction == 'forward', day2_df.aim * day2_df.amount, 0
+    ),
+    horizontal_position = np.where(
+      day2_df.instruction == 'forward', day2_df.amount, 0
+    )
+  )
+day2_df 
+```
+
+I've also added the `horizontal_position` variable, so that I can compute the sums with a simple `aggregate`:
+
+```{python}
+day2_df[['depth', 'horizontal_position']].aggregate('sum')
 ```
 
 ## Reproducibility {.appendix}
