@@ -60,7 +60,7 @@ Import the measurements:
 
 ```{r}
 day1 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
-                     "day01-input.txt")) %>%
+                        "day01-input.txt")) %>%
   as.integer()
 head(day1)
 ```
@@ -160,7 +160,7 @@ Import the steps:
 
 ```{r}
 day2 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
-                     "day02-input.txt"))
+                        "day02-input.txt"))
 head(day2)
 ```
 
@@ -316,7 +316,7 @@ Import the binary numbers:
 
 ```{r}
 day3 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
-                     "day03-input.txt"))
+                        "day03-input.txt"))
 head(day3)
 ```
 
@@ -526,6 +526,163 @@ co2_rating = co2_rating.astype(str).aggregate(''.join, axis = 1).values[0]
 oxygen_rating = oxygen_rating.astype(str).aggregate(''.join, axis = 1).values[0]
 
 int(co2_rating, 2) * int(oxygen_rating, 2)
+```
+
+## Day 4
+
+### Part 1
+
+>Bingo is played on a set of boards each consisting of a 5x5 grid of numbers. Numbers are chosen at random, and the chosen number is marked on all boards on which it appears. (Numbers may not appear on all boards.) If all numbers in any row or any column of a board are marked, that board wins. (Diagonals don't count.)
+
+>The submarine has a bingo subsystem to help passengers (currently, you and the giant squid) pass the time. It automatically generates a random order in which to draw numbers and a random set of boards (your puzzle input).
+
+>The score of the winning board can now be calculated. Start by finding the sum of all unmarked numbers on that board; in this case, the sum is 188. Then, multiply that sum by the number that was just called when the board won, 24, to get the final score, 188 * 24 = 4512.
+
+>To guarantee victory against the giant squid, figure out which board will win first. What will your final score be if you choose that board?
+
+Import the bingo input:
+
+```{r}
+day4 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+                        "day04-input.txt"))
+head(day4, 8)
+```
+
+The data needs to be `split` up into the called numbers (at the top) and the boards.
+To do this, I'll use this trick with `cumsum` that I found on [Stack Overflow](https://stackoverflow.com/questions/39915542/split-elements-at-a-value-delimiter-in-vector-r):
+
+```{r}
+day4_split <- split(
+  day4[day4 != ""],
+  cumsum(day4 == "")[day4 != ""]
+)
+
+called_numbers <- day4_split[[1]]
+bingo_boards <- day4_split[2:length(day4_split)]
+called_numbers; bingo_boards[1]
+```
+
+Now I need to convert the called numbers to a numeric vector, and the bingo boards to numeric matrices:
+
+```{r}
+called_numbers <- strsplit(called_numbers, ",")[[1]] %>% as.integer()
+
+bingo_boards <- bingo_boards %>%
+  map(
+    ~{
+      .x %>%
+        # str_squish replaces the double spaces before single digits numbers
+        #  with single spaces, so that we can properly strsplit by " "
+        str_squish() %>%
+        str_split(" ") %>%
+        map(as.integer) %>%
+        unlist() %>%
+        matrix(nrow = 5, byrow = TRUE)
+    }
+  )
+
+called_numbers; bingo_boards[1]
+```
+
+Here is my iteration strategy for identifying and marking called numbers (not evaluated, just a demonstration with one board and one number):
+
+```{r eval=FALSE}
+bingo_board1 <- bingo_boards[[1]]
+called_number1 <- 49 # suppose 49 was called
+# Replace any 49s with -1
+bingo_board1[bingo_board1 == called_number1] <- -1
+
+# Look for and row or column sums that = -5 (all values = -1)
+row_sums1 <- rowSums(bingo_board1)
+col_sums1 <- colSums(bingo_board1)
+
+# If we have bingo
+if (-5 %in% c(row_sums1, col_sums1)) {
+  # Compute the sum of the uncalled (non-negative) numbers
+  uncalled_sum <- sum(bingo_board1[bingo_board1 > 0])
+  # Return the product as the answer to the puzzle
+  called_number1 * uncalled_sum
+}
+```
+
+Now put it into a loop over all numbers and boards:
+
+```{r}
+bingo_boards_part1 <- bingo_boards
+for (called_number in called_numbers) {
+  bingo_boards_part1 <- map(
+    bingo_boards_part1,
+    ~{
+      .x[.x == called_number] <- -1
+      .x
+    }
+  )
+  
+  # Find any winning boards
+  bingo_board_winner <- map_lgl(
+    bingo_boards_part1,
+    ~{-5 %in% c(rowSums(.x), colSums(.x))}
+  )
+  
+  if (sum(bingo_board_winner) > 0) {
+    bingo_board_final <- bingo_boards_part1[bingo_board_winner] 
+    break
+  }
+}
+bingo_board_final; called_number
+```
+
+Then the solution is:
+
+```{r}
+sum(bingo_board_final[[1]][bingo_board_final[[1]] > 0]) * called_number
+```
+
+### Part 2
+
+>On the other hand, it might be wise to try a different strategy: let the giant squid win.
+
+>You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to figure out which board will win last and choose that one. That way, no matter which boards it picks, it will win for sure.
+
+>Figure out which board will win last. Once it wins, what would its final score be?
+
+Simple enough to alter the loop to iteratively remove winning boards until one remains:
+
+```{r}
+bingo_boards_part2 <- bingo_boards
+for (called_number in called_numbers) {
+  bingo_boards_part2 <- map(
+    bingo_boards_part2,
+    ~{
+      .x[.x == called_number] <- -1
+      .x
+    }
+  )
+  
+  # Find any winning boards
+  bingo_board_winner <- map_lgl(
+    bingo_boards_part2,
+    ~{-5 %in% c(rowSums(.x), colSums(.x))}
+  )
+  
+  # If more than one board remains, remove winners
+  if (length(bingo_boards_part2) > 1) {
+    bingo_boards_part2 <- bingo_boards_part2[!bingo_board_winner]
+  } else {
+    # Otherwise, continue until the last board wins
+    if (sum(bingo_board_winner) > 0) {
+      bingo_board_final <- bingo_boards_part2[bingo_board_winner] 
+      break
+    }
+  }
+}
+bingo_board_final; called_number
+```
+
+And the product:
+
+```{r}
+sum(bingo_board_final[[1]][bingo_board_final[[1]] > 0]) * called_number
 ```
 
 
