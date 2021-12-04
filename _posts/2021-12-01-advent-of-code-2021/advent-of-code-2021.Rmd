@@ -1,7 +1,7 @@
 ---
-title: "Advent of Code 2021"
+title: "Advent of Code 2021: Days 1-5"
 description: |
-  My solutions to the #AdventOfCode2021 coding challenges.
+  My solutions to the #AdventOfCode2021 coding challenges, days 1 through 5.
 author:
   - name: Taylor Dunn
 date: 2021-12-01
@@ -11,6 +11,7 @@ params:
 categories:
   - Advent of Code
   - Python
+  - R
 draft: false
 output:
   distill::distill_article:
@@ -22,27 +23,27 @@ output:
 ```{r setup, include=TRUE, code_folding="Setup"}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(dunnr)
+#library(dunnr)
 library(here)
 
-extrafont::loadfonts(device = "win", quiet = TRUE)
-theme_set(theme_td())
-set_geom_fonts()
-set_palette()
+# extrafont::loadfonts(device = "win", quiet = TRUE)
+# theme_set(theme_td())
+# set_geom_fonts()
+# set_palette()
 ```
 
 
 The [Advent of Code](https://adventofcode.com/) has begun for 2021, and I decided to participate this year to work on my programming and problem solving skills in R and, where possible, I'll try to translate the solutions to Python.
-Load the `reticulate` package:
+Load the `reticulate` package and activate my virtual Python environment:
 
 ```{r python-setup}
+# Point to my virtual environment
 Sys.setenv(
   RETICULATE_PYTHON = here("..", "python", ".venv", "Scripts", "python.exe")
 )
 library(reticulate)
 py_config()
 ```
-
 
 I'll also be "competing" in a private leaderboard started by [Tan Ho](https://twitter.com/_TanHo/status/1465310512716173313).
 I don't expect to rank highly here because the puzzles are released at 1AM my time (and scores are based on time from release) but it'll be a good source of motivation throughout the month.
@@ -223,8 +224,8 @@ day2_df_sum.loc['down'].amount - day2_df_sum.loc['up'].amount
 >* down X increases your aim by X units.
 * up X decreases your aim by X units.
 * forward X does two things:
-  * It increases your horizontal position by X units.
-  * It increases your depth by your aim multiplied by X.
+    * It increases your horizontal position by X units.
+    * It increases your depth by your aim multiplied by X.
   
 >Using this new interpretation of the commands, calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 
@@ -253,7 +254,7 @@ d_day2 %>%
   summarise(
     horizontal_position = sum(amount[instruction == "forward"]),
     depth = sum(
-      # Depth is forward multiplied by aim
+      # Depth is aim multiplied by forward amount
       aim[instruction == "forward"] * amount[instruction == "forward"]
     ),
     .groups = "drop"
@@ -297,6 +298,237 @@ I've also added the `horizontal_position` variable, so that I can compute the su
 day2_df[['depth', 'horizontal_position']].aggregate('sum')
 ```
 
+## Day 3
+
+### Part 1
+
+>The diagnostic report (your puzzle input) consists of a list of binary numbers which, when decoded properly, can tell you many useful things about the conditions of the submarine. The first parameter to check is the power consumption.
+
+>You need to use the binary numbers in the diagnostic report to generate two new binary numbers (called the gamma rate and the epsilon rate). The power consumption can then be found by multiplying the gamma rate by the epsilon rate.
+
+>Each bit in the gamma rate can be determined by finding the most common bit in the corresponding position of all numbers in the diagnostic report.
+
+>The epsilon rate is calculated in a similar way; rather than use the most common bit, the least common bit from each position is used.
+
+>Use the binary numbers in your diagnostic report to calculate the gamma rate and epsilon rate, then multiply them together. What is the power consumption of the submarine?
+
+Import the binary numbers:
+
+```{r}
+day3 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+                     "day03-input.txt"))
+head(day3)
+```
+
+Each bit needs to be considered separately, so use `strsplit` like this:
+
+```{r}
+strsplit(day3[1:2], split = "")
+```
+
+Map over all values, put it into a `tibble`, and convert to integers:
+
+```{r message=FALSE}
+day3_df <-
+  map_dfr(strsplit(day3, split = ""),
+          as_tibble_row, .name_repair = "unique") %>%
+  mutate(across(everything(), as.integer))
+head(day3_df)
+```
+
+Before computing the solution, and there any bits with an equal number of 0s and 1s?
+
+```{r}
+day3_df %>%
+  summarise(across(everything(), mean)) %>%
+  pivot_longer(everything(), names_to = "bit", values_to = "prop")
+```
+
+No, none the bits have `prop` = 0.500.
+Compute the gamma and epsilon rates:
+
+```{r}
+# There isn't a function available in base R to compute the mode of a vector,
+#  so define one here that takes the most frequent by default (freq_rank = 1)
+vector_mode <- function(x, freq_rank = 1) {
+  # Frequency table
+  table(x) %>%
+    # Sort it by count
+    sort(decreasing = TRUE) %>%
+    # Get the labels of the counts
+    names() %>%
+    pluck(freq_rank)
+}
+
+day3_rates <- day3_df %>%
+  pivot_longer(everything(), names_to = "bit", values_to = "value") %>%
+  mutate(bit = as.integer(str_remove(bit, "..."))) %>%
+  group_by(bit) %>%
+  summarise(
+    gamma = vector_mode(value, freq_rank = 1),
+    epsilon = vector_mode(value, freq_rank = 2),
+    .groups = "drop"
+  ) %>%
+  summarise(
+    # Collapse the most/least frequent values into a single string
+    across(c(gamma, epsilon), str_c, collapse = "")
+  )
+day3_rates
+```
+
+We now have the binary representations, which we convert using `strtoi`:
+
+```{r}
+day3_rates %>%
+  mutate(across(c(gamma, epsilon), strtoi, base = 2),
+         prod = gamma * epsilon)
+```
+
+To put this into a `pandas` `DataFrame`, use list comprehension to split the strings into characters:
+
+```{python}
+day3_df = pd.DataFrame([list(number) for number in r.day3]).astype('int32')
+day3_df
+```
+
+The `scipy` package has a mode function we can use to aggregate across columns:
+
+```{python}
+from scipy.stats import mode
+gamma = day3_df.aggregate('mode')
+# For epsilon rate, just swap the numbers
+epsilon = gamma.replace([0, 1], [1, 0])
+
+# Concatenate the bits into a single string
+gamma = gamma.apply(lambda row: ''.join(row.values.astype(str)), axis = 1)[0]
+epsilon = epsilon.apply(lambda row: ''.join(row.values.astype(str)), axis = 1)[0]
+gamma; epsilon
+```
+
+Finally, use `int()` with `base = 2` to convert to decimal:
+
+```{python}
+int(gamma, 2) * int(epsilon, 2)
+```
+
+
+### Part 2
+
+>Next, you should verify the life support rating, which can be determined by multiplying the oxygen generator rating by the CO2 scrubber rating.
+
+>Both the oxygen generator rating and the CO2 scrubber rating are values that can be found in your diagnostic report - finding them is the tricky part. Both values are located using a similar process that involves filtering out values until only one remains. Before searching for either rating value, start with the full list of binary numbers from your diagnostic report and consider just the first bit of those numbers. Then:
+
+>
+* Keep only numbers selected by the bit criteria for the type of rating value for which you are searching. Discard numbers which do not match the bit criteria.
+* If you only have one number left, stop; this is the rating value for which you are searching.
+* Otherwise, repeat the process, considering the next bit to the right.
+
+>The bit criteria depends on which type of rating value you want to find:
+>
+* To find oxygen generator rating, determine the most common value (0 or 1) in the current bit position, and keep only numbers with that bit in that position. If 0 and 1 are equally common, keep values with a 1 in the position being considered.
+* To find CO2 scrubber rating, determine the least common value (0 or 1) in the current bit position, and keep only numbers with that bit in that position. If 0 and 1 are equally common, keep values with a 0 in the position being considered.
+
+Before doing anything, I need to alter my `vector_mode` function to deal with ties:
+
+```{r}
+vector_mode_part2 <- function(x, freq_rank = 1) {
+  freq_table <- table(x) %>%
+    sort(decreasing = TRUE)
+  
+  # If there is a tie
+  if (freq_table["0"] == freq_table["1"]) {
+    # And we're looking for the most frequent (oxygen rating)
+    if (freq_rank == 1) {
+      # Then return 1
+      return(1) 
+    } else {
+      # Otherwise return 0 (CO2 rating)
+      return(0)
+    }
+  # Otherwise, return the value from the table as usual
+  } else{
+    freq_table %>%
+      names() %>%
+      pluck(freq_rank) %>%
+      as.integer()
+  }
+}
+```
+
+This definitely isn't the most efficient way to implement the bit criteria, but an easy solution is to just `filter` bit-by-bit.
+
+```{r}
+oxygen_rating <- day3_df
+for (bit in names(day3_df)) {
+  # If 1 number (row) remains, we have found the single oxygen rating
+  if (nrow(oxygen_rating) == 1) break
+  
+  most_freq <- vector_mode_part2(oxygen_rating[[bit]])
+  oxygen_rating <- oxygen_rating %>%
+    filter(!!sym(bit) == most_freq)
+}
+oxygen_rating
+```
+
+```{r}
+co2_rating <- day3_df
+for (bit in names(day3_df)) {
+  if (nrow(co2_rating) == 1) break
+  
+  least_freq <- vector_mode_part2(co2_rating[[bit]], 2)
+  co2_rating <- co2_rating %>%
+    filter(!!sym(bit) == least_freq)
+}
+co2_rating
+```
+
+Convert the binary representations and compute the product:
+
+```{r}
+tibble(
+  oxygen_rating = oxygen_rating %>% str_c(collapse = ""),
+  co2_rating = co2_rating %>% str_c(collapse = "")
+) %>%
+  mutate(across(c(oxygen_rating, co2_rating), strtoi, base = 2),
+         prod = oxygen_rating * co2_rating)
+```
+
+It is simple enough to reproduce those loops in Python:
+
+```{python}
+oxygen_rating = day3_df
+for bit in day3_df:
+  if len(oxygen_rating) == 1:
+    break
+  
+  bit_value_counts = oxygen_rating[bit].value_counts()
+  if bit_value_counts[1] >= bit_value_counts[0]:
+    oxygen_rating = oxygen_rating[oxygen_rating[bit] == 1]
+  else:
+    oxygen_rating = oxygen_rating[oxygen_rating[bit] == 0]
+    
+co2_rating = day3_df
+for bit in day3_df:
+  if len(co2_rating) == 1:
+    break
+  
+  bit_value_counts = co2_rating[bit].value_counts()
+  # In cases where there are no 0s or no 1s, need to fill with 0 
+  bit_value_counts = bit_value_counts.reindex([0, 1], fill_value = 0)
+  
+  if bit_value_counts[0] <= bit_value_counts[1]:
+    co2_rating = co2_rating[co2_rating[bit] == 0]
+  else:
+    co2_rating = co2_rating[co2_rating[bit] == 1]
+   
+# In part 1, I used apply, here I'll use aggregate along axis = 1
+co2_rating = co2_rating.astype(str).aggregate(''.join, axis = 1).values[0]
+oxygen_rating = oxygen_rating.astype(str).aggregate(''.join, axis = 1).values[0]
+
+int(co2_rating, 2) * int(oxygen_rating, 2)
+```
+
+
 ## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
@@ -318,6 +550,6 @@ git2r::repository()
 </details>
 
 ```{r echo=FALSE}
-get_distill_source(date = params$date, slug = params$slug)
+dunnr::get_distill_source(date = params$date, slug = params$slug)
 ```
 
