@@ -545,7 +545,7 @@ Import the bingo input:
 ```{r}
 day4 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
                         "day04-input.txt"))
-head(day4, 8)
+print(str_trunc(head(day4, 8), 50))
 ```
 
 The data needs to be `split` up into the called numbers (at the top) and the boards.
@@ -559,10 +559,10 @@ day4_split <- split(
 
 called_numbers <- day4_split[[1]]
 bingo_boards <- day4_split[2:length(day4_split)]
-called_numbers; bingo_boards[1]
+str_trunc(called_numbers, 50); bingo_boards[1]
 ```
 
-Now I need to convert the called numbers to a numeric vector, and the bingo boards to numeric matrices:
+Now I need to convert the `called_numbers` to a numeric vector, and the `bingo_boards` to numeric matrices:
 
 ```{r}
 called_numbers <- strsplit(called_numbers, ",")[[1]] %>% as.integer()
@@ -581,7 +581,7 @@ bingo_boards <- bingo_boards %>%
     }
   )
 
-called_numbers; bingo_boards[1]
+head(called_numbers); bingo_boards[1]
 ```
 
 Here is my iteration strategy for identifying and marking called numbers (not evaluated, just a demonstration with one board and one number):
@@ -609,6 +609,7 @@ Now put it into a loop over all numbers and boards:
 
 ```{r}
 bingo_boards_part1 <- bingo_boards
+
 for (called_number in called_numbers) {
   bingo_boards_part1 <- map(
     bingo_boards_part1,
@@ -638,6 +639,50 @@ Then the solution is:
 sum(bingo_board_final[[1]][bingo_board_final[[1]] > 0]) * called_number
 ```
 
+For the Python solution, I'll practice my list comprehension to compile the bingo boards:
+
+```{python}
+called_numbers = [int(s) for s in r.day4[0].split(',')]
+
+# Find the indices of the '' characters separating the bingo boards
+bingo_boards_sep = [i for i,j in enumerate(r.day4) if j == '']
+# Compile a list of bingo boards
+bingo_boards = [r.day4[(i+1):(i+6)] for i in bingo_boards_sep]
+# For each row of each board, split the string into multiple valuse
+bingo_boards = [[str.split(board_row) for board_row in board] for board in bingo_boards]
+```
+
+That last line is a bit of a mess -- it is a nested list comprehension loop which iterates over boards and then iterates over rows of each board to split the string into single values -- but converting it all to numeric arrays is now simple:
+
+```{python}
+bingo_boards = [np.array(board, dtype = int) for board in bingo_boards]
+bingo_boards[0]
+```
+
+Now I can re-create the same loop from the R solution:
+
+```{python}
+# In Python, you use deepcopy() to make copies of nested structures like this
+import copy
+bingo_boards_part1 = copy.deepcopy(bingo_boards)
+
+for called_number in called_numbers:
+  # For each board, mark the called numbers as -1
+  for i,b in enumerate(bingo_boards_part1):
+    bingo_boards_part1[i][bingo_boards_part1[i] == called_number] = -1
+  
+  # Find winning boards
+  winners = [-5 in np.concatenate([board.sum(axis = 0), board.sum(axis = 1)]) \
+             for board in bingo_boards_part1]
+  
+  if True in winners:
+    bingo_board_final = bingo_boards_part1[winners.index(True)]
+    break
+
+bingo_board_final[bingo_board_final > 0].sum() * called_number
+```
+
+
 ### Part 2
 
 >On the other hand, it might be wise to try a different strategy: let the giant squid win.
@@ -650,6 +695,7 @@ Simple enough to alter the loop to iteratively remove winning boards until one r
 
 ```{r}
 bingo_boards_part2 <- bingo_boards
+
 for (called_number in called_numbers) {
   bingo_boards_part2 <- map(
     bingo_boards_part2,
@@ -683,6 +729,30 @@ And the product:
 
 ```{r}
 sum(bingo_board_final[[1]][bingo_board_final[[1]] > 0]) * called_number
+```
+
+Python:
+
+```{python}
+bingo_boards_part2 = copy.deepcopy(bingo_boards)
+
+for called_number in called_numbers:
+  for i,b in enumerate(bingo_boards_part2):
+    bingo_boards_part2[i][bingo_boards_part2[i] == called_number] = -1
+  
+  winners = [-5 in np.concatenate([board.sum(axis = 0), board.sum(axis = 1)]) \
+             for board in bingo_boards_part2]
+  
+  # If more than one board remains, remove winners
+  if len(bingo_boards_part2) > 1:
+    bingo_boards_part2 = [b for i,b in \
+                          enumerate(bingo_boards_part2) if not winners[i]]
+  else:
+    if True in winners:
+      bingo_board_final = bingo_boards_part2[winners.index(True)]
+      break
+
+bingo_board_final[bingo_board_final > 0].sum() * called_number
 ```
 
 
