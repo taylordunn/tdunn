@@ -7,7 +7,7 @@ author:
 date: 2021-12-01
 params:
   date: 2021-12-01
-  slug: "advent-of-code-2021"
+  slug: "advent-of-code-2021-days-1-5"
 categories:
   - Advent of Code
   - Python
@@ -23,13 +23,7 @@ output:
 ```{r setup, include=TRUE, code_folding="Setup"}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-#library(dunnr)
 library(here)
-
-# extrafont::loadfonts(device = "win", quiet = TRUE)
-# theme_set(theme_td())
-# set_geom_fonts()
-# set_palette()
 ```
 
 
@@ -59,7 +53,7 @@ To do this, count the number of times a depth measurement increases from the pre
 Import the measurements:
 
 ```{r}
-day1 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+day1 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021-days-1-5",
                         "day01-input.txt")) %>%
   as.integer()
 head(day1)
@@ -159,7 +153,7 @@ np.convolve(r.day1, np.ones(3, dtype = int), mode = 'valid')
 Import the steps:
 
 ```{r}
-day2 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+day2 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021-days-1-5",
                         "day02-input.txt"))
 head(day2)
 ```
@@ -315,7 +309,7 @@ day2_df[['depth', 'horizontal_position']].aggregate('sum')
 Import the binary numbers:
 
 ```{r}
-day3 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+day3 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021-days-1-5",
                         "day03-input.txt"))
 head(day3)
 ```
@@ -543,7 +537,7 @@ int(co2_rating, 2) * int(oxygen_rating, 2)
 Import the bingo input:
 
 ```{r}
-day4 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021",
+day4 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021-days-1-5",
                         "day04-input.txt"))
 print(str_trunc(head(day4, 8), 50))
 ```
