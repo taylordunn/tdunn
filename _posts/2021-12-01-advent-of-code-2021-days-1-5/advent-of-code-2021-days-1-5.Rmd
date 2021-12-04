@@ -642,7 +642,7 @@ called_numbers = [int(s) for s in r.day4[0].split(',')]
 bingo_boards_sep = [i for i,j in enumerate(r.day4) if j == '']
 # Compile a list of bingo boards
 bingo_boards = [r.day4[(i+1):(i+6)] for i in bingo_boards_sep]
-# For each row of each board, split the string into multiple valuse
+# For each row of each board, split the string into multiple values
 bingo_boards = [[str.split(board_row) for board_row in board] for board in bingo_boards]
 ```
 
