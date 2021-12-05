@@ -749,6 +749,70 @@ for called_number in called_numbers:
 bingo_board_final[bingo_board_final > 0].sum() * called_number
 ```
 
+## Day 5
+
+### Part 1
+
+Import the bingo input:
+
+```{r}
+day5 <- read_lines(here("_posts", "2021-12-01-advent-of-code-2021-days-1-5",
+                        "day05-input.txt"))
+head(day5)
+```
+
+```{r}
+day5_df <- tibble(x = day5) %>%
+  separate(x, into = c("x1_y1", "x2_y2"), sep = " -> ") %>%
+  separate(x1_y1, into = c("x1", "y1"), sep = ",", convert = TRUE) %>%
+  separate(x2_y2, into = c("x2", "y2"), sep = ",", convert = TRUE)
+# Only straight lines
+day5_straight <- day5_df %>%
+  filter((x1 == x2) | (y1 == y2)) %>%
+  rowwise() %>%
+  mutate(xy = list(crossing(x = x1:x2, y = y1:y2))) %>%
+  ungroup()
+```
+
+```{r}
+day5_straight %>%
+  select(xy) %>%
+  unnest(xy) %>%
+  count(x, y) %>%
+  summarise(dangerous_points = sum(n > 1))
+```
+
+
+```{r eval=FALSE}
+max(c(day5_df$x1, day5_df$x2))
+max(c(day5_df$y1, day5_df$y2))
+
+ocean_floor <- matrix(0, nrow = 1000, ncol = 1000)
+
+for (line in day5_df$xy) {
+  ocean_floor[unique(line$x), unique(line$y)] <-
+    ocean_floor[unique(line$x), unique(line$y)] + 1
+}
+sum(ocean_floor > 1)
+```
+
+### Part 2
+
+```{r}
+day5_diag <- day5_df %>%
+  filter(x1 != x2, y1 != y2) %>%
+  rowwise() %>%
+  mutate(x = list(x1:x2), y = list(y1:y2)) %>%
+  ungroup()
+
+bind_rows(
+  day5_straight %>% select(xy) %>% unnest(xy),
+  day5_diag %>% select(x, y) %>% unnest(c(x, y))
+) %>%
+  count(x, y) %>%
+  summarise(dangerous_points = sum(n > 1))
+```
+
 
 ## Reproducibility {.appendix}
 
