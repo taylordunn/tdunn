@@ -755,6 +755,15 @@ bingo_board_final[bingo_board_final > 0].sum() * called_number
 
 ### Part 1
 
+>You come across a field of hydrothermal vents on the ocean floor! These vents constantly produce large, opaque clouds, so it would be best to avoid them if possible.
+They tend to form in lines; the submarine helpfully produces a list of nearby lines of vents (your puzzle input) for you to review.
+
+>Each line of vents is given as a line segment in the format x1,y1 -> x2,y2 where x1,y1 are the coordinates of one end the line segment and x2,y2 are the coordinates of the other end. These line segments include the points at both ends.
+For now, only consider horizontal and vertical lines: lines where either x1 = x2 or y1 = y2.
+
+>To avoid the most dangerous areas, you need to determine the number of points where at least two lines overlap.
+Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
+
 Import the lines:
 
 ```{r}
@@ -835,6 +844,10 @@ np.count_nonzero(ocean_floor > 1)
 
 ### Part 2
 
+>Unfortunately, considering only horizontal and vertical lines doesn't give you the full picture; you need to also consider diagonal lines.
+Because of the limits of the hydrothermal vent mapping system, the lines in your list will only ever be horizontal, vertical, or a diagonal line at exactly 45 degrees.
+Consider all of the lines. At how many points do at least two lines overlap?
+
 Find the diagonal line points:
 
 ```{r}
@@ -905,7 +918,7 @@ Except for day 5 (when I stayed up late because it was the weekend), I've been c
 These 0 scores come from the global leaderboard, which only gives points to the first 100 users to finish, which I definitely won't be doing.
 A better benchmark is the private leaderboard:
 
-```{r}
+```{r eval=FALSE}
 library(httr)
 
 leaderboard <- httr::GET(
@@ -919,6 +932,15 @@ leaderboard <- httr::GET(
   transmute(
     Rank = 1:n(), Name = name, Score = local_score, Stars = stars
   )
+```
+
+```{r echo=FALSE}
+leaderboard <-
+  read_rds(here("_posts", "2021-12-01-advent-of-code-2021-days-1-5",
+                "leaderboard_2021-12-05.rds"))
+```
+
+```{r}
 leaderboard %>%
   gt() %>%
   text_transform(

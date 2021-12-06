@@ -1590,15 +1590,15 @@ NOTE: Python version was forced by RETICULATE_PYTHON</code></pre>
 <pre><code># A tibble: 10 x 2
    value increased
    &lt;int&gt; &lt;lgl&gt;    
- 1     9 NA       
- 2     2 FALSE    
- 3     7 TRUE     
- 4     6 FALSE    
- 5     3 FALSE    
- 6     4 TRUE     
- 7     8 TRUE     
- 8     5 FALSE    
- 9    10 TRUE     
+ 1    10 NA       
+ 2     6 FALSE    
+ 3     5 FALSE    
+ 4     2 FALSE    
+ 5     7 TRUE     
+ 6     8 TRUE     
+ 7     9 TRUE     
+ 8     3 FALSE    
+ 9     4 TRUE     
 10     1 FALSE    </code></pre>
 </div>
 <p>Excluding the <code>NA</code> value, which occurs due to being the first element, <code>sum()</code> up the cases of larger measurements:</p>
@@ -1648,15 +1648,15 @@ NOTE: Python version was forced by RETICULATE_PYTHON</code></pre>
 <pre><code># A tibble: 10 x 3
    value  sum3 increased
    &lt;int&gt; &lt;int&gt; &lt;lgl&gt;    
- 1     9    NA NA       
- 2     2    18 NA       
- 3     7    15 FALSE    
- 4     6    16 TRUE     
- 5     3    13 FALSE    
- 6     4    15 TRUE     
- 7     8    17 TRUE     
- 8     5    23 TRUE     
- 9    10    16 FALSE    
+ 1    10    NA NA       
+ 2     6    21 NA       
+ 3     5    13 FALSE    
+ 4     2    14 TRUE     
+ 5     7    17 TRUE     
+ 6     8    24 TRUE     
+ 7     9    20 FALSE    
+ 8     3    16 FALSE    
+ 9     4     8 FALSE    
 10     1    NA NA       </code></pre>
 </div>
 <p>Now <code>sum</code> the number of increases in the day 1 data:</p>
@@ -2489,6 +2489,15 @@ dtype: int64</code></pre>
 </div>
 <h2 id="day-5">Day 5</h2>
 <h3 id="part-1-4">Part 1</h3>
+<blockquote>
+<p>You come across a field of hydrothermal vents on the ocean floor! These vents constantly produce large, opaque clouds, so it would be best to avoid them if possible. They tend to form in lines; the submarine helpfully produces a list of nearby lines of vents (your puzzle input) for you to review.</p>
+</blockquote>
+<blockquote>
+<p>Each line of vents is given as a line segment in the format x1,y1 -&gt; x2,y2 where x1,y1 are the coordinates of one end the line segment and x2,y2 are the coordinates of the other end. These line segments include the points at both ends. For now, only consider horizontal and vertical lines: lines where either x1 = x2 or y1 = y2.</p>
+</blockquote>
+<blockquote>
+<p>To avoid the most dangerous areas, you need to determine the number of points where at least two lines overlap. Consider only horizontal and vertical lines. At how many points do at least two lines overlap?</p>
+</blockquote>
 <p>Import the lines:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2597,6 +2606,9 @@ dtype: int64</code></pre>
 <pre><code>7142</code></pre>
 </div>
 <h3 id="part-2-4">Part 2</h3>
+<blockquote>
+<p>Unfortunately, considering only horizontal and vertical lines doesn’t give you the full picture; you need to also consider diagonal lines. Because of the limits of the hydrothermal vent mapping system, the lines in your list will only ever be horizontal, vertical, or a diagonal line at exactly 45 degrees. Consider all of the lines. At how many points do at least two lines overlap?</p>
+</blockquote>
 <p>Find the diagonal line points:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2666,12 +2678,12 @@ dtype: int64</code></pre>
   <span class='fu'><a href='https://gt.rstudio.com/reference/tab_spanner_delim.html'>tab_spanner_delim</a></span><span class='op'>(</span>delim <span class='op'>=</span> <span class='st'>"_"</span>, split <span class='op'>=</span> <span class='st'>"first"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="klwkpzojpc" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="gkkqvswnsg" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#klwkpzojpc .gt_table {
+#gkkqvswnsg .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2696,7 +2708,7 @@ dtype: int64</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_heading {
+#gkkqvswnsg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2708,7 +2720,7 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_title {
+#gkkqvswnsg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2718,7 +2730,7 @@ dtype: int64</code></pre>
   border-bottom-width: 0;
 }
 
-#klwkpzojpc .gt_subtitle {
+#gkkqvswnsg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2728,13 +2740,13 @@ dtype: int64</code></pre>
   border-top-width: 0;
 }
 
-#klwkpzojpc .gt_bottom_border {
+#gkkqvswnsg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_col_headings {
+#gkkqvswnsg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2749,7 +2761,7 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_col_heading {
+#gkkqvswnsg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2769,7 +2781,7 @@ dtype: int64</code></pre>
   overflow-x: hidden;
 }
 
-#klwkpzojpc .gt_column_spanner_outer {
+#gkkqvswnsg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2781,15 +2793,15 @@ dtype: int64</code></pre>
   padding-right: 4px;
 }
 
-#klwkpzojpc .gt_column_spanner_outer:first-child {
+#gkkqvswnsg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#klwkpzojpc .gt_column_spanner_outer:last-child {
+#gkkqvswnsg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#klwkpzojpc .gt_column_spanner {
+#gkkqvswnsg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2801,7 +2813,7 @@ dtype: int64</code></pre>
   width: 100%;
 }
 
-#klwkpzojpc .gt_group_heading {
+#gkkqvswnsg .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2823,7 +2835,7 @@ dtype: int64</code></pre>
   vertical-align: middle;
 }
 
-#klwkpzojpc .gt_empty_group_heading {
+#gkkqvswnsg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2838,15 +2850,15 @@ dtype: int64</code></pre>
   vertical-align: middle;
 }
 
-#klwkpzojpc .gt_from_md > :first-child {
+#gkkqvswnsg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#klwkpzojpc .gt_from_md > :last-child {
+#gkkqvswnsg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#klwkpzojpc .gt_row {
+#gkkqvswnsg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2865,7 +2877,7 @@ dtype: int64</code></pre>
   overflow-x: hidden;
 }
 
-#klwkpzojpc .gt_stub {
+#gkkqvswnsg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2877,7 +2889,7 @@ dtype: int64</code></pre>
   padding-left: 12px;
 }
 
-#klwkpzojpc .gt_summary_row {
+#gkkqvswnsg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2887,7 +2899,7 @@ dtype: int64</code></pre>
   padding-right: 5px;
 }
 
-#klwkpzojpc .gt_first_summary_row {
+#gkkqvswnsg .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2897,7 +2909,7 @@ dtype: int64</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_grand_summary_row {
+#gkkqvswnsg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2907,7 +2919,7 @@ dtype: int64</code></pre>
   padding-right: 5px;
 }
 
-#klwkpzojpc .gt_first_grand_summary_row {
+#gkkqvswnsg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2917,11 +2929,11 @@ dtype: int64</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_striped {
+#gkkqvswnsg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#klwkpzojpc .gt_table_body {
+#gkkqvswnsg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2930,7 +2942,7 @@ dtype: int64</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_footnotes {
+#gkkqvswnsg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2944,13 +2956,13 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_footnote {
+#gkkqvswnsg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#klwkpzojpc .gt_sourcenotes {
+#gkkqvswnsg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2964,41 +2976,41 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#klwkpzojpc .gt_sourcenote {
+#gkkqvswnsg .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#klwkpzojpc .gt_left {
+#gkkqvswnsg .gt_left {
   text-align: left;
 }
 
-#klwkpzojpc .gt_center {
+#gkkqvswnsg .gt_center {
   text-align: center;
 }
 
-#klwkpzojpc .gt_right {
+#gkkqvswnsg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#klwkpzojpc .gt_font_normal {
+#gkkqvswnsg .gt_font_normal {
   font-weight: normal;
 }
 
-#klwkpzojpc .gt_font_bold {
+#gkkqvswnsg .gt_font_bold {
   font-weight: bold;
 }
 
-#klwkpzojpc .gt_font_italic {
+#gkkqvswnsg .gt_font_italic {
   font-style: italic;
 }
 
-#klwkpzojpc .gt_super {
+#gkkqvswnsg .gt_super {
   font-size: 65%;
 }
 
-#klwkpzojpc .gt_footnote_marks {
+#gkkqvswnsg .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3090,7 +3102,15 @@ dtype: int64</code></pre>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>transmute</a></span><span class='op'>(</span>
     Rank <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span>, Name <span class='op'>=</span> <span class='va'>name</span>, Score <span class='op'>=</span> <span class='va'>local_score</span>, Stars <span class='op'>=</span> <span class='va'>stars</span>
   <span class='op'>)</span>
-<span class='va'>leaderboard</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>leaderboard</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='https://gt.rstudio.com/reference/text_transform.html'>text_transform</a></span><span class='op'>(</span>
     locations <span class='op'>=</span> <span class='fu'><a href='https://gt.rstudio.com/reference/cells_body.html'>cells_body</a></span><span class='op'>(</span>columns <span class='op'>=</span> <span class='va'>Stars</span><span class='op'>)</span>,
@@ -3110,12 +3130,12 @@ dtype: int64</code></pre>
   <span class='fu'><a href='https://gt.rstudio.com/reference/tab_options.html'>tab_options</a></span><span class='op'>(</span>container.height <span class='op'>=</span> <span class='fl'>500</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="kmrpjvqmxh" style="overflow-x:auto;overflow-y:auto;width:auto;height:500px;">
+<div id="qsevgfanhp" style="overflow-x:auto;overflow-y:auto;width:auto;height:500px;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#kmrpjvqmxh .gt_table {
+#qsevgfanhp .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3140,7 +3160,7 @@ dtype: int64</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_heading {
+#qsevgfanhp .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3152,7 +3172,7 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_title {
+#qsevgfanhp .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3162,7 +3182,7 @@ dtype: int64</code></pre>
   border-bottom-width: 0;
 }
 
-#kmrpjvqmxh .gt_subtitle {
+#qsevgfanhp .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3172,13 +3192,13 @@ dtype: int64</code></pre>
   border-top-width: 0;
 }
 
-#kmrpjvqmxh .gt_bottom_border {
+#qsevgfanhp .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_col_headings {
+#qsevgfanhp .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3193,7 +3213,7 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_col_heading {
+#qsevgfanhp .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3213,7 +3233,7 @@ dtype: int64</code></pre>
   overflow-x: hidden;
 }
 
-#kmrpjvqmxh .gt_column_spanner_outer {
+#qsevgfanhp .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3225,15 +3245,15 @@ dtype: int64</code></pre>
   padding-right: 4px;
 }
 
-#kmrpjvqmxh .gt_column_spanner_outer:first-child {
+#qsevgfanhp .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kmrpjvqmxh .gt_column_spanner_outer:last-child {
+#qsevgfanhp .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kmrpjvqmxh .gt_column_spanner {
+#qsevgfanhp .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3245,7 +3265,7 @@ dtype: int64</code></pre>
   width: 100%;
 }
 
-#kmrpjvqmxh .gt_group_heading {
+#qsevgfanhp .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3267,7 +3287,7 @@ dtype: int64</code></pre>
   vertical-align: middle;
 }
 
-#kmrpjvqmxh .gt_empty_group_heading {
+#qsevgfanhp .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3282,15 +3302,15 @@ dtype: int64</code></pre>
   vertical-align: middle;
 }
 
-#kmrpjvqmxh .gt_from_md > :first-child {
+#qsevgfanhp .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kmrpjvqmxh .gt_from_md > :last-child {
+#qsevgfanhp .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kmrpjvqmxh .gt_row {
+#qsevgfanhp .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3309,7 +3329,7 @@ dtype: int64</code></pre>
   overflow-x: hidden;
 }
 
-#kmrpjvqmxh .gt_stub {
+#qsevgfanhp .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3321,7 +3341,7 @@ dtype: int64</code></pre>
   padding-left: 12px;
 }
 
-#kmrpjvqmxh .gt_summary_row {
+#qsevgfanhp .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3331,7 +3351,7 @@ dtype: int64</code></pre>
   padding-right: 5px;
 }
 
-#kmrpjvqmxh .gt_first_summary_row {
+#qsevgfanhp .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3341,7 +3361,7 @@ dtype: int64</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_grand_summary_row {
+#qsevgfanhp .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3351,7 +3371,7 @@ dtype: int64</code></pre>
   padding-right: 5px;
 }
 
-#kmrpjvqmxh .gt_first_grand_summary_row {
+#qsevgfanhp .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3361,11 +3381,11 @@ dtype: int64</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_striped {
+#qsevgfanhp .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kmrpjvqmxh .gt_table_body {
+#qsevgfanhp .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3374,7 +3394,7 @@ dtype: int64</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_footnotes {
+#qsevgfanhp .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3388,13 +3408,13 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_footnote {
+#qsevgfanhp .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#kmrpjvqmxh .gt_sourcenotes {
+#qsevgfanhp .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3408,41 +3428,41 @@ dtype: int64</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#kmrpjvqmxh .gt_sourcenote {
+#qsevgfanhp .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#kmrpjvqmxh .gt_left {
+#qsevgfanhp .gt_left {
   text-align: left;
 }
 
-#kmrpjvqmxh .gt_center {
+#qsevgfanhp .gt_center {
   text-align: center;
 }
 
-#kmrpjvqmxh .gt_right {
+#qsevgfanhp .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kmrpjvqmxh .gt_font_normal {
+#qsevgfanhp .gt_font_normal {
   font-weight: normal;
 }
 
-#kmrpjvqmxh .gt_font_bold {
+#qsevgfanhp .gt_font_bold {
   font-weight: bold;
 }
 
-#kmrpjvqmxh .gt_font_italic {
+#qsevgfanhp .gt_font_italic {
   font-style: italic;
 }
 
-#kmrpjvqmxh .gt_super {
+#qsevgfanhp .gt_super {
   font-size: 65%;
 }
 
-#kmrpjvqmxh .gt_footnote_marks {
+#qsevgfanhp .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -3480,11 +3500,11 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">1126</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">6</td>
-<td class="gt_row gt_left">David Robinson</td>
+<td class="gt_row gt_left">gpecci</td>
 <td class="gt_row gt_left">1112</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">7</td>
-<td class="gt_row gt_left">gpecci</td>
+<td class="gt_row gt_left">David Robinson</td>
 <td class="gt_row gt_left">1112</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">8</td>
@@ -3524,11 +3544,11 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">984</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">17</td>
-<td class="gt_row gt_left">Jonathan Spring</td>
+<td class="gt_row gt_left">Josh Gray</td>
 <td class="gt_row gt_left">952</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">18</td>
-<td class="gt_row gt_left">Josh Gray</td>
+<td class="gt_row gt_left">Jonathan Spring</td>
 <td class="gt_row gt_left">952</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">19</td>
@@ -3600,11 +3620,11 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">751</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">36</td>
-<td class="gt_row gt_left">Arun Chavan</td>
+<td class="gt_row gt_left">patelis</td>
 <td class="gt_row gt_left">746</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">37</td>
-<td class="gt_row gt_left">patelis</td>
+<td class="gt_row gt_left">Arun Chavan</td>
 <td class="gt_row gt_left">746</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">38</td>
@@ -3636,11 +3656,11 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">681</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">45</td>
-<td class="gt_row gt_left">jordi figueras puig</td>
+<td class="gt_row gt_left">KT421</td>
 <td class="gt_row gt_left">680</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">46</td>
-<td class="gt_row gt_left">KT421</td>
+<td class="gt_row gt_left">jordi figueras puig</td>
 <td class="gt_row gt_left">680</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">47</td>
@@ -3704,11 +3724,11 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">556</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">62</td>
-<td class="gt_row gt_left">Miha Gazvoda</td>
+<td class="gt_row gt_left">mfiorina</td>
 <td class="gt_row gt_left">553</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">63</td>
-<td class="gt_row gt_left">mfiorina</td>
+<td class="gt_row gt_left">Miha Gazvoda</td>
 <td class="gt_row gt_left">553</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg> <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">64</td>
@@ -3916,23 +3936,23 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">17</td>
 <td class="gt_row gt_left"><svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:gold;overflow:visible;position:relative;"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg></td></tr>
     <tr><td class="gt_row gt_left">115</td>
-<td class="gt_row gt_left">Tony ElHabr</td>
-<td class="gt_row gt_left">0</td>
-<td class="gt_row gt_left"></td></tr>
-    <tr><td class="gt_row gt_left">116</td>
-<td class="gt_row gt_left">Wiktor Jacaszek</td>
-<td class="gt_row gt_left">0</td>
-<td class="gt_row gt_left"></td></tr>
-    <tr><td class="gt_row gt_left">117</td>
-<td class="gt_row gt_left">NA</td>
-<td class="gt_row gt_left">0</td>
-<td class="gt_row gt_left"></td></tr>
-    <tr><td class="gt_row gt_left">118</td>
 <td class="gt_row gt_left">chapmandu2</td>
 <td class="gt_row gt_left">0</td>
 <td class="gt_row gt_left"></td></tr>
+    <tr><td class="gt_row gt_left">116</td>
+<td class="gt_row gt_left">NA</td>
+<td class="gt_row gt_left">0</td>
+<td class="gt_row gt_left"></td></tr>
+    <tr><td class="gt_row gt_left">117</td>
+<td class="gt_row gt_left">Wiktor Jacaszek</td>
+<td class="gt_row gt_left">0</td>
+<td class="gt_row gt_left"></td></tr>
+    <tr><td class="gt_row gt_left">118</td>
+<td class="gt_row gt_left">jacquietran</td>
+<td class="gt_row gt_left">0</td>
+<td class="gt_row gt_left"></td></tr>
     <tr><td class="gt_row gt_left">119</td>
-<td class="gt_row gt_left">CaioBrighenti</td>
+<td class="gt_row gt_left">Tony ElHabr</td>
 <td class="gt_row gt_left">0</td>
 <td class="gt_row gt_left"></td></tr>
     <tr><td class="gt_row gt_left">120</td>
@@ -3940,7 +3960,7 @@ dtype: int64</code></pre>
 <td class="gt_row gt_left">0</td>
 <td class="gt_row gt_left"></td></tr>
     <tr><td class="gt_row gt_left">121</td>
-<td class="gt_row gt_left">jacquietran</td>
+<td class="gt_row gt_left">CaioBrighenti</td>
 <td class="gt_row gt_left">0</td>
 <td class="gt_row gt_left"></td></tr>
   </tbody>
@@ -3965,10 +3985,10 @@ Session info
  collate  English_Canada.1252         
  ctype    English_Canada.1252         
  tz       America/Curacao             
- date     2021-12-05                  </code></pre>
+ date     2021-12-06                  </code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.9","3":"0.7.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-07-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"checkmate","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","6":"FALSE","7":"FALSE","8":"2020-02-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"checkmate"},{"1":"cli","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-06-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"digest","2":"0.6.28","3":"0.6.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-09-23","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"fontawesome","2":"0.2.2","3":"0.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fontawesome","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fontawesome","6":"FALSE","7":"FALSE","8":"2021-07-02","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fontawesome"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2021-10-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"glue","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gt","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","6":"TRUE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gt"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"here","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/here","5":"C:/Users/tdunn/Documents/R/win-library/4.1/here","6":"TRUE","7":"FALSE","8":"2020-12-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"here"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"TRUE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"lattice","2":"0.20.44","3":"0.20-44","4":"C:/Program Files/R/R-4.1.1/library/lattice","5":"C:/Program Files/R/R-4.1.1/library/lattice","6":"FALSE","7":"FALSE","8":"2021-05-02","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"lattice"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"TRUE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"Matrix","2":"1.3.4","3":"1.3-4","4":"C:/Program Files/R/R-4.1.1/library/Matrix","5":"C:/Program Files/R/R-4.1.1/library/Matrix","6":"FALSE","7":"FALSE","8":"2021-06-01","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"Matrix"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"pillar","2":"1.6.4","3":"1.6.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"png","2":"0.1.7","3":"0.1-7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/png","5":"C:/Users/tdunn/Documents/R/win-library/4.1/png","6":"FALSE","7":"FALSE","8":"2013-12-03","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"png"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"remotes","2":"2.4.0","3":"2.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-06-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"reticulate","2":"1.22","3":"1.22","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reticulate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reticulate","6":"TRUE","7":"FALSE","8":"2021-09-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reticulate"},{"1":"rlang","2":"0.4.12","3":"0.4.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.7.5","3":"1.7.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-10-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.0.4","3":"3.0.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-07-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"usethis","2":"2.1.3","3":"2.1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.28","3":"0.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-11-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.9","3":"0.7.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-07-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"checkmate","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","6":"FALSE","7":"FALSE","8":"2020-02-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"checkmate"},{"1":"cli","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"DBI","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-06-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"digest","2":"0.6.28","3":"0.6.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-09-23","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"fontawesome","2":"0.2.2","3":"0.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fontawesome","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fontawesome","6":"FALSE","7":"FALSE","8":"2021-07-02","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fontawesome"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2021-10-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"glue","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gt","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","6":"TRUE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gt"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"here","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/here","5":"C:/Users/tdunn/Documents/R/win-library/4.1/here","6":"TRUE","7":"FALSE","8":"2020-12-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"here"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"FALSE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"lattice","2":"0.20.44","3":"0.20-44","4":"C:/Program Files/R/R-4.1.1/library/lattice","5":"C:/Program Files/R/R-4.1.1/library/lattice","6":"FALSE","7":"FALSE","8":"2021-05-02","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"lattice"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"TRUE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"Matrix","2":"1.3.4","3":"1.3-4","4":"C:/Program Files/R/R-4.1.1/library/Matrix","5":"C:/Program Files/R/R-4.1.1/library/Matrix","6":"FALSE","7":"FALSE","8":"2021-06-01","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Program Files/R/R-4.1.1/library","_rn_":"Matrix"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"pillar","2":"1.6.4","3":"1.6.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"png","2":"0.1.7","3":"0.1-7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/png","5":"C:/Users/tdunn/Documents/R/win-library/4.1/png","6":"FALSE","7":"FALSE","8":"2013-12-03","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"png"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"remotes","2":"2.4.0","3":"2.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-06-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"reticulate","2":"1.22","3":"1.22","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reticulate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reticulate","6":"TRUE","7":"FALSE","8":"2021-09-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reticulate"},{"1":"rlang","2":"0.4.12","3":"0.4.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.7.5","3":"1.7.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-10-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.0.4","3":"3.0.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-07-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"usethis","2":"2.1.3","3":"2.1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.28","3":"0.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-11-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -3980,7 +4000,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [770e991] 2021-12-05: Quick and dirty R solution</code></pre>
+Head:     [1cb6e56] 2021-12-06: Day 5 + some stats</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
