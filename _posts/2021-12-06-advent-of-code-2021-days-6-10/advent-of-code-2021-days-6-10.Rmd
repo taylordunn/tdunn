@@ -1,0 +1,195 @@
+---
+title: "Advent of Code 2021: Days 6-10"
+description: |
+  My solutions to the #AdventOfCode2021 coding challenges, days 6 through 10.
+author:
+  - name: Taylor Dunn
+date: 2021-12-06
+params:
+  date: 2021-12-06
+  slug: "advent-of-code-2021-days-6-10"
+categories:
+  - Advent of Code
+  - Python
+  - R
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+#bibliography: references.bib
+---
+
+
+```{r setup, include=TRUE, code_folding="R setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+<details><summary>Python setup</summary>
+
+```{r py-setup1}
+Sys.setenv(
+  RETICULATE_PYTHON = here("..", "python", ".venv", "Scripts", "python.exe")
+)
+library(reticulate)
+```
+
+```{python py-setup2}
+import numpy as np
+import pandas as pd
+```
+
+</details>
+
+## Day 6
+
+```{r}
+day6 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
+                        "day06-input.txt"))
+str_trunc(day6, 80)
+```
+
+### Part 1
+
+>A massive school of glowing lanternfish swims past. They must spawn quickly to reach such large numbers - maybe exponentially quickly? You should model their growth rate to be sure.
+Although you know nothing about this specific species of lanternfish, you make some guesses about their attributes. Surely, each lanternfish creates a new lanternfish once every 7 days.
+However, this process isn't necessarily synchronized between every lanternfish - one lanternfish might have 2 days left until it creates another lanternfish, while another might have 4. So, you can model each fish as a single number that represents the number of days until it creates a new lanternfish.
+Furthermore, you reason, a new lanternfish would surely need slightly longer before it's capable of producing more lanternfish: two more days for its first cycle.
+
+>Each day, a 0 becomes a 6 and adds a new 8 to the end of the list, while each other number decreases by 1 if it was present at the start of the day.
+Find a way to simulate lanternfish. How many lanternfish would there be after 80 days?
+
+This is simple enough to do with a vector and a loop over 80 days:
+
+```{r}
+fish_timers <- strsplit(day6, ",") %>% unlist() %>% as.numeric()
+
+for (day in seq(1:80)) {
+  # Decrease each timer by one
+  fish_timers <- map_dbl(fish_timers, ~{.x - 1})
+  
+  # Look for elapsed timers
+  elapsed_timers <- fish_timers < 0
+  # Reset them to 6
+  fish_timers[elapsed_timers] <- 6
+  # Add new fish with timers starting at 8
+  fish_timers <- c(fish_timers, rep(8, sum(elapsed_timers)))
+}
+
+# Count the number of fish after 80 days
+length(fish_timers)
+```
+
+For Python, I'll resist using `numpy`/`pandas` and just use some lists:
+
+```{python}
+fish_timers = [int(x) for x in r.day6.split(',')]
+
+for day in range(80):
+  fish_timers = [f - 1 for f in fish_timers]
+  
+  n_new_fish = fish_timers.count(-1)
+  fish_timers = [6 if f == -1 else f for f in fish_timers]
+  
+  if n_new_fish > 0:
+    fish_timers.extend([8] * n_new_fish)
+
+len(fish_timers) 
+```
+
+### Part 2
+
+>Suppose the lanternfish live forever and have unlimited food and space. Would they take over the entire ocean?
+How many lanternfish would there be after 256 days?
+
+For this part, the list of fish would quickly become too large to store in memory after 256 days.
+Instead, find the number of fish at each timer value:
+
+```{r}
+fish_timers_df <- tibble(
+  timer = strsplit(day6, ",") %>% unlist() %>% as.numeric()
+) %>%
+  count(timer, name = "n_fish") %>%
+  # Need to fill in the missing days with 0 fish
+  bind_rows(tibble(timer = c(0, 6, 7, 8), n_fish = c(0, 0, 0, 0))) %>%
+  arrange(timer)
+fish_timers_df
+```
+
+Now it is a matter of looping through the days and updating the counts:
+
+```{r}
+for (day in 1:256) {
+  # Decrease the timer values by 1
+  fish_timers_df <- fish_timers_df %>% mutate(timer = timer - 1)
+  # Count new fish
+  new_fish <- fish_timers_df$n_fish[fish_timers_df$timer == -1]
+  
+  # Add new fish with timers at 8 
+  fish_timers_df <- fish_timers_df %>%
+    bind_rows(tibble(timer = 8, n_fish = new_fish))
+ 
+  # Reset elapsed timers to 6
+  fish_timers_df$n_fish[fish_timers_df$timer == 6] <-
+    fish_timers_df$n_fish[fish_timers_df$timer == 6] +
+    new_fish
+  
+  # Remove the -1 values now that they've been accounted for
+  fish_timers_df <- fish_timers_df %>% filter(timer != -1)
+}
+
+fish_timers_df
+```
+
+That's a lot of fish.
+To get the answer, I need to `format` the sum so that it is not printed in scientific notation:
+
+```{r}
+format(sum(fish_timers_df$n_fish), scientific = FALSE)
+```
+
+Python:
+
+```{python}
+fish_timers_df = pd.DataFrame({'timer': [int(x) for x in r.day6.split(',')]})
+fish_timers_df = fish_timers_df.value_counts('timer') \
+  .rename_axis('n_fish') \
+  .reindex(range(9), fill_value = 0)
+  
+for day in range(256):
+  n_new_fish = fish_timers_df[0]
+  
+  for i in range(1, len(fish_timers_df)):
+    fish_timers_df[i-1] = fish_timers_df[i]
+  
+  fish_timers_df[6] += n_new_fish
+  fish_timers_df[8] = n_new_fish
+  
+fish_timers_df.sum()
+```
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
