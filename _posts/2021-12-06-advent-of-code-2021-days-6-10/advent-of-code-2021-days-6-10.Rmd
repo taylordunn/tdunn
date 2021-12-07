@@ -169,6 +169,94 @@ for day in range(256):
 fish_timers_df.sum()
 ```
 
+## Day 7
+
+```{r}
+day7 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
+                        "day07-input.txt"))
+str_trunc(day7, 80)
+```
+
+```{r}
+day7_sample <- strsplit("16,1,2,0,4,2,7,1,2,14", ",") %>%
+  unlist() %>% as.numeric()
+day7_sample
+mean(day7_sample); median(day7_sample)
+```
+
+### Part 1
+
+```{r}
+day7 <- strsplit(day7, ",") %>% unlist() %>% as.numeric()
+median(day7)
+```
+
+```{r}
+sum(abs(day7 - median(day7)))
+```
+
+### Part 2
+
+* 1: 1
+* 2: 3
+* 3: 6
+* 4: 10
+* 5: 15
+
+```{r}
+cumsum(5)
+cumsum(1:2)
+cumsum(1:3)
+cumsum(1:3) %>% tail(1)
+
+map_int(
+  abs(day7_sample - median(day7_sample)),
+  ~ifelse(
+    median(median(day7_sample) == .x), 0L,
+    cumsum(1:.x) %>% tail(1)
+  )
+)
+
+for (test_point in seq(1:5)) {
+  print(test_point)
+  
+  fuel_spent <- map_int(
+    abs(day7_sample - test_point),
+    ~ifelse(
+      .x == 0, 0L,
+      cumsum(1:.x) %>% tail(1)
+    )
+  )
+  
+  print(sum(fuel_spent))
+}
+```
+
+
+```{r}
+fuel_spent_list <- list()
+min_point <- median(day7) + 100
+max_point <- median(day7) + 400
+for (test_point in seq(min_point, max_point)) {
+  fuel_spent <- map_int(
+    abs(day7 - test_point),
+    ~ifelse(
+      .x == 0, 0L,
+      cumsum(1:.x) %>% tail(1)
+    )
+  )  
+  
+  fuel_spent_list[as.character(test_point)] <- sum(fuel_spent)   
+}
+
+tibble(test_point = names(fuel_spent_list),
+       fuel_spent = as.numeric(fuel_spent_list)) %>%
+  arrange(fuel_spent)
+
+```
+
+
+
 ## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
