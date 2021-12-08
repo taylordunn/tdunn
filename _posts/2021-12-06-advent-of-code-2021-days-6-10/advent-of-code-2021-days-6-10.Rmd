@@ -81,7 +81,7 @@ for (day in seq(1:80)) {
 length(fish_timers)
 ```
 
-For Python, I'll resist using `numpy`/`pandas` and just use some lists:
+For Python, I'll resist using `numpy`/`pandas` and just use a list:
 
 ```{python}
 fish_timers = [int(x) for x in r.day6.split(',')]
@@ -177,85 +177,104 @@ day7 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
 str_trunc(day7, 80)
 ```
 
-```{r}
-day7_sample <- strsplit("16,1,2,0,4,2,7,1,2,14", ",") %>%
-  unlist() %>% as.numeric()
-day7_sample
-mean(day7_sample); median(day7_sample)
-```
-
 ### Part 1
 
-```{r}
-day7 <- strsplit(day7, ",") %>% unlist() %>% as.numeric()
-median(day7)
-```
+>A giant whale has decided your submarine is its next meal, and it's much faster than you are. There's nowhere to run!
+>
+Suddenly, a swarm of crabs (each in its own tiny submarine - it's too deep for them otherwise) zooms in to rescue you! They seem to be preparing to blast a hole in the ocean floor; sensors indicate a massive underground cave system just beyond where they're aiming!
+>
+The crab submarines all need to be aligned before they'll have enough power to blast a large enough hole for your submarine to get through. However, it doesn't look like they'll be aligned before the whale catches you! Maybe you can help?
+>
+There's one major catch - crab submarines can only move horizontally.
+>
+You quickly make a list of the horizontal position of each crab (your puzzle input). Crab submarines have limited fuel, so you need to find a way to make all of their horizontal positions match while requiring them to spend as little fuel as possible.
+>
+Each change of 1 step in horizontal position of a single crab costs 1 fuel. 
+Determine the horizontal position that the crabs can align to using the least fuel possible. How much fuel must they spend to align to that position?
+
+The amount of fuel spent by a crab $i$ at position $x_i$ moving to position $x_0$ can be represented as the absolute deviation $|x_i - x_0|$.
+We seek the position $x_0$ that minimizes the sum of absolute deviations for all $N$ crabs:
+
+$$
+\sum_i^N |x_i - x_0|
+$$
+
+My mathematical proof skills are pretty rusty (it has been about 8 years since I took Mathematical Reasoning at UPEI), but my lazy Google search tells me that [the median minimizes the sum of absolute deviations](https://math.stackexchange.com/questions/113270/the-median-minimizes-the-sum-of-absolute-deviations-the-ell-1-norm).
+The median position of the input is:
 
 ```{r}
-sum(abs(day7 - median(day7)))
+crab_positions <- strsplit(day7, ",") %>% unlist() %>% as.numeric()
+median(crab_positions)
+```
+
+And so the total fuel taken for each crab to move to this position is:
+
+```{r}
+sum(abs(crab_positions - median(crab_positions)))
+```
+
+Python:
+
+```{python}
+crab_positions = [int(x) for x in r.day7.split(',')]
+sum([np.abs(x - np.median(crab_positions)) for x in crab_positions])
 ```
 
 ### Part 2
 
-* 1: 1
-* 2: 3
-* 3: 6
-* 4: 10
-* 5: 15
+>
+The crabs don't seem interested in your proposed solution. Perhaps you misunderstand crab engineering?
+>
+As it turns out, crab submarine engines don't burn fuel at a constant rate. Instead, each change of 1 step in horizontal position costs 1 more unit of fuel than the last: the first step costs 1, the second step costs 2, the third step costs 3, and so on.
+>
+Determine the horizontal position that the crabs can align to using the least fuel possible so they can make you an escape route! How much fuel must they spend to align to that position?
+
+My first thought for calculating this fuel was the cumulative sum.
+For example, moving 7 steps would cost fuel equal to the last value of this `cumsum()`:
 
 ```{r}
-cumsum(5)
-cumsum(1:2)
-cumsum(1:3)
-cumsum(1:3) %>% tail(1)
-
-map_int(
-  abs(day7_sample - median(day7_sample)),
-  ~ifelse(
-    median(median(day7_sample) == .x), 0L,
-    cumsum(1:.x) %>% tail(1)
-  )
-)
-
-for (test_point in seq(1:5)) {
-  print(test_point)
-  
-  fuel_spent <- map_int(
-    abs(day7_sample - test_point),
-    ~ifelse(
-      .x == 0, 0L,
-      cumsum(1:.x) %>% tail(1)
-    )
-  )
-  
-  print(sum(fuel_spent))
-}
+cumsum(1:7)
 ```
 
+But then I figured there is probably a useful formula for this sum, and another lazy Google search tells me that these are called [triangular numbers](https://en.wikipedia.org/wiki/1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF) with the simple formula:
+
+$$
+\sum_{i=1}^n k = \frac{n (n + 1)}{2}.
+$$
+
+And so we want to find $x_0$ that minimizes:
+
+$$
+\sum_i^N \frac{|x_i - x_0|(|x_i - x_0| + 1)}{2}.
+$$
+
+I'm not aware of a simple solution (like the median in part 1) to this optimization problem.
+The brute force way is to loop over values of $x_0$, ranging from $\text{min}(x_i)$ to $\text{max}(x_i)$:
 
 ```{r}
-fuel_spent_list <- list()
-min_point <- median(day7) + 100
-max_point <- median(day7) + 400
-for (test_point in seq(min_point, max_point)) {
-  fuel_spent <- map_int(
-    abs(day7 - test_point),
-    ~ifelse(
-      .x == 0, 0L,
-      cumsum(1:.x) %>% tail(1)
-    )
-  )  
-  
-  fuel_spent_list[as.character(test_point)] <- sum(fuel_spent)   
-}
-
-tibble(test_point = names(fuel_spent_list),
-       fuel_spent = as.numeric(fuel_spent_list)) %>%
+fuel_spent <- tibble(
+  x0 = seq(min(crab_positions), max(crab_positions))
+) %>%
+  mutate(
+    crab_dist = map(x0, ~abs(crab_positions - .x)),
+    fuel_spent = map_dbl(crab_dist, ~sum(.x * (.x + 1) / 2))
+  ) %>%
   arrange(fuel_spent)
-
+head(fuel_spent)
 ```
 
+We find that $x_0$ = `r fuel_spent$x0[[1]]` minimizes the fuel with `r as.character(fuel_spent$fuel_spent[[1]])` spent.
 
+Use a `pandas.Series` to do the same:
+
+```{python}
+fuel_spent = pd.Series(dtype = np.float64)
+for x0 in range(min(crab_positions), max(crab_positions)):
+  crab_dist = [np.abs(x - x0) for x in crab_positions]
+  fuel_spent.at[x0] = sum([d * (d + 1) / 2 for d in crab_dist])
+  
+fuel_spent.sort_values().head()
+```
 
 ## Reproducibility {.appendix}
 
