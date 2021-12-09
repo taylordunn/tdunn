@@ -24,6 +24,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
+library(gt)
 ```
 
 <details><summary>Python setup</summary>
@@ -274,6 +275,282 @@ for x0 in range(min(crab_positions), max(crab_positions)):
   fuel_spent.at[x0] = sum([d * (d + 1) / 2 for d in crab_dist])
   
 fuel_spent.sort_values().head()
+```
+
+## Day 8
+
+```{r}
+day8 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
+                        "day08-input.txt"))
+head(day8)
+```
+
+### Part 1
+
+>You barely reach the safety of the cave when the whale smashes into the cave mouth, collapsing it. Sensors indicate another exit to this cave at a much greater depth, so you have no choice but to press on.
+>
+As your submarine slowly makes its way through the cave system, you notice that the four-digit seven-segment displays in your submarine are malfunctioning; they must have been damaged during the escape. You'll be in a lot of trouble without them, so you'd better figure out what's wrong.
+>
+Each digit of a seven-segment display is rendered by turning on or off any of seven segments named `a` through `g`:
+
+```
+  0:      1:      2:      3:      4:     5:      6:      7:      8:      9:
+ aaaa    ....    aaaa    aaaa    ....   aaaa    aaaa    aaaa    aaaa    aaaa
+b    c  .    c  .    c  .    c  b    c b    .  b    .  .    c  b    c  b    c
+b    c  .    c  .    c  .    c  b    c b    .  b    .  .    c  b    c  b    c
+ ....    ....    dddd    dddd    dddd  dddd    dddd    ....    dddd    dddd
+e    f  .    f  e    .  .    f  .    f .    f  e    f  .    f  e    f  .    f  
+e    f  .    f  e    .  .    f  .    f .    f  e    f  .    f  e    f  .    f
+ gggg    ....    gggg    gggg    ....   gggg    gggg    ....    gggg    gggg
+```
+>
+So, to render a `1`, only segments `c` and `f` would be turned on; the rest would be off. To render a `7`, only segments `a`, `c`, and `f` would be turned on.
+>
+The problem is that the signals which control the segments have been mixed up on each display. The submarine is still trying to display numbers by producing output on signal wires `a` through `g`, but those wires are connected to segments randomly. Worse, the wire/segment connections are mixed up separately for each four-digit display! (All of the digits within a display use the same connections, though.)
+>
+For each display, you watch the changing signals for a while, make a note of all ten unique signal patterns you see, and then write down a single four digit output value (your puzzle input). Using the signal patterns, you should be able to work out which pattern corresponds to which digit.
+>
+Each entry consists of ten unique signal patterns, a `|` delimiter, and finally the four digit output value. Within an entry, the same wire/segment connections are used (but you don't know what the connections actually are). The unique signal patterns correspond to the ten different ways the submarine tries to render a digit using the current wire/segment connections.
+>
+In the output values, how many times do digits 1, 4, 7, or 8 appear?
+
+First, for my own reference, compile the number of segments used by each digit:
+
+```{r}
+digit_segments_count <- tribble(
+  ~digit, ~n_segments,
+  0, 6,
+  1, 2,
+  2, 5,
+  3, 5,
+  4, 4,
+  5, 5,
+  6, 6,
+  7, 3,
+  8, 7,
+  9, 6
+)
+digit_segments_count %>%
+  group_by(n_segments) %>%
+  summarise(digits = str_c(digit, collapse = ","), .groups = "drop")
+```
+
+I see why part 1 is asking about just the digits 1, 4, 7, and 8 -- they consist of a unique number of segments (2, 4, 3, and 7, respectively).
+
+Split the input into the the signal patterns (ten unique values) and four digit output values:
+
+```{r}
+day8_split <- strsplit(day8, " \\| ") %>%
+  map(strsplit, " ")
+
+day8_df <-
+  tibble(
+    signal_patterns = map(day8_split, 1),
+    output = map(day8_split, 2)
+  )
+day8_df
+```
+
+Consider a single row of this data:
+
+```{r}
+signals1 <- day8_df %>% slice(2) %>%
+  unnest(signal_patterns) %>% pull(signal_patterns)
+output1 <- day8_df %>% slice(2) %>% unnest(output) %>% pull(output)
+signals1; output1
+```
+
+We actually don't need the 10 `signal_patterns` for part 1 -- we just need to find the string length of the `output` values:
+
+```{r}
+nchar(output1)
+```
+
+From these lengths, I know that the first digit is 1, the second digit is 4, the third digit is one of {2, 3, 5}, and the fourth digit is 7.
+We want to count the occurrences of 1, 4, 7 and 8, so this row contributes 3 to that count.
+Apply this logic to the full input:
+
+```{r}
+part1_count <- day8_df %>%
+  mutate(
+    n_1_4_7_8 = map_int(
+      output,
+      ~sum(nchar(.x) %in% c(2, 3, 4, 7))
+    )
+  )
+part1_count
+sum(part1_count$n_1_4_7_8)
+```
+
+### Part 2
+
+>
+For each entry, determine all of the wire/segment connections and decode the four-digit output values. What do you get if you add up all of the output values?
+
+Consider again the segment patterns for each digit:
+
+```
+  0:      1:      2:      3:      4:     5:      6:      7:      8:      9:
+ aaaa    ....    aaaa    aaaa    ....   aaaa    aaaa    aaaa    aaaa    aaaa
+b    c  .    c  .    c  .    c  b    c b    .  b    .  .    c  b    c  b    c
+b    c  .    c  .    c  .    c  b    c b    .  b    .  .    c  b    c  b    c
+ ....    ....    dddd    dddd    dddd  dddd    dddd    ....    dddd    dddd
+e    f  .    f  e    .  .    f  .    f .    f  e    f  .    f  e    f  .    f  
+e    f  .    f  e    .  .    f  .    f .    f  e    f  .    f  e    f  .    f
+ gggg    ....    gggg    gggg    ....   gggg    gggg    ....    gggg    gggg
+```
+
+```{r}
+digit_segments <- c("abcefg", "cf", "acdeg", "acdfg", "bcdf",
+                    "abdfg", "abdefg", "acf", "abcdefg", "abcdfg")
+```
+
+We know digits 1, 4, 7 and 8 are uniquely identified by their number of segments.
+We also know that the digit 1 has two overlapping segments (`c` and `f`) with the digit 0.
+This can be derived with `intersect` on the letters:
+
+```{r}
+intersect(strsplit(digit_segments[1], "") %>% unlist(),
+          strsplit(digit_segments[2], "") %>% unlist())
+```
+
+Compute the amount of overlap between each pair of digits:
+
+```{r}
+compute_overlap <- function(segments1, segments2) {
+  length(
+    intersect(strsplit(segments1, "") %>% unlist(),
+              strsplit(segments2, "") %>% unlist())
+  )
+}
+digit_overlap <- 
+  crossing(
+    tibble(digit1 = 0:9, segments1 = digit_segments),
+    tibble(digit2 = 0:9, segments2 = digit_segments)
+  ) %>%
+  filter(digit1 != digit2) %>%
+  mutate(
+    n_segment_overlap = map2_int(
+      segments1, segments2,
+      compute_overlap
+    )
+  )
+digit_overlap %>%
+  select(digit1, digit2, n_segment_overlap) %>%
+  pivot_wider(names_from = digit2, values_from = n_segment_overlap) %>%
+  relocate(`0`, .before = `1`) %>% # Need to correct order of columns
+  gt(rowname_col = "digit1")
+```
+
+Using these relationships, it is simply a matter of elimination to determine which pattern of segments corresponds to which digit:
+
+* The digit 1 has 2 segments.
+* The digit 4 has 4 segments.
+* The digit 7 has 3 segments.
+* The digit 8 has 7 segments.
+* The digits 2, 3 and 5 have 5 segments.
+    * The digit 3 shares 2 segments with 1.
+    * The digit 2 shares 2 segments with 4.
+    * The digit 5 remains.
+* The digits 0, 6 and 9 have 6 segments.
+    * The digit 6 shares 2 segments with 7.
+    * The digit 9 shares 4 segments with 4.
+    * The digit 0 remains.
+    
+Write a function that follows this logic, and returns a list mapping segment patterns to digits:
+
+```{r}
+get_digit_map <- function(signals) {
+  digit_map <- list()
+  
+  d1 <- signals[nchar(signals) == 2]
+  digit_map[d1] <- 1
+  
+  d4 <- signals[nchar(signals) == 4]
+  digit_map[d4] <- 4
+  
+  d7 <- signals[nchar(signals) == 3]
+  digit_map[d7] <- 7
+  
+  d8 <- signals[nchar(signals) == 7]
+  digit_map[d8] <- 8
+  
+  # Remove the four digits identified so far
+  signals <- setdiff(signals, names(digit_map))
+  
+  d3 <- signals[nchar(signals) == 5 & map_int(signals, compute_overlap, d1) == 2]
+  digit_map[d3] <- 3
+  signals <- setdiff(signals, d3)
+  
+  d2 <- signals[nchar(signals) == 5 & map_int(signals, compute_overlap, d4) == 2]
+  digit_map[d2] <- 2
+  signals <- setdiff(signals, d2)
+  
+  d5 <- signals[nchar(signals) == 5]
+  digit_map[d5] <- 5
+  signals <- setdiff(signals, d5)
+  
+  d6 <- signals[nchar(signals) == 6 & map_int(signals, compute_overlap, d7) == 2]
+  digit_map[d6] <- 6
+  signals <- setdiff(signals, d6)
+  
+  d9 <- signals[nchar(signals) == 6 & map_int(signals, compute_overlap, d4) == 4]
+  digit_map[d9] <- 9
+  signals <- setdiff(signals, d9)
+  
+  # The last digit is 0
+  digit_map[signals] <- 0
+  
+  return(digit_map)
+}
+```
+
+One last step before applying this function is the sort the segments alphabetically, because the output does not necessarily match the patterns in the signals, e.g. "bedf" may appear as "dbfe" in the output.
+
+```{r}
+sort_segment <- function(segment) {
+  strsplit(segment, "")[[1]] %>%
+    sort() %>%
+    paste0(collapse = "")
+}
+
+day8_df <- day8_df %>%
+  mutate(
+    signal_patterns = map(
+      signal_patterns, ~map_chr(.x, sort_segment)
+    ),
+    output = map(
+      output, ~map_chr(.x, sort_segment)
+    )
+  )
+day8_df$signal_patterns[[5]]
+```
+
+Now find the digit mapping for each set of signals:
+
+```{r}
+day8_df <- day8_df %>%
+  mutate(digit_map = map(signal_patterns, get_digit_map))
+day8_df$digit_map[[5]] %>% glimpse()
+```
+
+Now use each `digit_map` to determine the 4 digit output codes:
+
+```{r}
+day8_df <- day8_df %>%
+  mutate(
+    output_decoded = map2_int(
+      output, digit_map,
+      ~as.integer(paste0(.y[.x], collapse = ""))
+    )
+  )
+day8_df
+```
+
+And finally, the sum:
+
+```{r}
+sum(day8_df$output_decoded)
 ```
 
 ## Reproducibility {.appendix}
