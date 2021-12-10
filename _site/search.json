@@ -6,14 +6,14 @@
       "description": "Some additional details about the blog",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-12-09T20:20:15-04:00"
+      "last_modified": "2021-12-10T13:07:38-04:00"
     },
     {
       "path": "index.html",
       "title": "Taylor Dunn's personal website",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-12-09T20:20:15-04:00"
+      "last_modified": "2021-12-10T13:07:39-04:00"
     },
     {
       "path": "projects.html",
@@ -21,7 +21,7 @@
       "description": "A collection of my projects.\n",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\ndunnr\r\n\r\nMy personal R package of commonly used functions and templates.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\ngasr\r\n\r\nAn R package for simulating goal attainment scaling (GAS) data.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nTidyTuesday\r\n\r\nTo practice my data science skills I like to participate in the TidyTuesday project (https://github.com/rfordatascience/tidytuesday).\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-      "last_modified": "2021-12-09T20:20:18-04:00"
+      "last_modified": "2021-12-10T13:07:41-04:00"
     }
   ],
   "collections": ["posts/posts.json"]

@@ -776,6 +776,195 @@ basin_size.sort(reverse = True)
 np.prod(basin_size[0:3])
 ```
 
+## Day 10
+
+```{r}
+day10 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
+                         "day10-input.txt"))
+head(day10) %>% str_trunc(80)
+```
+
+### Part 1
+
+>
+You ask the submarine to determine the best route out of the deep-sea cave, but it only replies:
+`Syntax error in navigation subsystem on line: all of them`
+All of them?! The damage is worse than you thought. You bring up a copy of the navigation subsystem (your puzzle input).
+>
+The navigation subsystem syntax is made of several lines containing chunks. There are one or more chunks on each line, and chunks contain zero or more other chunks. Adjacent chunks are not separated by any delimiter; if one chunk stops, the next chunk (if any) can immediately start. Every chunk must open and close with one of four legal pairs of matching characters:
+>
+    If a chunk opens with `(`, it must close with `)`.
+    If a chunk opens with `[`, it must close with `]`.
+    If a chunk opens with `{`, it must close with `}`.
+    If a chunk opens with `<`, it must close with `>`.
+>
+So, `()` is a legal chunk that contains no other chunks, as is `[]`. More complex but valid chunks include `([])`, `{()()()}`, `<([{}])>`, `[<>({}){}[([])<>]]`, and even `(((((((((())))))))))`.
+>
+Some lines are incomplete, but others are corrupted. Find and discard the corrupted lines first.
+>
+A corrupted line is one where a chunk closes with the wrong character - that is, where the characters it opens and closes with do not form one of the four legal pairs listed above.
+>
+Examples of corrupted chunks include `(]`, `{()()()>`, `(((()))}`, and `<([]){()}[{}])`. Such a chunk can appear anywhere within a line, and its presence causes the whole line to be considered corrupted.
+>
+To calculate the syntax error score for a line, take the first illegal character on the line and look it up in the following table:
+>
+    `)`: 3 points.
+    `]`: 57 points.
+    `}`: 1197 points.
+    `>`: 25137 points.
+>
+Find the first illegal character in each corrupted line of the navigation subsystem. What is the total syntax error score for those errors?
+
+I'll make heavy use of `stringr` and regular expressions to solve this problem.
+First, define a function that iterates over a line and determines if it is corrupt:
+
+```{r}
+# Regex representations of the character pairs (requires \\ to escape)
+pairs <- c("\\(\\)" = "", "\\[\\]" = "", "\\{\\}" = "", "\\<\\>" = "")
+
+remove_pairs <- function(line) {
+  repeat {
+    new_line <- line %>% str_replace_all(pairs)
+    if (new_line == line) return(new_line)
+    else line <- new_line
+  }
+}
+
+line <- "([{<>}])[](<>)"
+line_corrupt <- "([{<>]])"
+
+remove_pairs(line)
+remove_pairs(line_corrupt)
+```
+
+Then for corrupt lines, I need to find the location of the wrong closing characters:
+
+```{r}
+# Regex representations of mismatched pairs "[>", "(>", "{>", "[}", etc.
+mismatched_pairs <- c("[\\(\\[\\{]\\>",
+                      "[\\(\\[\\<]\\}",
+                      "[\\(\\{\\<]\\]",
+                      "[\\[\\{\\<]\\)")
+find_corrupt_loc <- function(line_reduced) {
+  map_dfr(
+    mismatched_pairs,
+    ~remove_pairs(line_reduced) %>% str_locate(.x) %>% as.data.frame()
+  ) %>%
+    drop_na()
+}
+
+corrupt_loc <- find_corrupt_loc(remove_pairs(line_corrupt))
+corrupt_loc
+```
+
+Then I use the `end` location (the smallest value to get the first occurrence) to determine which character is incorrect:
+
+```{r}
+remove_pairs(line_corrupt) %>%
+  str_sub(start = min(corrupt_loc$end), end = min(corrupt_loc$end))
+```
+
+Apply this to the full input:
+
+```{r}
+day10_df <- tibble(line = day10) %>%
+  mutate(
+    line_reduced = map_chr(line, remove_pairs),
+    corrupt_loc = map(line_reduced, find_corrupt_loc)
+  )
+
+corrupt_chars <- day10_df %>%
+  mutate(line_num = 1:n()) %>%
+  # Filter down to just corrupt lines
+  filter(map_int(corrupt_loc, nrow) > 0) %>%
+  transmute(
+    line_num,
+    corrupt_char = map2_chr(
+      line_reduced, corrupt_loc,
+      ~str_sub(.x, start = min(.y$end), end = min(.y$end))
+    )
+  )
+corrupt_chars
+```
+
+Finally, add up the points of the characters:
+
+```{r}
+corrupt_chars %>%
+  mutate(score = recode(corrupt_char,
+                        `)` = 3, `]` = 57, `}` = 1197, `>` = 25137)) %>%
+  pull(score) %>% sum()
+```
+
+### Part 2
+
+>
+Now, discard the corrupted lines. The remaining lines are incomplete.
+>
+Incomplete lines don't have any incorrect characters - instead, they're missing some closing characters at the end of the line. To repair the navigation subsystem, you just need to figure out the sequence of closing characters that complete all open chunks in the line.
+>
+You can only use closing characters (`(`, `]`, `}`, or `>`), and you must add them in the correct order so that only legal pairs are formed and all chunks end up closed.
+>
+The score is determined by considering the completion string character-by-character. Start with a total score of 0. Then, for each character, multiply the total score by 5 and then increase the total score by the point value given for the character in the following table:
+>
+    `)`: 1 point.
+    `]`: 2 points.
+    `}`: 3 points.
+    `>`: 4 points.
+>
+Autocomplete tools are an odd bunch: the winner is found by sorting all of the scores and then taking the middle score. (There will always be an odd number of scores to consider.) In this example, the middle score is 288957 because there are the same number of scores smaller and larger than it.
+>
+Find the completion string for each incomplete line, score the completion strings, and sort the scores. What is the middle score?
+
+From part 1, we have these incomplete (and non-corrupt) lines:
+
+```{r}
+day10_incomplete <- day10_df %>%
+  filter(map_int(corrupt_loc, nrow) == 0) %>%
+  select(-corrupt_loc)
+glimpse(day10_incomplete)
+```
+
+As expected, we have an odd number of lines so we can get a middle score.
+Because I've already reduced the `line`s down to `line_reduced` without matching pairs, I can simply reverse the order, and count the scores.
+For example:
+
+```{r}
+reversed_chars <- remove_pairs("[({(<(())[]>[[{[]{<()<>>") %>%
+  strsplit("") %>%
+  unlist() %>%
+  rev()
+ 
+total_score <- 0
+for (char in reversed_chars) {
+  total_score <- total_score * 5
+  # No need to replace the opening with closing characters
+  total_score <- total_score + switch(char, `(` = 1, `[` = 2, `{` = 3, `<` = 4)
+}
+total_score
+```
+
+```{r}
+day10_incomplete <- day10_incomplete %>%
+  mutate(
+    total_score = map_dbl(
+      line_reduced,
+      ~{
+        reversed_chars <- str_split(.x, "") %>% unlist() %>% rev()
+        
+        total_score <- 0
+        for (char in reversed_chars) {
+          total_score <- total_score * 5
+          total_score <- total_score + switch(char, `(` = 1, `[` = 2, `{` = 3, `<` = 4)
+        }
+        total_score
+      }
+    )
+  )
+sort(day10_incomplete$total_score)[(nrow(day10_incomplete) + 1) / 2]
+```
+
+
 ## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
