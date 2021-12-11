@@ -1,0 +1,214 @@
+---
+title: "Advent of Code 2021: Days 11-15"
+description: |
+  My solutions to the #AdventOfCode2021 coding challenges, days 1 through 5.
+author:
+  - name: Taylor Dunn
+date: 2021-12-11
+params:
+  date: 2021-12-11
+  slug: "advent-of-code-2021-days-11-15"
+categories:
+  - Advent of Code
+  - Python
+  - R
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+#bibliography: references.bib
+---
+
+```{r setup, include=TRUE, code_folding="R setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(gt)
+```
+
+<details><summary>Python setup</summary>
+
+```{r py-setup1}
+Sys.setenv(
+  RETICULATE_PYTHON = here("..", "python", ".venv", "Scripts", "python.exe")
+)
+library(reticulate)
+```
+
+```{python py-setup2}
+import numpy as np
+import pandas as pd
+```
+
+</details>
+
+## Day 11
+
+```{r}
+day11 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
+                         "day11-input.txt"))
+day11
+str_trunc(day11, 80)
+```
+
+```{r}
+day11 <- "5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526" %>%
+  strsplit("\n") %>% unlist()
+```
+
+### Part 1
+
+```{r}
+day11_mat <- day11 %>%
+  strsplit("") %>%
+  unlist() %>%
+  as.integer() %>%
+  matrix(nrow = 10, byrow = TRUE)
+```
+
+```{r}
+row <- 2
+col <- 3
+day11_mat[1:3, 2:4]
+max_row <- nrow(day11_mat)
+max_col <- ncol(day11_mat)
+```
+
+
+```{r}
+# The 8 neighbors (including diagonals) of a point
+d_coords <- cbind(c(0, 0, 0, -1, 1, -1, -1, 1, 1),
+                  c(0, -1, 1, 0, 0, -1, 1, -1, 1))
+
+get_neighbors <- function(row, col, max_row, max_col) {
+  neighbor_rows <- d_coords[,1] + row
+  neighbor_rows <- neighbor_rows[neighbor_rows <= max_row]
+  neighbor_cols <- d_coords[,2] + col
+  neighbor_cols <- neighbor_cols[neighbor_cols <= max_col]
+  matrix(c(neighbor_rows, neighbor_cols), ncol = 2)
+}
+
+get_neighbors <- function(row_col, max_row = 10, max_col = 10) {
+  neighbors <- apply(d_coords, 1, function(d) d + row_col) %>% t()
+  neighbors <- neighbors[neighbors[,1] <= max_row, , drop = FALSE]
+  neighbors <- neighbors[neighbors[,2] <= max_col, , drop = FALSE]
+  neighbors
+}
+```
+
+```{r}
+day11_part1 <- day11_mat
+n_flashes <- 0
+
+for (day in c(1, 2)) {
+  flashing_points <- matrix(FALSE, nrow = 10, ncol = 10)
+  day11_part1 <- day11_part1 + 1
+  flashing_points <- day11_part1 == 10
+  
+  while (sum(flashing_points) > 0) {
+    n_flashes <- n_flashes + sum(flashing_points)
+    neighbors <- map(which(flashing_points, arr.ind = TRUE), get_neighbors)
+    new_flashing_points <- matrix(FALSE, nrow = 10, ncol = 10)
+     
+    for (neighbor in neighbors) {
+      day11_part1[neighbor] <- day11_part1[neighbor] + 1
+      new_flashing_points
+      new_flashing_points <- new_flashing_points | (day11_part1[neighbor] == 10)
+    }
+    flashing_points <- new_flashing_points 
+  }
+  day11_part1[day11_part1 >= 10] <- 0
+}
+day11_part1
+```
+
+
+```{r}
+#flashing_points <- flashing_points | (day11_part1 == 10)
+    
+    #flashing_points <- which(day11_part1 == 10, arr.ind = TRUE)
+    
+    #day11_part1[flashing_points] <- NA
+    #neighbors <- map(flashing_points, get_neighbors)
+  }
+
+  while (length(neighbors) > 0) {
+    new_neighbors <- list()
+    for (neighbor in neighbors) {
+      day11_part1[neighbor] <- day11_part1[neighbor] + 1
+      flashing_points <- which(day11_part1 == 10, arr.ind = TRUE)
+      n_flashes <- n_flashes + nrow(flashing_points) 
+      day11_part1[flashing_points] <- NA
+      new_neighbors <- append(new_neighbors, )
+    } 
+  }
+  
+  day11_part1[neighbors] <- day11_part1[neighbors] + 1
+  
+  day11_part1[which(is.na(day11_part1))] <- 0
+}
+day11_part1
+```
+
+
+```{r}
+#for (day in 1:10) {
+for (day in c(1, 2)) {
+  day11_part1 <- day11_part1 + 1
+   
+  while (10 %in% day11_part1) {
+    flashing_points <- which(day11_part1 == 10, arr.ind = TRUE)
+    n_flashes <- n_flashes + sum(flashes)
+    
+    day11_part1[flashing_points] <- NA
+    neighbors <- map(flashing_points, get_neighbors)
+    for (neighbor in neighbors) {
+      day11_part1[neighbor] <- day11_part1[neighbor] + 1
+      flashing_points <- which(day11_part1 == 10, arr.ind = TRUE)
+      
+      day11_part1[]
+    } 
+    
+    day11_part1[neighbors] <- day11_part1[neighbors] + 1
+  }
+  
+  day11_part1[which(is.na(day11_part1))] <- 0
+}
+day11_part1
+
+```
+
+
+# Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+get_distill_source(date = params$date, slug = params$slug)
+```
+
