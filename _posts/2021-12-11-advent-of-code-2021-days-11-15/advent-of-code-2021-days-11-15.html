@@ -117,7 +117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["day11-input.txt"]}
+  {"type":"character","attributes":{},"value":["advent-of-code-2021-days-11-15_files/anchor-4.2.2/anchor.min.js","advent-of-code-2021-days-11-15_files/bowser-1.9.3/bowser.min.js","advent-of-code-2021-days-11-15_files/distill-2.2.21/template.v2.js","advent-of-code-2021-days-11-15_files/header-attrs-2.11/header-attrs.js","advent-of-code-2021-days-11-15_files/jquery-3.6.0/jquery-3.6.0.js","advent-of-code-2021-days-11-15_files/jquery-3.6.0/jquery-3.6.0.min.js","advent-of-code-2021-days-11-15_files/jquery-3.6.0/jquery-3.6.0.min.map","advent-of-code-2021-days-11-15_files/pagedtable-1.1/css/pagedtable.css","advent-of-code-2021-days-11-15_files/pagedtable-1.1/js/pagedtable.js","advent-of-code-2021-days-11-15_files/popper-2.6.0/popper.min.js","advent-of-code-2021-days-11-15_files/tippy-6.2.7/tippy-bundle.umd.min.js","advent-of-code-2021-days-11-15_files/tippy-6.2.7/tippy-light-border.css","advent-of-code-2021-days-11-15_files/tippy-6.2.7/tippy.css","advent-of-code-2021-days-11-15_files/tippy-6.2.7/tippy.umd.min.js","advent-of-code-2021-days-11-15_files/webcomponents-2.0.0/webcomponents.js","day11-input.txt"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1534,6 +1534,43 @@ Python setup
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div>
 </div>
 </details>
+<ul>
+<li>one
+<ul>
+<li>1a</li>
+<li>1b
+<ul>
+<li>1bi</li>
+<li>1bii</li>
+</ul></li>
+<li>1c</li>
+</ul></li>
+<li>two
+<ul>
+<li>2a</li>
+<li>2b</li>
+</ul></li>
+<li>three</li>
+</ul>
+<p>text</p>
+<ol type="1">
+<li>one
+<ul>
+<li>1a</li>
+<li>1b
+<ul>
+<li>1bi</li>
+<li>1bii</li>
+</ul></li>
+<li>1c</li>
+</ul></li>
+<li>two
+<ul>
+<li>2a</li>
+<li>2b</li>
+</ul></li>
+<li>three</li>
+</ol>
 <h2 id="day-11">Day 11</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1593,7 +1630,7 @@ Python setup
 
 <span class='kw'>for</span> <span class='op'>(</span><span class='va'>step</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>)</span> <span class='op'>{</span>
   <span class='va'>day11_part1</span> <span class='op'>&lt;-</span> <span class='va'>day11_part1</span> <span class='op'>+</span> <span class='fl'>1</span>
-  <span class='co'># This matrix will keep running track of which points have flashed so far</span>
+  <span class='co'># This matrix will keep track of which points have flashed in each step</span>
   <span class='va'>flashing</span> <span class='op'>&lt;-</span> <span class='va'>day11_part1</span> <span class='op'>==</span> <span class='fl'>10</span>
   
   <span class='va'>n_flashes</span> <span class='op'>&lt;-</span> <span class='va'>n_flashes</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>flashing</span><span class='op'>)</span>
@@ -1601,7 +1638,7 @@ Python setup
                      <span class='va'>get_neighbors</span>, simplify <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
   
   <span class='kw'>repeat</span> <span class='op'>{</span>
-    <span class='co'># This will keep track of newly flashing points for each iteration</span>
+    <span class='co'># Keep track of newly flashing points for each iteration of neighbors</span>
     <span class='va'>new_flashing</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='cn'>FALSE</span>, nrow <span class='op'>=</span> <span class='fl'>10</span>, ncol <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
      
     <span class='kw'>for</span> <span class='op'>(</span><span class='va'>neighbor</span> <span class='kw'>in</span> <span class='va'>neighbors</span><span class='op'>)</span> <span class='op'>{</span>
@@ -1726,7 +1763,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [0877a72] 2021-12-11: Started day 11</code></pre>
+Head:     [75d554a] 2021-12-11: Day 11 in R</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
