@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(gt)
+library(tictoc)
 ```
 
 <details><summary>Python setup</summary>
@@ -182,6 +183,142 @@ while (!all(flashing)) {
   day11_part2[day11_part2 >= 10] <- 0
 }
 step
+```
+
+## Day 12
+
+```{r}
+day12 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
+                         "day12-input.txt"))
+day12
+```
+
+### Part 1
+
+>
+With your submarine's subterranean subsystems subsisting suboptimally, the only way you're getting out of this cave anytime soon is by finding a path yourself. Not just a path - the only way to know if you've found the best path is to find all of them.
+>
+Fortunately, the sensors are still mostly working, and so you build a rough map of the remaining caves (your puzzle input).
+>
+Your goal is to find the number of distinct paths that start at start, end at end, and don't visit small caves more than once. There are two types of caves: big caves (written in uppercase, like A) and small caves (written in lowercase, like b). It would be a waste of time to visit any small cave more than once, but big caves are large enough that it might be worth visiting them multiple times. So, all paths you find should visit small caves at most once, and can visit big caves any number of times.
+>
+How many paths through this cave system are there that visit small caves at most once?
+
+First, put together a list of all the cave connections:
+
+```{r}
+cave_connections <- tibble(paths = day12) %>%
+  separate(paths, into = c("cave1", "cave2"), "-") 
+cave_connections <- cave_connections %>%
+  # By adding the reverse connections, we have all bi-directional paths
+  bind_rows(cave_connections %>% rename(cave1 = cave2, cave2 = cave1)) %>%
+  # Paths can't end with start, or start with end
+  filter(cave1 != "end", cave2 != "start") %>%
+  arrange(cave1)
+cave_connections
+```
+
+Then the starting paths also begin with the `start` cave:
+
+```{r}
+starting_paths <- cave_connections %>%
+  filter(cave1 == "start") %>%
+  rowwise() %>% # this rowwise() grouping is very important to the logic
+  transmute(start_cave = cave1, path = list(cave2),
+            end_cave = cave2)
+starting_paths
+```
+
+Lastly, a helper function to identify small caves (I'm not aware of a base R function to check for case):
+
+```{r}
+is_lower <- function(x) {
+  tolower(x) == x
+}
+```
+
+My strategy is to continuously loop, add new caves by `left_join`ing `cave_connections`, add new caves to the `path` list, and remove paths which go through the same small cave twice.
+The loop will `break` when there was no change from the previous iteration:
+
+```{r}
+tic()
+cave_paths <- starting_paths
+repeat {
+  prev_paths <- cave_paths
+  
+  cave_paths <- cave_paths %>%
+    left_join(
+      cave_connections, by = c("end_cave" = "cave1")
+    ) %>%
+    # Remove paths which visit a small cave twice
+    filter(
+      !(is_lower(cave2) & (cave2 %in% path))
+    ) %>%
+    # Add the new caves to the paths, unless NA (already at the end)
+    mutate(
+      path = ifelse(!is.na(cave2), list(c(path, cave2)), list(path)),
+      end_cave = ifelse(!is.na(cave2), cave2, end_cave)
+    ) %>%
+    select(-cave2)
+  
+  if (all_equal(prev_paths, cave_paths) == TRUE) break 
+}
+toc()
+```
+
+`r n_distinct(cave_paths$path)` unique paths were identified:
+
+```{r}
+cave_paths %>%
+  mutate(path = str_c(path, collapse = ",")) %>%
+  distinct(path)
+```
+
+### Part 2
+
+>
+After reviewing the available paths, you realize you might have time to visit a single small cave twice. Specifically, big caves can be visited any number of times, a single small cave can be visited at most twice, and the remaining small caves can be visited at most once. However, the caves named start and end can only be visited exactly once each: once you leave the start cave, you may not return to it, and once you reach the end cave, the path must end immediately.
+>
+Given these new rules, how many paths through this cave system are there?
+
+I will slightly modify the loop from part 1 to check if a small cave has been visited twice:
+
+```{r part2_loop, cache=TRUE}
+tic()
+cave_paths <- starting_paths %>% mutate(small_cave_twice = FALSE)
+repeat {
+  prev_paths <- cave_paths
+  
+  cave_paths <- cave_paths %>%
+    left_join(
+      cave_connections, by = c("end_cave" = "cave1")
+    ) %>%
+    # Remove paths which visit a small cave twice more than once
+    filter(
+      !(small_cave_twice & is_lower(cave2) & (cave2 %in% path))
+    ) %>%
+    # Add the new caves to the paths, unless NA (already at the end)
+    mutate(
+      path = ifelse(!is.na(cave2), list(c(path, cave2)), list(path)),
+      end_cave = ifelse(!is.na(cave2), cave2, end_cave)
+    ) %>%
+    select(-cave2) %>%
+    # Check to see if a small cave has been visited twice
+    mutate(
+      small_cave_twice = any(table(path[is_lower(path)]) > 1)  
+    )
+  if (all_equal(prev_paths, cave_paths) == TRUE) break 
+}
+toc()
+# 263.08 sec elapsed
+```
+
+`r n_distinct(cave_paths$path)` unique paths were identified:
+
+```{r}
+cave_paths %>%
+  mutate(path = str_c(path, collapse = ",")) %>%
+  distinct(path)
 ```
 
 # Reproducibility {.appendix}
