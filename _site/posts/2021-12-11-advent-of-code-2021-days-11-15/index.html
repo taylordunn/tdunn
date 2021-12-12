@@ -2553,7 +2553,8 @@ Python setup
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timeit</span></code></pre></div>
 </div>
 </details>
 <h2 id="day-11">Day 11</h2>
@@ -2679,6 +2680,59 @@ Python setup
 [4,]   2   2</code></pre>
 </div>
 <p>About an hour lost, and a lesson learned.</p>
+<p>Python implementation:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>day11_df <span class="op">=</span> np.array([<span class="bu">list</span>(row) <span class="cf">for</span> row <span class="kw">in</span> r.day11], dtype <span class="op">=</span> <span class="bu">int</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_neighbor_coords(row, col, max_row <span class="op">=</span> <span class="dv">10</span>, max_col <span class="op">=</span> <span class="dv">10</span>):</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  neighbor_coords <span class="op">=</span> [[row <span class="op">+</span> d <span class="cf">for</span> d <span class="kw">in</span> [<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]],</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                     [col <span class="op">+</span> d <span class="cf">for</span> d <span class="kw">in</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>]]]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  neighbor_coords <span class="op">=</span> np.array(neighbor_coords).T</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  in_bounds <span class="op">=</span> (neighbor_coords[:, <span class="dv">0</span>] <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">&amp;</span> <span class="op">\</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    (neighbor_coords[:, <span class="dv">0</span>] <span class="op">&lt;</span> max_row) <span class="op">&amp;</span> <span class="op">\</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    (neighbor_coords[:, <span class="dv">1</span>] <span class="op">&gt;=</span> <span class="dv">0</span>) <span class="op">&amp;</span> <span class="op">\</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    (neighbor_coords[:, <span class="dv">1</span>] <span class="op">&lt;</span> max_col)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span>(neighbor_coords[in_bounds, :])</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>day11_part1 <span class="op">=</span> day11_df.copy()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>n_flashes <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  day11_part1 <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  flashing <span class="op">=</span> day11_part1 <span class="op">==</span> <span class="dv">10</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  n_flashes <span class="op">+=</span> flashing.<span class="bu">sum</span>()</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  flashing_loc <span class="op">=</span> np.where(flashing) </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  neighbors <span class="op">=</span> []</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> row, col <span class="kw">in</span> <span class="bu">zip</span>(flashing_loc[<span class="dv">0</span>], flashing_loc[<span class="dv">1</span>]):</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    neighbors.append(get_neighbor_coords(row, col))</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    new_flashing <span class="op">=</span> np.zeros((<span class="dv">10</span>, <span class="dv">10</span>), dtype <span class="op">=</span> <span class="bu">bool</span>)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> neighbor <span class="kw">in</span> neighbors:</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> row,col <span class="kw">in</span> <span class="bu">zip</span>(neighbor[:,<span class="dv">0</span>], neighbor[:,<span class="dv">1</span>]):</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        day11_part1[row, col] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        new_flashing[row, col] <span class="op">=</span> new_flashing[row, col] <span class="kw">or</span> <span class="op">\</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>          (<span class="kw">not</span> flashing[row, col] <span class="kw">and</span> day11_part1[row, col] <span class="op">==</span> <span class="dv">10</span>)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> new_flashing.<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">0</span>: <span class="cf">break</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>      n_flashes <span class="op">+=</span> new_flashing.<span class="bu">sum</span>()</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>      flashing_loc <span class="op">=</span> np.where(new_flashing) </span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>      neighbors <span class="op">=</span> []</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> row, col <span class="kw">in</span> <span class="bu">zip</span>(flashing_loc[<span class="dv">0</span>], flashing_loc[<span class="dv">1</span>]):</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>        neighbors.append(get_neighbor_coords(row, col))</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>      flashing <span class="op">=</span> flashing <span class="op">|</span> new_flashing</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  day11_part1[day11_part1 <span class="op">&gt;=</span> <span class="dv">10</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>n_flashes</span></code></pre></div>
+<pre><code>1713</code></pre>
+</div>
 <h3 id="part-2">Part 2</h3>
 <p>I can get this answer by just modifying the loop slightly:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2692,7 +2746,6 @@ Python setup
   <span class='va'>day11_part2</span> <span class='op'>&lt;-</span> <span class='va'>day11_part2</span> <span class='op'>+</span> <span class='fl'>1</span>
   
   <span class='va'>flashing</span> <span class='op'>&lt;-</span> <span class='va'>day11_part2</span> <span class='op'>==</span> <span class='fl'>10</span>
-  <span class='co'>#n_flashes &lt;- n_flashes + sum(flashing)</span>
   <span class='va'>neighbors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/which.html'>which</a></span><span class='op'>(</span><span class='va'>flashing</span>, arr.ind <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>, <span class='fl'>1</span>,
                      <span class='va'>get_neighbors</span>, simplify <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
   
@@ -2717,6 +2770,44 @@ Python setup
 </code></pre>
 </div>
 <pre><code>[1] 502</code></pre>
+</div>
+<p>Python:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>day11_part2 <span class="op">=</span> day11_df.copy()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">not</span> flashing.<span class="bu">all</span>():</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  step <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  day11_part2 <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  flashing <span class="op">=</span> day11_part2 <span class="op">==</span> <span class="dv">10</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  flashing_loc <span class="op">=</span> np.where(flashing) </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  neighbors <span class="op">=</span> []</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> row, col <span class="kw">in</span> <span class="bu">zip</span>(flashing_loc[<span class="dv">0</span>], flashing_loc[<span class="dv">1</span>]):</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    neighbors.append(get_neighbor_coords(row, col))</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    new_flashing <span class="op">=</span> np.zeros((<span class="dv">10</span>, <span class="dv">10</span>), dtype <span class="op">=</span> <span class="bu">bool</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> neighbor <span class="kw">in</span> neighbors:</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> row,col <span class="kw">in</span> <span class="bu">zip</span>(neighbor[:,<span class="dv">0</span>], neighbor[:,<span class="dv">1</span>]):</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        day11_part2[row, col] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        new_flashing[row, col] <span class="op">=</span> new_flashing[row, col] <span class="kw">or</span> <span class="op">\</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>          (<span class="kw">not</span> flashing[row, col] <span class="kw">and</span> day11_part2[row, col] <span class="op">==</span> <span class="dv">10</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> new_flashing.<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">0</span>: <span class="cf">break</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>      flashing_loc <span class="op">=</span> np.where(new_flashing) </span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>      neighbors <span class="op">=</span> []</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> row, col <span class="kw">in</span> <span class="bu">zip</span>(flashing_loc[<span class="dv">0</span>], flashing_loc[<span class="dv">1</span>]):</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        neighbors.append(get_neighbor_coords(row, col))</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>      flashing <span class="op">=</span> flashing <span class="op">|</span> new_flashing</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  day11_part2[day11_part2 <span class="op">&gt;=</span> <span class="dv">10</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>step</span></code></pre></div>
+<pre><code>502</code></pre>
 </div>
 <h2 id="day-12">Day 12</h2>
 <div class="layout-chunk" data-layout="l-body">
@@ -2767,7 +2858,7 @@ Python setup
 10 dm    wz   
 # ... with 32 more rows</code></pre>
 </div>
-<p>Then the starting paths also begin with the <code>start</code> cave:</p>
+<p>All paths begin with the <code>start</code> cave, with these possible connections:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>starting_paths</span> <span class='op'>&lt;-</span> <span class='va'>cave_connections</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
@@ -2795,7 +2886,7 @@ Python setup
 </code></pre>
 </div>
 </div>
-<p>My strategy is to continuously loop, add new caves by <code>left_join</code>ing <code>cave_connections</code>, add new caves to the <code>path</code> list, and remove paths which go through the same small cave twice. The loop will <code>break</code> when there was no change from the previous iteration:</p>
+<p>My strategy is to continuously loop, add new caves by <code>left_join</code>ing <code>cave_connections</code>, add new caves to the <code>path</code> list, and remove paths which go through a small cave twice. The loop will <code>break</code> when there was no change from the previous iteration:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/tictoc/man/tic.html'>tic</a></span><span class='op'>(</span><span class='op'>)</span>
@@ -2823,7 +2914,7 @@ Python setup
 <span class='fu'><a href='https://rdrr.io/pkg/tictoc/man/tic.html'>toc</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>1.22 sec elapsed</code></pre>
+<pre><code>1.2 sec elapsed</code></pre>
 </div>
 <p>3421 unique paths were identified:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2848,6 +2939,55 @@ Python setup
  9 start,cg,AV,mh,AV,gy,RL,wz,rf,dm,end   
 10 start,cg,AV,mh,AV,gy,RL,wz,end         
 # ... with 3,411 more rows</code></pre>
+</div>
+<p>For the Python solution, I’ll use a <code>pandas.DataFrame()</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cave_connections <span class="op">=</span> pd.DataFrame([path.split(<span class="st">&#39;-&#39;</span>) <span class="cf">for</span> path <span class="kw">in</span> r.day12],</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                                columns <span class="op">=</span> [<span class="st">&#39;cave1&#39;</span>, <span class="st">&#39;cave2&#39;</span>])</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                                </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>cave_connections <span class="op">=</span> cave_connections.append(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  cave_connections.rename(columns <span class="op">=</span> {<span class="st">&#39;cave1&#39;</span>: <span class="st">&#39;cave2&#39;</span>, <span class="st">&#39;cave2&#39;</span>: <span class="st">&#39;cave1&#39;</span>}),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  ignore_index <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>).query(<span class="st">&quot;cave2 != &#39;start&#39;&quot;</span>).query(<span class="st">&quot;cave1 != &#39;end&#39;&quot;</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>starting_paths <span class="op">=</span> cave_connections.query(<span class="st">&quot;cave1 == &#39;start&#39;&quot;</span>) <span class="op">\</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  .rename(columns <span class="op">=</span> {<span class="st">&#39;cave1&#39;</span>: <span class="st">&#39;start_cave&#39;</span>, <span class="st">&#39;cave2&#39;</span>: <span class="st">&#39;end_cave&#39;</span>})</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>starting_paths <span class="op">=</span> starting_paths.assign(path <span class="op">=</span> starting_paths[<span class="st">&#39;end_cave&#39;</span>])</span></code></pre></div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> day12_part1():</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  n_paths <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  cave_paths <span class="op">=</span> starting_paths.copy()</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    prev_paths <span class="op">=</span> cave_paths.copy()</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    cave_paths <span class="op">=</span> pd.merge(cave_paths, cave_connections,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                          left_on <span class="op">=</span> <span class="st">&#39;end_cave&#39;</span>, right_on <span class="op">=</span> <span class="st">&#39;cave1&#39;</span>, how <span class="op">=</span> <span class="st">&#39;left&#39;</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove paths that go through a small cave twice</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    remove_paths <span class="op">=</span> [<span class="bu">str</span>.islower(c) <span class="kw">and</span> (c <span class="kw">in</span> p.split(<span class="st">&#39;,&#39;</span>)) <span class="op">\</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> c, p <span class="kw">in</span> <span class="bu">zip</span>(cave_paths.cave2, cave_paths.path)]</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    cave_paths.drop(cave_paths[remove_paths].index, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Drop paths that have reached the end, and add to the count</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    remove_paths <span class="op">=</span> cave_paths.cave2 <span class="op">==</span> <span class="st">&#39;end&#39;</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    n_paths <span class="op">+=</span> remove_paths.<span class="bu">sum</span>()</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    cave_paths.drop(cave_paths[remove_paths].index, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Re-structure the data frame for the next iteration</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    cave_paths <span class="op">=</span> cave_paths <span class="op">\</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>      .assign(path <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">&#39;path&#39;</span>] <span class="op">+</span> <span class="st">&#39;,&#39;</span> <span class="op">+</span> df[<span class="st">&#39;cave2&#39;</span>]) <span class="op">\</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>      .assign(end_cave <span class="op">=</span> cave_paths[<span class="st">&#39;cave2&#39;</span>]) <span class="op">\</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>      .<span class="bu">filter</span>(items <span class="op">=</span> [<span class="st">&#39;start_cave&#39;</span>, <span class="st">&#39;path&#39;</span>, <span class="st">&#39;end_cave&#39;</span>])</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cave_paths.equals(prev_paths): <span class="cf">break</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(n_paths)</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>timeit.repeat(<span class="st">&quot;day12_part1()&quot;</span>, <span class="st">&quot;from __main__ import day12_part1&quot;</span>,</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>              repeat <span class="op">=</span> <span class="dv">1</span>, number <span class="op">=</span> <span class="dv">1</span>)</span></code></pre></div>
+<pre><code>3421
+[0.09340489999999946]</code></pre>
 </div>
 <h3 id="part-2-1">Part 2</h3>
 <blockquote>
@@ -2911,10 +3051,57 @@ Python setup
 10 start,cg,AV,mh,AV,mh,AV,gy,RL,wz,end         
 # ... with 84,860 more rows</code></pre>
 </div>
-<p>This solution was obviously inefficient, taking about 2 minutes to run. &gt;<a href="https://adventofcode.com/2021/about">.. every problem has a solution that completes in at most 15 seconds on ten-year-old hardware.</a></p>
+<p>This solution was obviously inefficient, taking about 2 minutes to run.</p>
 <blockquote>
 <p><a href="https://adventofcode.com/2021/about">.. every problem has a solution that completes in at most 15 seconds on ten-year-old hardware.</a></p>
 </blockquote>
+<p>Let’s see if Python is any faster:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> day12_part2():</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  n_paths <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  cave_paths <span class="op">=</span> starting_paths.copy()</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    prev_paths <span class="op">=</span> cave_paths.copy()</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    cave_paths <span class="op">=</span> pd.merge(cave_paths, cave_connections,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>                          left_on <span class="op">=</span> <span class="st">&#39;end_cave&#39;</span>, right_on <span class="op">=</span> <span class="st">&#39;cave1&#39;</span>, how <span class="op">=</span> <span class="st">&#39;left&#39;</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Drop paths that have reached the end, and add to the count</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    remove_paths <span class="op">=</span> cave_paths.cave2 <span class="op">==</span> <span class="st">&#39;end&#39;</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    n_paths <span class="op">+=</span> remove_paths.<span class="bu">sum</span>()</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    cave_paths.drop(cave_paths[remove_paths].index, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Re-structure the data frame for the next iteration</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    cave_paths <span class="op">=</span> cave_paths <span class="op">\</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>      .assign(path <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">&#39;path&#39;</span>] <span class="op">+</span> <span class="st">&#39;,&#39;</span> <span class="op">+</span> df[<span class="st">&#39;cave2&#39;</span>]) <span class="op">\</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>      .assign(end_cave <span class="op">=</span> cave_paths[<span class="st">&#39;cave2&#39;</span>]) <span class="op">\</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>      .<span class="bu">filter</span>(items <span class="op">=</span> [<span class="st">&#39;start_cave&#39;</span>, <span class="st">&#39;path&#39;</span>, <span class="st">&#39;end_cave&#39;</span>])</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get a list of the caves for each path</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    cave_list <span class="op">=</span> [path.split(<span class="st">&#39;,&#39;</span>) <span class="cf">for</span> path <span class="kw">in</span> cave_paths.path]</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter the list down to just small caves</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    cave_list <span class="op">=</span> [[cave <span class="cf">for</span> cave <span class="kw">in</span> cl <span class="cf">if</span> <span class="bu">str</span>.islower(cave)] <span class="op">\</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>                 <span class="cf">for</span> cl <span class="kw">in</span> cave_list]</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Frequency counts of the small caves</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    cave_list <span class="op">=</span> [<span class="bu">list</span>(Counter(cl).values()) <span class="cf">for</span> cl <span class="kw">in</span> cave_list]</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Determine the illegal paths</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    cave_list <span class="op">=</span> [cc.count(<span class="dv">2</span>) <span class="op">&gt;</span> <span class="dv">1</span> <span class="kw">or</span> cc.count(<span class="dv">3</span>) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">for</span> cc <span class="kw">in</span> cave_list]</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Finally, remove illegal paths</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    cave_paths.drop(cave_paths[cave_list].index, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cave_paths.equals(prev_paths): <span class="cf">break</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(n_paths)</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>timeit.repeat(<span class="st">&quot;day12_part2()&quot;</span>, <span class="st">&quot;from __main__ import day12_part2&quot;</span>,</span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>              repeat <span class="op">=</span> <span class="dv">1</span>, number <span class="op">=</span> <span class="dv">1</span>)</span></code></pre></div>
+<pre><code>84870
+[6.843806000000001]</code></pre>
+</div>
+<p>Much, much faster.</p>
 <h2 class="appendix" id="reproducibility">Reproducibility</h2>
 <details>
 <summary>
@@ -2945,13 +3132,13 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [2b5b17f] 2021-12-12: Day 12 in R</code></pre>
+Head:     [2b31ef3] 2021-12-12: Day 12 in R</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
 <p><a href="https://github.com/taylordunn/tdunn/tree/main/_posts/2021-12-11-advent-of-code-2021-days-11-15">Source code</a></p>
 </div>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

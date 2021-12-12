@@ -39,6 +39,7 @@ library(reticulate)
 ```{python py-setup2}
 import numpy as np
 import pandas as pd
+import timeit
 ```
 
 </details>
@@ -145,8 +146,62 @@ I wouldn't get a list as expected, unless setting `simplify = FALSE`:
 apply(which(matrix(c(T, F, F, F), nrow = 2, ncol = 2), arr.ind = TRUE), 1,
       get_neighbors, simplify = FALSE)
 ```
+
 About an hour lost, and a lesson learned.
 
+Python implementation:
+
+```{python}
+day11_df = np.array([list(row) for row in r.day11], dtype = int)
+
+def get_neighbor_coords(row, col, max_row = 10, max_col = 10):
+  neighbor_coords = [[row + d for d in [0, -1, 1, 0, 0, -1, -1, 1, 1]],
+                     [col + d for d in [0, 0, 0, -1, 1, -1, 1, -1, 1]]]
+  neighbor_coords = np.array(neighbor_coords).T
+  
+  in_bounds = (neighbor_coords[:, 0] >= 0) & \
+    (neighbor_coords[:, 0] < max_row) & \
+    (neighbor_coords[:, 1] >= 0) & \
+    (neighbor_coords[:, 1] < max_col)
+    
+  return(neighbor_coords[in_bounds, :])
+
+day11_part1 = day11_df.copy()
+n_flashes = 0
+for step in range(100):
+  day11_part1 += 1
+  flashing = day11_part1 == 10
+  n_flashes += flashing.sum()
+  
+  flashing_loc = np.where(flashing) 
+  neighbors = []
+  for row, col in zip(flashing_loc[0], flashing_loc[1]):
+    neighbors.append(get_neighbor_coords(row, col))
+    
+  while True:
+    new_flashing = np.zeros((10, 10), dtype = bool)
+    
+    for neighbor in neighbors:
+      for row,col in zip(neighbor[:,0], neighbor[:,1]):
+        day11_part1[row, col] += 1
+        new_flashing[row, col] = new_flashing[row, col] or \
+          (not flashing[row, col] and day11_part1[row, col] == 10)
+          
+    if new_flashing.sum() == 0: break
+    else:
+      n_flashes += new_flashing.sum()
+      
+      flashing_loc = np.where(new_flashing) 
+      neighbors = []
+      for row, col in zip(flashing_loc[0], flashing_loc[1]):
+        neighbors.append(get_neighbor_coords(row, col))
+      
+      flashing = flashing | new_flashing
+  
+  day11_part1[day11_part1 >= 10] = 0
+  
+n_flashes
+```
 
 ### Part 2
 
@@ -162,7 +217,6 @@ while (!all(flashing)) {
   day11_part2 <- day11_part2 + 1
   
   flashing <- day11_part2 == 10
-  #n_flashes <- n_flashes + sum(flashing)
   neighbors <- apply(which(flashing, arr.ind = TRUE), 1,
                      get_neighbors, simplify = FALSE)
   
@@ -185,6 +239,46 @@ while (!all(flashing)) {
 }
 step
 ```
+
+Python:
+
+```{python}
+day11_part2 = day11_df.copy()
+
+step = 0
+while not flashing.all():
+  step += 1
+  day11_part2 += 1
+  
+  flashing = day11_part2 == 10
+  flashing_loc = np.where(flashing) 
+  neighbors = []
+  for row, col in zip(flashing_loc[0], flashing_loc[1]):
+    neighbors.append(get_neighbor_coords(row, col))
+    
+  while True:
+    new_flashing = np.zeros((10, 10), dtype = bool)
+    
+    for neighbor in neighbors:
+      for row,col in zip(neighbor[:,0], neighbor[:,1]):
+        day11_part2[row, col] += 1
+        new_flashing[row, col] = new_flashing[row, col] or \
+          (not flashing[row, col] and day11_part2[row, col] == 10)
+          
+    if new_flashing.sum() == 0: break
+    else:
+      flashing_loc = np.where(new_flashing) 
+      neighbors = []
+      for row, col in zip(flashing_loc[0], flashing_loc[1]):
+        neighbors.append(get_neighbor_coords(row, col))
+      
+      flashing = flashing | new_flashing
+  
+  day11_part2[day11_part2 >= 10] = 0
+  
+step
+```
+
 
 ## Day 12
 
@@ -219,7 +313,7 @@ cave_connections <- cave_connections %>%
 cave_connections
 ```
 
-Then the starting paths also begin with the `start` cave:
+All paths begin with the `start` cave, with these possible connections:
 
 ```{r}
 starting_paths <- cave_connections %>%
@@ -238,7 +332,7 @@ is_lower <- function(x) {
 }
 ```
 
-My strategy is to continuously loop, add new caves by `left_join`ing `cave_connections`, add new caves to the `path` list, and remove paths which go through the same small cave twice.
+My strategy is to continuously loop, add new caves by `left_join`ing `cave_connections`, add new caves to the `path` list, and remove paths which go through a small cave twice.
 The loop will `break` when there was no change from the previous iteration:
 
 ```{r}
@@ -273,6 +367,56 @@ toc()
 cave_paths %>%
   mutate(path = str_c(c(start_cave, path), collapse = ",")) %>%
   distinct(path)
+```
+
+For the Python solution, I'll use a `pandas.DataFrame()`:
+
+```{python}
+cave_connections = pd.DataFrame([path.split('-') for path in r.day12],
+                                columns = ['cave1', 'cave2'])
+                                
+cave_connections = cave_connections.append(
+  cave_connections.rename(columns = {'cave1': 'cave2', 'cave2': 'cave1'}),
+  ignore_index = True
+).query("cave2 != 'start'").query("cave1 != 'end'")
+starting_paths = cave_connections.query("cave1 == 'start'") \
+  .rename(columns = {'cave1': 'start_cave', 'cave2': 'end_cave'})
+starting_paths = starting_paths.assign(path = starting_paths['end_cave'])
+```
+
+```{python}
+def day12_part1():
+  n_paths = 0
+  cave_paths = starting_paths.copy()
+           
+  while True:
+    prev_paths = cave_paths.copy()
+    
+    cave_paths = pd.merge(cave_paths, cave_connections,
+                          left_on = 'end_cave', right_on = 'cave1', how = 'left')
+           
+    # Remove paths that go through a small cave twice
+    remove_paths = [str.islower(c) and (c in p.split(',')) \
+                    for c, p in zip(cave_paths.cave2, cave_paths.path)]
+    cave_paths.drop(cave_paths[remove_paths].index, inplace = True)
+    
+    # Drop paths that have reached the end, and add to the count
+    remove_paths = cave_paths.cave2 == 'end'
+    n_paths += remove_paths.sum()
+    cave_paths.drop(cave_paths[remove_paths].index, inplace = True)
+    
+    # Re-structure the data frame for the next iteration
+    cave_paths = cave_paths \
+      .assign(path = lambda df: df['path'] + ',' + df['cave2']) \
+      .assign(end_cave = cave_paths['cave2']) \
+      .filter(items = ['start_cave', 'path', 'end_cave'])
+    
+    if cave_paths.equals(prev_paths): break
+  
+  print(n_paths)
+  
+timeit.repeat("day12_part1()", "from __main__ import day12_part1",
+              repeat = 1, number = 1)
 ```
 
 ### Part 2
@@ -324,6 +468,54 @@ cave_paths %>%
 This solution was obviously inefficient, taking about 2 minutes to run.
 
 >[.. every problem has a solution that completes in at most 15 seconds on ten-year-old hardware.](https://adventofcode.com/2021/about)
+
+Let's see if Python is any faster:
+
+```{python}
+from collections import Counter
+
+def day12_part2():
+  n_paths = 0
+  cave_paths = starting_paths.copy()
+           
+  while True:
+    prev_paths = cave_paths.copy()
+    
+    cave_paths = pd.merge(cave_paths, cave_connections,
+                          left_on = 'end_cave', right_on = 'cave1', how = 'left')
+           
+    # Drop paths that have reached the end, and add to the count
+    remove_paths = cave_paths.cave2 == 'end'
+    n_paths += remove_paths.sum()
+    cave_paths.drop(cave_paths[remove_paths].index, inplace = True)
+    
+    # Re-structure the data frame for the next iteration
+    cave_paths = cave_paths \
+      .assign(path = lambda df: df['path'] + ',' + df['cave2']) \
+      .assign(end_cave = cave_paths['cave2']) \
+      .filter(items = ['start_cave', 'path', 'end_cave'])
+    
+    # Get a list of the caves for each path
+    cave_list = [path.split(',') for path in cave_paths.path]
+    # Filter the list down to just small caves
+    cave_list = [[cave for cave in cl if str.islower(cave)] \
+                 for cl in cave_list]
+    # Frequency counts of the small caves
+    cave_list = [list(Counter(cl).values()) for cl in cave_list]
+    # Determine the illegal paths
+    cave_list = [cc.count(2) > 1 or cc.count(3) > 0 for cc in cave_list]
+    # Finally, remove illegal paths
+    cave_paths.drop(cave_paths[cave_list].index, inplace = True)
+    
+    if cave_paths.equals(prev_paths): break
+  
+  print(n_paths)
+  
+timeit.repeat("day12_part2()", "from __main__ import day12_part2",
+              repeat = 1, number = 1)
+```
+
+Much, much faster.
 
 ## Reproducibility {.appendix}
 
