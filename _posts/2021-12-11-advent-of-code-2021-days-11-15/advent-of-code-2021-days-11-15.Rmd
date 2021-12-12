@@ -147,6 +147,7 @@ apply(which(matrix(c(T, F, F, F), nrow = 2, ncol = 2), arr.ind = TRUE), 1,
 ```
 About an hour lost, and a lesson learned.
 
+
 ### Part 2
 
 I can get this answer by just modifying the loop slightly:
@@ -270,7 +271,7 @@ toc()
 
 ```{r}
 cave_paths %>%
-  mutate(path = str_c(path, collapse = ",")) %>%
+  mutate(path = str_c(c(start_cave, path), collapse = ",")) %>%
   distinct(path)
 ```
 
@@ -310,18 +311,21 @@ repeat {
   if (all_equal(prev_paths, cave_paths) == TRUE) break 
 }
 toc()
-# 263.08 sec elapsed
 ```
 
 `r n_distinct(cave_paths$path)` unique paths were identified:
 
 ```{r}
 cave_paths %>%
-  mutate(path = str_c(path, collapse = ",")) %>%
+  mutate(path = str_c(c(start_cave, path), collapse = ",")) %>%
   distinct(path)
 ```
 
-# Reproducibility {.appendix}
+This solution was obviously inefficient, taking about 2 minutes to run.
+
+>[.. every problem has a solution that completes in at most 15 seconds on ten-year-old hardware.](https://adventofcode.com/2021/about)
+
+## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
 
