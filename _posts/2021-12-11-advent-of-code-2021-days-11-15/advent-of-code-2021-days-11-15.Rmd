@@ -205,6 +205,11 @@ n_flashes
 
 ### Part 2
 
+>
+It seems like the individual flashes aren't bright enough to navigate. However, you might have a better option: the flashes seem to be synchronizing!
+>
+If you can calculate the exact moments when the octopuses will all flash simultaneously, you should be able to navigate through the cavern. What is the first step during which all octopuses flash?
+
 I can get this answer by just modifying the loop slightly:
 
 ```{r}
@@ -369,7 +374,7 @@ cave_paths %>%
   distinct(path)
 ```
 
-For the Python solution, I'll use a `pandas.DataFrame()`:
+For the Python solution, I'll use `pandas`:
 
 ```{python}
 cave_connections = pd.DataFrame([path.split('-') for path in r.day12],
@@ -379,6 +384,7 @@ cave_connections = cave_connections.append(
   cave_connections.rename(columns = {'cave1': 'cave2', 'cave2': 'cave1'}),
   ignore_index = True
 ).query("cave2 != 'start'").query("cave1 != 'end'")
+
 starting_paths = cave_connections.query("cave1 == 'start'") \
   .rename(columns = {'cave1': 'start_cave', 'cave2': 'end_cave'})
 starting_paths = starting_paths.assign(path = starting_paths['end_cave'])
@@ -516,6 +522,135 @@ timeit.repeat("day12_part2()", "from __main__ import day12_part2",
 ```
 
 Much, much faster.
+
+## Day 13
+
+```{r}
+day13 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
+                         "day13-input.txt"))
+head(day13)
+tail(day13)
+```
+
+```{r}
+day13 <- read_lines(
+  "6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5"
+)
+```
+
+### Part 1
+
+```{r}
+day13_dots <- day13[1:(which(day13 == "") - 1)]
+day13_instructions <- day13[(which(day13 == "") + 1):length(day13)] %>%
+  str_remove("fold along ") %>%
+  strsplit("=")
+
+head(day13_dots); head(day13_instructions, 3)
+```
+
+```{r}
+dots <- strsplit(day13_dots, ",") %>%
+  map(as.integer) %>%
+  reduce(rbind, deparse.level = 0)
+# Because R indices start at 1, not 0, adjust each point by 1
+dots <- dots + 1
+# Also, because the coordinates are in (x,y) order, we need to reverse these
+#  points so that they may be used as (row,col) input
+dots <- dots[,c(2, 1)]
+
+# Model the sheet of paper as a matrix big enough for the points
+paper <- matrix(FALSE, nrow = max(dots[,1]), ncol = max(dots[,2]))
+# Mark the dots on the paper
+paper[dots] <- TRUE
+# Show a random portion of the paper
+paper[285:300, 1240:1255]
+```
+
+Fold once, using the first instruction:
+
+```{r}
+paper_part1 <- paper
+fold <- day13_instructions[[1]]
+
+fold_dir <- fold[1]
+fold_pos <- as.integer(fold[2]) + 1
+
+if (fold_dir == "x") {
+  half1 <- paper_part1[, 1:(fold_pos - 1)]
+  half2 <- paper_part1[, (fold_pos + 1):ncol(paper_part1)]
+  # Reverse the half
+  half2 <- half2[, ncol(half2):1]
+} else {
+  half1 <- paper_part1[1:(fold_pos - 1), ]
+  half2 <- paper_part1[(fold_pos + 1):nrow(paper_part1), ]
+  # Reverse the half
+  half2 <- half2[nrow(half2):1, ]
+}
+paper_part1 <- half1 | half2
+
+# Count the sum of visible dots
+sum(paper_part1)
+```
+### Part 2
+
+Now loop over each fold:
+
+```{r}
+paper_part2 <- paper
+for (fold in day13_instructions) {
+  fold_dir <- fold[1]
+  fold_pos <- as.integer(fold[2]) + 1
+  
+  if (fold_dir == "x") {
+    half1 <- paper_part2[, 1:(fold_pos-1)]
+    half2 <- paper_part2[, (fold_pos+1):ncol(paper_part2)]
+    # Reverse the half
+    half2 <- half2[, ncol(half2):1]
+  } else {
+    half1 <- paper_part2[1:(fold_pos-1), ]
+    half2 <- paper_part2[(fold_pos+1):nrow(paper_part2), ]
+    # Reverse the half
+    half2 <- half2[nrow(half2):1, ]
+  }
+  paper_part2 <- half1 | half2
+}
+```
+
+
+```{r fig.height=2.5, fig.width=5}
+paper_part2 %>%
+  as_tibble() %>%
+  mutate(row_num = 1:n()) %>%
+  pivot_longer(cols = -row_num, names_to = "col_num") %>%
+  mutate(col_num = as.integer(str_remove(col_num, "V"))) %>%
+  ggplot(aes(x = col_num, y = row_num, fill = value)) +
+  geom_tile() +
+  scale_y_reverse()
+  
+  ggplot(aes())
+```
+
 
 ## Reproducibility {.appendix}
 
