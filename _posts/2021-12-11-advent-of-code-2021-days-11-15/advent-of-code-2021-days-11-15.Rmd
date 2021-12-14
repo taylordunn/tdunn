@@ -533,6 +533,7 @@ day13 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
 head(day13)
 tail(day13)
 ```
+
 ### Part 1
 
 >You reach another volcanically active part of the cave. It would be nice if you could do some kind of thermal imaging so you could tell ahead of time which caves are too hot to safely enter.
@@ -710,6 +711,177 @@ fig.savefig('day13-fig.png', bbox_inches = 'tight')
 ![](day13-fig.png)
 
 Looks like `PCPHARKL`.
+
+## Day 14
+
+```{r}
+day14 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
+                         "day14-input.txt"))
+head(day14)
+```
+
+```{r}
+day14 <- read_lines(
+  "NNCB
+
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C"
+)
+```
+
+
+### Part 1
+
+```{r}
+polymer_template <- day14[1]
+pair_insertions <- day14[-c(1, 2)]
+pairs <- map_chr(pair_insertions, ~strsplit(.x, " -> ")[[1]][1])
+insertions <- map_chr(pair_insertions, ~strsplit(.x, " -> ")[[1]][2])
+
+insertions3 <- map2_chr(
+  pairs, insertions,
+  ~paste0(substr(.x, 1, 1), .y, substr(.x, 2, 2))
+)
+```
+
+
+```{r}
+polymer_template_part1 <- polymer_template
+for (step in 1:10) {
+  # Find the pair insertions relevant to this step
+  pair_idx <- map_lgl(pairs, ~str_detect(polymer_template_part1, .x))
+  step_pairs <- pairs[pair_idx]
+  step_insertions <- insertions3[pair_idx]
+  names(step_insertions) <-
+    paste0(map_chr(step_pairs, substr, 1, 1),
+           seq_along(step_insertions),
+           map_chr(step_pairs, substr, 2, 2))
+  
+  for (i in seq_along(step_pairs)) {
+    while (str_detect(polymer_template_part1, step_pairs[i])) {
+      polymer_template_part1 <-
+        str_replace_all(polymer_template_part1, step_pairs[i],
+                        paste0(substr(step_pairs[i], 1, 1), i,
+                               substr(step_pairs[i], 2, 2)))
+    }
+  }
+  
+  while (str_detect(polymer_template_part1, "\\d+")) {
+    polymer_template_part1 <- str_replace_all(polymer_template_part1,
+                                              step_insertions)
+  }
+}
+
+part1_freq <- table(strsplit(polymer_template_part1, "")[[1]])
+part1_freq
+as.numeric(part1_freq[part1_freq == max(part1_freq)]) -
+  as.numeric(part1_freq[part1_freq == min(part1_freq)])
+```
+
+### Part 2
+
+```{r}
+test <- "ABC"
+test_pairs <- str_sub(test, start = 1:(nchar(test) - 1), end = 2:nchar(test))
+tibble(pair = test_pairs) %>% count(pair)
+```
+
+```{r}
+tibble(element = strsplit(test, "")[[1]])  %>%
+  count(element)
+```
+
+```{r}
+tibble(pair = test_pairs) %>% count(pair) %>%
+  # mutate(
+  #   n = ifelse(
+  #     substr(pair, 1, 1)  == substr(pair, 2, 2),
+  #     n - 1, n
+  #   )
+  # ) %>%
+  separate_rows(pair, sep = "") %>%
+  filter(pair != "") %>%
+  group_by(pair) %>%
+  summarise(n = sum(n))
+```
+
+
+
+`r nchar(polymer_template_part1)`
+
+Consider each pair `r str_c(pairs[1:3], collapse = ", ")`, etc.
+Each pair results in two new pairs from the same list after inserting a letter in between.
+For example, `CH` becomes `CBH` which consists of the pairs `CB` and `BH`.
+For each pair, compile the resulting pairs after insertion:
+
+```{r}
+pair_transitions <- tibble(pair = pairs, element = insertions) %>%
+  mutate(
+    # Paste together the three-letter result of inserting an element
+    insertions3 = map2_chr(
+      pair, element,
+      ~paste0(substr(.x, 1, 1), .y, substr(.x, 2, 2))),
+    # Get the two new pairs resulting from the insertion
+    new_pairs = map(insertions3,
+                    ~str_sub(.x, start = 1:2, end = 2:3))
+  )
+pair_transitions %>%
+  mutate(new_pairs = map_chr(new_pairs, str_c, collapse = ", "))
+```
+
+The it is a simple matter of taking the starting pairs, and counting the new pairs after each step:
+
+```{r}
+template_pairs <-
+  tibble(
+    pair = str_sub(polymer_template,
+                   start = 1:(nchar(polymer_template) - 1),
+                   end = 2:nchar(polymer_template))
+  ) %>%
+  count(pair)
+
+element_counts <-
+  tibble(element = strsplit(polymer_template, "")[[1]]) %>%
+  count(element)
+# pair_transitions <- pair_transitions %>%
+#   select(pair, new_pairs) %>%
+#   unnest(new_pairs)
+
+part2_pairs <- template_pairs
+for (step in 1:40) {
+  part2_pairs <- part2_pairs %>%
+    left_join(pair_transitions, by = "pair")
+  element_counts <- element_counts %>%
+    bind_rows(part2_pairs %>% select(element, n)) %>%
+    group_by(element) %>%
+    summarise(n = sum(n), .groups = "drop")
+  
+  part2_pairs <- part2_pairs %>%
+    unnest(new_pairs) %>%
+    select(pair = new_pairs, n) %>%
+    group_by(pair) %>%
+    summarise(n = sum(n), .groups = "drop")
+}
+
+element_counts %>%
+  summarise(freq_diff = max(n) - min(n)) %>%
+  pull(freq_diff) %>%
+  format(scientific = FALSE)
+```
 
 ## Reproducibility {.appendix}
 
