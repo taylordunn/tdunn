@@ -40,6 +40,8 @@ library(reticulate)
 import numpy as np
 import pandas as pd
 import timeit
+import matplotlib.pylab as plt
+plt.switch_backend('agg') # needed for knitting in rmarkdown
 ```
 
 </details>
@@ -531,43 +533,35 @@ day13 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
 head(day13)
 tail(day13)
 ```
-
-```{r}
-day13 <- read_lines(
-  "6,10
-0,14
-9,10
-0,3
-10,4
-4,11
-6,0
-6,12
-4,1
-0,13
-10,12
-3,4
-3,0
-8,4
-1,10
-2,14
-8,10
-9,0
-
-fold along y=7
-fold along x=5"
-)
-```
-
 ### Part 1
+
+>You reach another volcanically active part of the cave. It would be nice if you could do some kind of thermal imaging so you could tell ahead of time which caves are too hot to safely enter.
+>
+Fortunately, the submarine seems to be equipped with a thermal camera! When you activate it, you are greeted with:
+>
+Congratulations on your purchase! To activate this infrared thermal imaging
+camera system, please enter the code found on page 1 of the manual.
+>
+Apparently, the Elves have never used this feature. To your surprise, you manage to find the manual; as you go to open it, page 1 falls out. It's a large sheet of transparent paper! The transparent paper is marked with random dots and includes instructions on how to fold it up (your puzzle input).
+>
+The first section is a list of dots on the transparent paper. `0,0` represents the top-left coordinate. The first value, `x`, increases to the right. The second value, `y`, increases downward. So, the coordinate `3,0` is to the right of `0,0`, and the coordinate `0,7` is below `0,0`.
+>
+Then, there is a list of fold instructions. Each instruction indicates a line on the transparent paper and wants you to fold the paper up (for horizontal `y=...` lines) or left (for vertical `x=...` lines).
+>
+How many dots are visible after completing just the first fold instruction on your transparent paper?
+
+Separate the dots and the folding instructions:
 
 ```{r}
 day13_dots <- day13[1:(which(day13 == "") - 1)]
-day13_instructions <- day13[(which(day13 == "") + 1):length(day13)] %>%
+day13_folds <- day13[(which(day13 == "") + 1):length(day13)] %>%
   str_remove("fold along ") %>%
   strsplit("=")
 
-head(day13_dots); head(day13_instructions, 3)
+head(day13_dots); head(day13_folds, 3)
 ```
+
+Model the paper as a matrix of booleans, and mark the dots:
 
 ```{r}
 dots <- strsplit(day13_dots, ",") %>%
@@ -583,15 +577,13 @@ dots <- dots[,c(2, 1)]
 paper <- matrix(FALSE, nrow = max(dots[,1]), ncol = max(dots[,2]))
 # Mark the dots on the paper
 paper[dots] <- TRUE
-# Show a random portion of the paper
-paper[285:300, 1240:1255]
 ```
 
 Fold once, using the first instruction:
 
 ```{r}
 paper_part1 <- paper
-fold <- day13_instructions[[1]]
+fold <- day13_folds[[1]]
 
 fold_dir <- fold[1]
 fold_pos <- as.integer(fold[2]) + 1
@@ -604,7 +596,6 @@ if (fold_dir == "x") {
 } else {
   half1 <- paper_part1[1:(fold_pos - 1), ]
   half2 <- paper_part1[(fold_pos + 1):nrow(paper_part1), ]
-  # Reverse the half
   half2 <- half2[nrow(half2):1, ]
 }
 paper_part1 <- half1 | half2
@@ -612,24 +603,57 @@ paper_part1 <- half1 | half2
 # Count the sum of visible dots
 sum(paper_part1)
 ```
+In Python with `numpy` arrays:
+
+```{python}
+dots = r.day13[0:r.day13.index('')]
+dots = np.array([d.split(',') for d in dots], dtype = int)
+dots = np.flip(dots, axis = 1)
+
+folds = r.day13[(r.day13.index('') + 1):]
+folds = [fold.replace('fold along ', '') for fold in folds]
+folds = [fold.split('=') for fold in folds]
+
+paper = np.zeros((dots[:, 0].max() + 1, dots[:, 1].max() + 1), dtype = bool)
+for dot in dots:
+  paper[tuple(dot)] = True
+  
+paper_part1 = paper.copy()
+
+fold = folds[0]
+fold_dir = fold[0]
+fold_loc = int(fold[1])
+
+half1 = paper_part1[:, 0:fold_loc]
+half2 = paper_part1[:, (fold_loc + 1):]
+half2 = np.flip(half2, axis = 1)
+
+paper_part1 = half1 | half2
+paper_part1.sum()
+```
+
 ### Part 2
+
+>
+Finish folding the transparent paper according to the instructions. The manual says the code is always eight capital letters.
+What code do you use to activate the infrared thermal imaging camera system?
 
 Now loop over each fold:
 
 ```{r}
 paper_part2 <- paper
-for (fold in day13_instructions) {
+for (fold in day13_folds) {
   fold_dir <- fold[1]
   fold_pos <- as.integer(fold[2]) + 1
   
   if (fold_dir == "x") {
-    half1 <- paper_part2[, 1:(fold_pos-1)]
-    half2 <- paper_part2[, (fold_pos+1):ncol(paper_part2)]
+    half1 <- paper_part2[, 1:(fold_pos - 1)]
+    half2 <- paper_part2[, (fold_pos + 1):ncol(paper_part2)]
     # Reverse the half
     half2 <- half2[, ncol(half2):1]
   } else {
-    half1 <- paper_part2[1:(fold_pos-1), ]
-    half2 <- paper_part2[(fold_pos+1):nrow(paper_part2), ]
+    half1 <- paper_part2[1:(fold_pos - 1), ]
+    half2 <- paper_part2[(fold_pos + 1):nrow(paper_part2), ]
     # Reverse the half
     half2 <- half2[nrow(half2):1, ]
   }
@@ -637,20 +661,55 @@ for (fold in day13_instructions) {
 }
 ```
 
+And use a plot to read the pattern of dots:
 
-```{r fig.height=2.5, fig.width=5}
+```{r fig.height=0.8, fig.width=4}
 paper_part2 %>%
   as_tibble() %>%
   mutate(row_num = 1:n()) %>%
   pivot_longer(cols = -row_num, names_to = "col_num") %>%
   mutate(col_num = as.integer(str_remove(col_num, "V"))) %>%
-  ggplot(aes(x = col_num, y = row_num, fill = value)) +
-  geom_tile() +
-  scale_y_reverse()
-  
-  ggplot(aes())
+  filter(value) %>%
+  ggplot(aes(x = col_num, y = row_num)) +
+  geom_point(size = 4) +
+  scale_y_reverse() +
+  theme_void()
 ```
 
+And in `matplotlib`:
+
+```{python}
+paper_part2 = paper.copy()
+
+for fold in folds:
+  fold_dir = fold[0]
+  fold_loc = int(fold[1])
+  
+  if fold_dir == "y":
+    half1 = paper_part2[0:fold_loc, :]
+    half2 = paper_part2[(fold_loc + 1):, :]
+    half2 = np.flip(half2, axis = 0)
+  else:
+    half1 = paper_part2[:, 0:fold_loc]
+    half2 = paper_part2[:, (fold_loc + 1):]
+    half2 = np.flip(half2, axis = 1)
+  
+  paper_part2 = half1 | half2
+  
+
+draw_points = np.where(paper_part2 == True)
+
+fig, ax = plt.subplots()
+ax.scatter(draw_points[1], -draw_points[0])
+ax.get_yaxis().set_visible(False)
+ax.get_xaxis().set_visible(False)
+fig.set_size_inches(4, 0.8)
+fig.savefig('day13-fig.png', bbox_inches = 'tight')
+```
+
+![](day13-fig.png)
+
+Looks like `PCPHARKL`.
 
 ## Reproducibility {.appendix}
 
