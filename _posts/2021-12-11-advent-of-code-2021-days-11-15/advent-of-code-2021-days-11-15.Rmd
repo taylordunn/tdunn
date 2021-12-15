@@ -720,31 +720,20 @@ day14 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
 head(day14)
 ```
 
-```{r}
-day14 <- read_lines(
-  "NNCB
-
-CH -> B
-HH -> N
-CB -> H
-NH -> C
-HB -> C
-HC -> B
-HN -> C
-NN -> C
-BH -> H
-NC -> B
-NB -> B
-BN -> B
-BB -> N
-BC -> B
-CC -> N
-CN -> C"
-)
-```
-
-
 ### Part 1
+
+>
+The incredible pressures at this depth are starting to put a strain on your submarine. The submarine has polymerization equipment that would produce suitable materials to reinforce the submarine, and the nearby volcanically-active caves should even have the necessary input elements in sufficient quantities.
+>
+The submarine manual contains instructions for finding the optimal polymer formula; specifically, it offers a polymer template and a list of pair insertion rules (your puzzle input). You just need to work out what polymer would result after repeating the pair insertion process a few times.
+>
+The first line is the polymer template - this is the starting point of the process.
+>
+The following section defines the pair insertion rules. A rule like `AB -> C` means that when elements `A` and `B` are immediately adjacent, element `C` should be inserted between them. These insertions all happen simultaneously.
+>
+Apply 10 steps of pair insertion to the polymer template and find the most and least common elements in the result. What do you get if you take the quantity of the most common element and subtract the quantity of the least common element?
+
+Separate the polymer template from the pair insertion instructions:
 
 ```{r}
 polymer_template <- day14[1]
@@ -752,12 +741,16 @@ pair_insertions <- day14[-c(1, 2)]
 pairs <- map_chr(pair_insertions, ~strsplit(.x, " -> ")[[1]][1])
 insertions <- map_chr(pair_insertions, ~strsplit(.x, " -> ")[[1]][2])
 
+# Also get the three-letter replacement for the two-letter pairs
 insertions3 <- map2_chr(
   pairs, insertions,
   ~paste0(substr(.x, 1, 1), .y, substr(.x, 2, 2))
 )
 ```
 
+My strategy for this part is to find the pairs at each step, then replace pairs with a numeric placeholder, e.g. `KK` -> `K1K`.
+Then replace the numeric placeholders with the three-letter combination, e.g. `K1K` -> `KSK`.
+By doing the replacements in this way, pairs I avoid accidentally finding new pairs during a single step.
 
 ```{r}
 polymer_template_part1 <- polymer_template
@@ -766,12 +759,9 @@ for (step in 1:10) {
   pair_idx <- map_lgl(pairs, ~str_detect(polymer_template_part1, .x))
   step_pairs <- pairs[pair_idx]
   step_insertions <- insertions3[pair_idx]
-  names(step_insertions) <-
-    paste0(map_chr(step_pairs, substr, 1, 1),
-           seq_along(step_insertions),
-           map_chr(step_pairs, substr, 2, 2))
   
   for (i in seq_along(step_pairs)) {
+    # While there are still pairs to replace, continuously replace them
     while (str_detect(polymer_template_part1, step_pairs[i])) {
       polymer_template_part1 <-
         str_replace_all(polymer_template_part1, step_pairs[i],
@@ -780,96 +770,118 @@ for (step in 1:10) {
     }
   }
   
+  # Use a named list as the input to str_replace_all
+  names(step_insertions) <-
+    paste0(map_chr(step_pairs, substr, 1, 1),
+           seq_along(step_insertions),
+           map_chr(step_pairs, substr, 2, 2))
+  # While there are still numeric placeholders, continually replace them
   while (str_detect(polymer_template_part1, "\\d+")) {
     polymer_template_part1 <- str_replace_all(polymer_template_part1,
                                               step_insertions)
   }
 }
 
+str_trunc(polymer_template_part1, width = 80)
+```
+
+Now count the letter/element frequency and subtract the most from the least frequent:
+
+```{r}
 part1_freq <- table(strsplit(polymer_template_part1, "")[[1]])
 part1_freq
 as.numeric(part1_freq[part1_freq == max(part1_freq)]) -
   as.numeric(part1_freq[part1_freq == min(part1_freq)])
 ```
 
+Python:
+
+```{python}
+polymer_template = r.day14[0]
+pair_insertions = [x.split(' -> ') for x in r.day14[2:]]
+pairs = [p[0] for p in pair_insertions]
+insertions = [p[1] for p in pair_insertions]
+insertions3 = [p[0] + i + p[1] for p, i in zip(pairs, insertions)]
+```
+
+
+```{python}
+polymer_template_part1 = polymer_template
+for step in range(10):
+  step_pairs = [p for p in pairs if p in polymer_template_part1]
+  step_insertions = [i for p, i in zip(pairs, insertions3) \
+                     if p in polymer_template_part1]
+  placeholders = [p[0] + str(i) + p[1] for i, p in enumerate(step_pairs)]
+                     
+  for i, (pair, placeholder) in enumerate(zip(step_pairs, placeholders)):
+    while pair in polymer_template_part1:
+      #print(i, pair, polymer_template_part1)
+      polymer_template_part1 = polymer_template_part1.replace(
+        pair, placeholder
+      )
+      
+  for i, (insertion, placeholder) in enumerate(zip(step_insertions, placeholders)):
+    while placeholder in polymer_template_part1:
+      #print(i, step_insertions[i], polymer_template_part1)
+      polymer_template_part1 = polymer_template_part1.replace(
+        placeholder, insertion
+      )
+      
+from collections import Counter
+element_counts = Counter(polymer_template_part1)
+max(element_counts.values()) - min(element_counts.values())
+```
+
+
 ### Part 2
 
-```{r}
-test <- "ABC"
-test_pairs <- str_sub(test, start = 1:(nchar(test) - 1), end = 2:nchar(test))
-tibble(pair = test_pairs) %>% count(pair)
-```
+>
+The resulting polymer isn't nearly strong enough to reinforce the submarine. You'll need to run more steps of the pair insertion process; a total of 40 steps should do it.
+>
+Apply 40 steps of pair insertion to the polymer template and find the most and least common elements in the result. What do you get if you take the quantity of the most common element and subtract the quantity of the least common element?
 
-```{r}
-tibble(element = strsplit(test, "")[[1]])  %>%
-  count(element)
-```
+I probably should have seen this coming.
+The polymer from part 1 consists of `r nchar(polymer_template_part1)` elements, and will continue to exponentially grow too large to store in memory before reaching 40 steps.
+Similar to the [lanternfish puzzle from day 6](../2021-12-06-advent-of-code-2021-days-6-10/index.html#part-2), I will need to instead find a way to count unique inputs (pairs of the polymer chain), then count their unique outputs at each step.
 
-```{r}
-tibble(pair = test_pairs) %>% count(pair) %>%
-  # mutate(
-  #   n = ifelse(
-  #     substr(pair, 1, 1)  == substr(pair, 2, 2),
-  #     n - 1, n
-  #   )
-  # ) %>%
-  separate_rows(pair, sep = "") %>%
-  filter(pair != "") %>%
-  group_by(pair) %>%
-  summarise(n = sum(n))
-```
-
-
-
-`r nchar(polymer_template_part1)`
-
-Consider each pair `r str_c(pairs[1:3], collapse = ", ")`, etc.
+Consider each pair ``r str_c(pairs[1:3], collapse = ", ")``, etc.
 Each pair results in two new pairs from the same list after inserting a letter in between.
-For example, `CH` becomes `CBH` which consists of the pairs `CB` and `BH`.
-For each pair, compile the resulting pairs after insertion:
+For example, `FO` becomes `FBO` which consists of the pairs `FB` and `BO`.
+For each unique pair, compile the resulting pairs after insertion:
 
 ```{r}
-pair_transitions <- tibble(pair = pairs, element = insertions) %>%
+pair_transitions <-
+  tibble(pair = pairs, element = insertions, insertion3 = insertions3) %>%
   mutate(
-    # Paste together the three-letter result of inserting an element
-    insertions3 = map2_chr(
-      pair, element,
-      ~paste0(substr(.x, 1, 1), .y, substr(.x, 2, 2))),
-    # Get the two new pairs resulting from the insertion
-    new_pairs = map(insertions3,
-                    ~str_sub(.x, start = 1:2, end = 2:3))
+    new_pairs = map(insertion3, ~str_sub(.x, start = 1:2, end = 2:3))
   )
 pair_transitions %>%
   mutate(new_pairs = map_chr(new_pairs, str_c, collapse = ", "))
 ```
 
-The it is a simple matter of taking the starting pairs, and counting the new pairs after each step:
+Then it is a simple matter of counting the starting pairs, and counting the new pairs after each step.
+I will also keep a running count of the elements inserted at each step to calculate the puzzle solution at the end:
 
 ```{r}
 template_pairs <-
-  tibble(
-    pair = str_sub(polymer_template,
-                   start = 1:(nchar(polymer_template) - 1),
-                   end = 2:nchar(polymer_template))
-  ) %>%
+  tibble(pair = str_sub(polymer_template,
+                        start = 1:(nchar(polymer_template) - 1),
+                        end = 2:nchar(polymer_template))) %>%
   count(pair)
 
-element_counts <-
-  tibble(element = strsplit(polymer_template, "")[[1]]) %>%
+element_counts <- tibble(element = strsplit(polymer_template, "")[[1]]) %>%
   count(element)
-# pair_transitions <- pair_transitions %>%
-#   select(pair, new_pairs) %>%
-#   unnest(new_pairs)
 
 part2_pairs <- template_pairs
 for (step in 1:40) {
-  part2_pairs <- part2_pairs %>%
-    left_join(pair_transitions, by = "pair")
+  part2_pairs <- part2_pairs %>% left_join(pair_transitions, by = "pair")
+  # Update the count with newly inserted elements
   element_counts <- element_counts %>%
     bind_rows(part2_pairs %>% select(element, n)) %>%
     group_by(element) %>%
     summarise(n = sum(n), .groups = "drop")
   
+  # Update the count of each pair
   part2_pairs <- part2_pairs %>%
     unnest(new_pairs) %>%
     select(pair = new_pairs, n) %>%
@@ -877,10 +889,49 @@ for (step in 1:40) {
     summarise(n = sum(n), .groups = "drop")
 }
 
+element_counts %>% arrange(desc(n))
+```
+
+Substract the highest from the lowest frequency:
+
+```{r}
 element_counts %>%
   summarise(freq_diff = max(n) - min(n)) %>%
   pull(freq_diff) %>%
   format(scientific = FALSE)
+```
+
+For the Python solution, I'll make use of `Counter`:
+
+```{python}
+# Use a dictionary to keep track of insertions
+insertions_dict = {}
+for line in r.day14[2:]:
+  pair, insertion = line.split(' -> ')
+  insertions_dict[pair] = insertion
+
+# Get the pairs in the initial polymer template
+pairs = [polymer_template[i:(i+2)] for i in range(len(polymer_template) - 1)]
+# And count them
+pairs_counter = Counter(pairs)
+# Also count the elements
+elements_counter = Counter(polymer_template)
+
+for _ in range(40):
+  # Note that you have to use a copy() of the counter dict or get this error:
+  #  RuntimeError: dictionary changed size during iteration
+  for (pair, n) in pairs_counter.copy().items():
+    # Count the element
+    element = insertions_dict[pair]
+    elements_counter[element] += n
+    
+    # Remove the pair
+    pairs_counter[pair] -= n
+    # Add the two new pairs
+    pairs_counter[pair[0] + element] += n
+    pairs_counter[element + pair[1]] += n
+    
+max(elements_counter.values()) - min(elements_counter.values())
 ```
 
 ## Reproducibility {.appendix}
