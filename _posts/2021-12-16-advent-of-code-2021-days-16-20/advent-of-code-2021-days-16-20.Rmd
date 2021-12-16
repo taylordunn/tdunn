@@ -1,0 +1,321 @@
+---
+title: "Advent of Code 2021: Days 16-20"
+description: |
+  My solutions to the #AdventOfCode2021 coding challenges, days 16 through 20.
+author:
+  - name: Taylor Dunn
+date: 2021-12-16
+params:
+  date: 2021-12-16
+  slug: "advent-of-code-2021-days-11-15"
+categories:
+  - Advent of Code
+  - Python
+  - R
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+#bibliography: references.bib
+---
+
+```{r setup, include=TRUE, code_folding="R setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(gt)
+library(tictoc)
+#library(lubridate)
+```
+
+<details><summary>Python setup</summary>
+
+```{r py-setup1}
+Sys.setenv(
+  RETICULATE_PYTHON = here("..", "python", ".venv", "Scripts", "python.exe")
+)
+library(reticulate)
+```
+
+```{python py-setup2}
+import numpy as np
+import pandas as pd
+import timeit
+#import matplotlib.pylab as plt
+#plt.switch_backend('agg') # needed for knitting in rmarkdown
+```
+
+</details>
+
+## Day 16: Packet Decoder
+
+```{r}
+day16 <- read_lines(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                         "day16-input.txt"))
+day16 %>% str_trunc(80)
+```
+```{r eval=FALSE, echo=FALSE}
+# Examples
+ex1 <- "D2FE28"
+ex2 <- "38006F45291200"
+ex3 <- "EE00D40C823060"
+ex4 <- "8A004A801A8002F478"
+ex5 <- "620080001611562C8802118E34"
+ex6 <- "C0015000016115A2E0802F182340"
+ex7 <- "A0016C880162017C3686B18A3D4780"
+ex8 <- "C200B40A82"
+ex9 <- "04005AC33890"
+ex10 <- "880086C3E88112"
+ex11 <- "CE00C43D881120"
+ex12 <- "D8005AC2A8F0"
+ex13 <- "F600BC2D8F"
+ex14 <- "9C005AC2F8F0"
+ex15 <- "9C0141080250320F1802104A08"
+```
+
+
+### Part 1
+
+<details><summary>Very long puzzle statement</summary>
+
+>
+As you leave the cave and reach open waters, you receive a transmission from the Elves back on the ship.
+>
+The transmission was sent using the Buoyancy Interchange Transmission System (BITS), a method of packing numeric expressions into a binary sequence. Your submarine's computer has saved the transmission in hexadecimal (your puzzle input).
+>
+The first step of decoding the message is to convert the hexadecimal representation into binary. Each character of hexadecimal corresponds to four bits of binary data:
+>
+The BITS transmission contains a single packet at its outermost layer which itself contains many other packets. The hexadecimal representation of this packet might encode a few extra 0 bits at the end; these are not part of the transmission and should be ignored.
+>
+Every packet begins with a standard header: the first three bits encode the packet version, and the next three bits encode the packet type ID. These two values are numbers; all numbers encoded in any packet are represented as binary with the most significant bit first. For example, a version encoded as the binary sequence 100 represents the number 4.
+>
+Packets with type ID 4 represent a literal value. Literal value packets encode a single binary number. To do this, the binary number is padded with leading zeroes until its length is a multiple of four bits, and then it is broken into groups of four bits. Each group is prefixed by a 1 bit except the last group, which is prefixed by a 0 bit. These groups of five bits immediately follow the packet header.
+>
+Every other type of packet (any packet with a type ID other than 4) represent an operator that performs some calculation on one or more sub-packets contained within. Right now, the specific operations aren't important; focus on parsing the hierarchy of sub-packets.
+>
+An operator packet contains one or more packets. To indicate which subsequent binary data represents its sub-packets, an operator packet can use one of two modes indicated by the bit immediately after the packet header; this is called the length type ID:
+>
+* If the length type ID is 0, then the next 15 bits are a number that represents the total length in bits of the sub-packets contained by this packet.
+* If the length type ID is 1, then the next 11 bits are a number that represents the number of sub-packets immediately contained by this packet.
+>
+Finally, after the length type ID bit and the 15-bit or 11-bit field, the sub-packets appear.
+>
+For now, parse the hierarchy of the packets throughout the transmission and add up all of the version numbers.
+>
+Decode the structure of your hexadecimal-encoded BITS transmission; what do you get if you add up the version numbers in all packets?
+
+</details>
+
+Start by defining the hexadecimal character mapping and converting the input:
+
+```{r}
+hex_map <- c(
+  "0" = "0000", "1" = "0001", "2" = "0010", "3" = "0011", "4" = "0100",
+  "5" = "0101", "6" = "0110", "7" = "0111", "8" = "1000", "9" = "1001",
+  "A" = "1010", "B" = "1011", "C" = "1100", "D" = "1101", "E" = "1110",
+  "F" = "1111"
+)
+input <- str_replace_all(day16, hex_map)
+str_trunc(input, 90)
+```
+
+Second, define a function for parsing literal values (packets with type ID `4`):
+
+```{r}
+decode_literal_value <- function(input, i) {
+  literal_value <- ""
+  repeat {
+    lv <- str_sub(input, i, i + 4)
+    literal_value <- paste0(literal_value, str_sub(lv, 2, 5))
+    i <- i + 5
+    # If the bit starts with 0, end of packet
+    if (str_sub(lv, 1, 1) == "0") break
+    # Else not the last group, keep reading
+  }
+  
+  list(i, literal_value)
+}
+```
+
+Now define the recursive function to parse the full strings:
+
+```{r}
+decode_packet_part1 <- function(input, i = 1) {
+  packet_vers <- c(str_sub(input, i, i + 2) %>% strtoi(base = 2))
+  packet_type <- str_sub(input, i + 3, i + 5) %>% strtoi(base = 2)
+  i <- i + 6
+  
+  # Literal values
+  if (packet_type == 4) {
+    literal_value <- decode_literal_value(input, i)
+    i <- literal_value[[1]]
+    value <- strtoi(literal_value[[2]], base = 2)
+    return(list(value = value, index = i, packet_vers = packet_vers))
+  }
+  
+  # Otherwise an operator
+  values <- c()
+  length_type <- str_sub(input, i, i)
+  i <- i + 1
+  
+  if (length_type == "0") {
+    # Next 15 bits are the number of bits in the sub-packets
+    n_bits <- str_sub(input, i, i + 14) %>% strtoi(base = 2)
+    i <- i + 15
+    
+    end_bit <- i + n_bits
+    while (i < end_bit) {
+      subpacket <- decode_packet_part1(input, i)
+      packet_vers <- c(packet_vers, subpacket$packet_vers)
+      values <- c(values, subpacket$value)
+      i <- subpacket$index
+    }
+  } else if (length_type == "1") {
+    # Next 11 bits are the number of sub-packets
+    n_subpackets <- str_sub(input, i, i + 10) %>% strtoi(base = 2)
+    i <- i + 11
+    
+    for (sp in 1:n_subpackets) {
+      subpacket <- decode_packet_part1(input, i)
+      packet_vers <- c(packet_vers, subpacket$packet_vers)
+      values <- c(values, subpacket$value)
+      i <- subpacket$index
+    }  
+  }
+  
+  return(list(value = values, index = i, packet_vers = packet_vers))
+}
+```
+
+Apply it to the input and sum up the versions:
+
+```{r}
+part1_results <- decode_packet_part1(input)
+sum(part1_results$packet_vers)
+```
+
+
+### Part 2
+
+>
+Now that you have the structure of your transmission decoded, you can calculate the value of the expression it represents.
+>
+Literal values (type ID `4`) represent a single number as described above. The remaining type IDs are more interesting:
+>
+* Packets with type ID `0` are sum packets - their value is the sum of the values of their sub-packets. If they only have a single sub-packet, their value is the value of the sub-packet.
+* Packets with type ID `1` are product packets - their value is the result of multiplying together the values of their sub-packets. If they only have a single sub-packet, their value is the value of the sub-packet.
+* Packets with type ID `2` are minimum packets - their value is the minimum of the values of their sub-packets.
+* Packets with type ID `3` are maximum packets - their value is the maximum of the values of their sub-packets.
+* Packets with type ID `5` are greater than packets - their value is `1` if the value of the first sub-packet is greater than the value of the second sub-packet; otherwise, their value is `0`. These packets always have exactly two sub-packets.
+* Packets with type ID `6` are less than packets - their value is `1` if the value of the first sub-packet is less than the value of the second sub-packet; otherwise, their value is `0`. These packets always have exactly two sub-packets.
+* Packets with type ID `7` are equal to packets - their value is `1` if the value of the first sub-packet is equal to the value of the second sub-packet; otherwise, their value is `0`. These packets always have exactly two sub-packets.
+>
+Using these rules, you can now work out the value of the outermost packet in your BITS transmission.
+
+Define a function to compute packet values following the above rules:
+
+```{r}
+compute_packet_val <- function(packet_type, literal_values) {
+  switch(
+    packet_type + 1,
+    sum(literal_values),
+    prod(literal_values),
+    min(literal_values),
+    max(literal_values),
+    NA, # packet_type = 4
+    ifelse(literal_values[1] > literal_values[2], 1, 0),
+    ifelse(literal_values[1] < literal_values[2], 1, 0),
+    ifelse(literal_values[1] == literal_values[2], 1, 0),
+  )
+}
+```
+
+The solution to this part took about an hour of debugging before I realized that the base R function `strtoi`
+[cannot handle numbers greater than 2^31](https://stackoverflow.com/questions/13536832/strtoi-fails-to-convert-string-to-integer-returns-na).
+Define a custom `strtoi` that accounts for integer overflow:
+
+```{r}
+strtoi_custom <- function(x) {
+  y <- as.numeric(strsplit(x, "")[[1]])
+  sum(y * 2^rev((seq_along(y) - 1)))
+}
+```
+
+Now re-define the function from part 1 to return the value of the outermost packet in the transmission:
+
+```{r}
+decode_packet_part2 <- function(input, i = 1) {
+  packet_vers <- c(str_sub(input, i, i + 2) %>% strtoi(base = 2))
+  packet_type <- str_sub(input, i + 3, i + 5) %>% strtoi(base = 2)
+  i <- i + 6
+  
+  if (packet_type == 4) {
+    literal_value <- decode_literal_value(input, i)
+    i <- literal_value[[1]]
+    value <- strtoi_custom(literal_value[[2]])
+    return(list(value = value, index = i, packet_vers = packet_vers))
+  }
+  
+  # Otherwise, an operator
+  values <- c()
+  length_type <- str_sub(input, i, i)
+  i <- i + 1
+  
+  if (length_type == "0") {
+    # Next 15 bits are the number of bits in the sub-packets
+    n_bits <- str_sub(input, i, i + 14) %>% strtoi(base = 2)
+    i <- i + 15
+    
+    end_bit <- i + n_bits
+    while (i < end_bit) {
+      subpacket <- decode_packet_part2(input, i)
+      packet_vers <- c(packet_vers, subpacket$packet_vers)
+      values <- c(values, subpacket$value)
+      i <- subpacket$index
+    }
+  } else if (length_type == "1") {
+    # Next 11 bits are the number of sub-packets
+    n_subpackets <- str_sub(input, i, i + 10) %>% strtoi(base = 2)
+    i <- i + 11
+    
+    for (sp in 1:n_subpackets) {
+      subpacket <- decode_packet_part2(input, i)
+      packet_vers <- c(packet_vers, subpacket$packet_vers)
+      values <- c(values, subpacket$value)
+      i <- subpacket$index
+    }  
+  }
+  
+  value <- compute_packet_val(packet_type, values)
+  
+  return(list(value = value, index = i, packet_vers = packet_vers))
+}
+
+part2_results <- decode_packet_part2(input)
+format(part2_results$value, scientific = FALSE)
+```
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
