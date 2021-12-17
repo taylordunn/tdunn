@@ -94,5 +94,17 @@
       <guid>https://tdunn.ca/posts/2020-07-12-tidytuesday-2020-week-28</guid>
       <pubDate>Sun, 12 Jul 2020 00:00:00 +0000</pubDate>
     </item>
+    <item>
+      <title>Ordinal regression in R: part 1</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2020-03-15-ordinal-regression-in-r-part-1</link>
+      <description>A theoretical and applied walkthrough of frequentist ordinal regression.</description>
+      <category>regression</category>
+      <category>ordinal</category>
+      <category>frequentist statistics</category>
+      <guid>https://tdunn.ca/posts/2020-03-15-ordinal-regression-in-r-part-1</guid>
+      <pubDate>Sun, 15 Mar 2020 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2020-03-15-ordinal-regression-in-r-part-1/ordinal-regression-in-r-part-1_files/figure-html5/unnamed-chunk-2-1.png" medium="image" type="image/png" width="960" height="576"/>
+    </item>
   </channel>
 </rss>
