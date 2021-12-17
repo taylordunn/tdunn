@@ -7,7 +7,7 @@ author:
 date: 2021-12-16
 params:
   date: 2021-12-16
-  slug: "advent-of-code-2021-days-11-15"
+  slug: "advent-of-code-2021-days-16-20"
 categories:
   - Advent of Code
   - Python
