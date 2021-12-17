@@ -295,6 +295,182 @@ part2_results <- decode_packet_part2(input)
 format(part2_results$value, scientific = FALSE)
 ```
 
+## Day 17: Trick Shot
+
+```{r}
+day17 <- read_lines(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                         "day17-input.txt"))
+day17
+```
+
+### Part 1
+
+>
+You finally decode the Elves' message. HI, the message says. You continue searching for the sleigh keys.
+>
+Ahead of you is what appears to be a large ocean trench. Could the keys have fallen into it? You'd better send a probe to investigate.
+>
+The probe launcher on your submarine can fire the probe with any integer velocity in the x (forward) and y (upward, or downward if negative) directions. For example, an initial x,y velocity like 0,10 would fire the probe straight up, while an initial velocity like 10,-1 would fire the probe forward at a slight downward angle.
+>
+The probe's x,y position starts at 0,0. Then, it will follow some trajectory by moving in steps. On each step, these changes occur in the following order:
+>
+* The probe's x position increases by its x velocity.
+* The probe's y position increases by its y velocity.
+* Due to drag, the probe's x velocity changes by 1 toward the value 0; that is, it decreases by 1 if it is greater than 0, increases by 1 if it is less than 0, or does not change if it is already 0.
+* Due to gravity, the probe's y velocity decreases by 1.
+>
+For the probe to successfully make it into the trench, the probe must be on some trajectory that causes it to be within a target area after any step. The submarine computer has already calculated this target area (your puzzle input).
+>
+Find the initial velocity that causes the probe to reach the highest y position and still eventually be within the target area after any step. What is the highest y position it reaches on this trajectory?
+
+Use `tidyr::extract` and regex to get the bounds of the target area:
+
+```{r}
+target_area <- tibble(x = day17) %>%
+  extract(x,
+          into = c("xmin", "xmax", "ymin", "ymax"),
+          regex = "x=(.*)\\.\\.(.*), y=(.*)\\.\\.(.*)",
+          convert = TRUE)
+target_area
+```
+
+Since the $x$ and $y$ velocity are independent, we can work out the correct $y$ velocity.
+Due to the way gravity works in this problem, any velocity $v_y > 0$ starting at $y = 0$ will be $-v_y$ when it returns to $y = 0$ on the way down.
+For example, for initial $v_y = [1, 5]$ (`vy_start`), these are the steps and velocities when the probe reaches $y = 0$ again:
+
+```{r}
+crossing(vy_start = 1:5, step = 1:20) %>%
+  # Each step decreases y velocity by 1
+  mutate(vy = vy_start - step + 1) %>%
+  group_by(vy_start) %>%
+  # The y position is the cumulative sum of y velocities up this point
+  mutate(y = cumsum(vy)) %>%
+  ungroup() %>%
+  filter(y == 0)
+```
+
+Then it is just a matter of maximizing `vy_start` such that it lands at the lowest possible point in the target area, i.e. `ymin`.
+The highest possible `vy_start` is the one that will reach `ymin` in a single step from `y = 0`, i.e. `vy_max = abs(ymin) - 1`.
+
+```{r}
+(vy_max <- abs(target_area$ymin) - 1)
+```
+
+Calculate the $y$ trajectory for this initial velocity, use `cumsum`:
+
+```{r}
+trajectory <- crossing(vy_max, step = 1:1000) %>%
+  mutate(vy = vy_max - step + 1, y = cumsum(vy))
+trajectory
+```
+
+Here is the step where the probe reaches the edge of the target area:
+
+```{r}
+(target_step <- trajectory %>% filter(y == target_area$ymin))
+```
+
+And here is the maximum height reached by the probe (the answer to part 1):
+
+```{r}
+max(trajectory$y)
+```
+
+And just to be sure, before answering, I need to verify that there is an initial $x$ velocity, $v_x$, that is *slow* enough (while still being an integer) that the probe will be between `xmin` and `xmax` (`r target_area$xmin` and `r target_area$xmax`), when it reaches the target area.
+
+Due to drag, the $x$ position will be a cumulative sum of decreasing integers.
+As I learned on [day 7](../2021-12-06-advent-of-code-2021-days-6-10/index.html#part-2-1),
+the cumulative sum of a sequence of integers is a triangular number with the value:
+
+$$
+\sum_{i=1}^n k = \frac{n (n + 1)}{2}.
+$$
+
+This means that the maximum $x$ position reached for an initial $x$ velocity $v_x$ is:
+
+$$
+x_{\text{max}} = \frac{v_x (v_x + 1)}{2}
+$$
+
+
+We need to find a $v_x$ that reaches the target $x$ between [156, 202] on or before step `r target_step$step` (which is when we reach the target $y$).
+
+```{r}
+tibble(vx_start = 1:30) %>%
+  mutate(xmax = vx_start * (vx_start + 1) / 2) %>%
+  filter(xmax >= target_area$xmin, xmax <= target_area$xmax)
+```
+
+So an initial $v_x$ (`vx_start`) of 18 or 19 will reach the target area in fewer than `r target_step$step` steps, which can be shown with the `cumsum` method as well:
+
+```{r}
+tibble(vx_start = c(18, 19)) %>%
+  crossing(step = 1:target_step$step) %>%
+  mutate(vx = vx_start - step + 1,
+         # x velocity will never go lower than 0
+         vx = ifelse(vx < 0, 0, vx)) %>%
+  group_by(vx_start) %>%
+  mutate(x = cumsum(vx)) %>%
+  ungroup() %>%
+  filter(x >= target_area$xmin, x <= target_area$xmax) %>%
+  group_by(vx_start, x, vx) %>%
+  filter(step == min(step))
+```
+
+
+### Part 2
+
+>
+Maybe a fancy trick shot isn't the best idea; after all, you only have one probe, so you had better not miss.
+>
+To get the best idea of what your options are for launching the probe, you need to find every initial velocity that causes the probe to eventually be within the target area after any step.
+>
+How many distinct initial velocity values cause the probe to be within the target area after any step?
+
+Find candidate $y$ velocities, which reach the target area at some `step` in their trajectories:
+
+```{r}
+vy_candidates <-
+  crossing(vy_start = seq(target_area$ymin, vy_max), step = 1:1000) %>%
+  mutate(vy = vy_start - step + 1) %>%
+  group_by(vy_start) %>%
+  mutate(y = cumsum(vy)) %>%
+  ungroup() %>%
+  filter(between(y, target_area$ymin, target_area$ymax)) %>%
+  select(-vy)
+vy_candidates
+```
+
+There are `r n_distinct(vy_candidates$vy_start)` unique starting $v_y$ values which will reach the $y$ target.
+Do the same for the $x$ target:
+
+```{r}
+vx_candidates <- 
+  crossing(vx_start = 1:target_area$xmax, step = 1:1000) %>%
+  mutate(vx = vx_start - step + 1, vx = ifelse(vx < 0, 0, vx)) %>%
+  group_by(vx_start) %>%
+  mutate(x = cumsum(vx)) %>%
+  ungroup() %>%
+  filter(between(x, target_area$xmin, target_area$xmax)) %>%
+  select(-vx)
+vx_candidates
+```
+
+There are `r n_distinct(vx_candidates$vx_start)` unique starting $v_x$ values which will reach the $x$ target.
+
+To determine which combination of $v_x$ and $v_y$ are valid, I need to find the combinations that line up in `step`s taken to reach the target:
+
+```{r}
+vxy_candidates <- vx_candidates %>%
+  inner_join(vy_candidates, by = "step") %>%
+  filter(!is.na(vx_start), !is.na(vy_start))
+vxy_candidates %>%
+  group_by(vx_start, vy_start) %>%
+  summarise(steps = str_c(step, collapse = ", "))
+```
+
+There are 3202 unique combinations of `vx_start` and `vy_start` which reach the target area during one or more steps.
+
 ## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
