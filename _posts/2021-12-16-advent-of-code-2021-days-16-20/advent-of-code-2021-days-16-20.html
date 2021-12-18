@@ -1674,6 +1674,63 @@ Very long puzzle statement
 </div>
 <pre><code>[1] 852</code></pre>
 </div>
+<p>Python:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>hex_map <span class="op">=</span> {<span class="st">&#39;0&#39;</span>: <span class="st">&#39;0000&#39;</span>, <span class="st">&#39;1&#39;</span>: <span class="st">&#39;0001&#39;</span>, <span class="st">&#39;2&#39;</span>: <span class="st">&#39;0010&#39;</span>, <span class="st">&#39;3&#39;</span>: <span class="st">&#39;0011&#39;</span>, <span class="st">&#39;4&#39;</span>: <span class="st">&#39;0100&#39;</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>           <span class="st">&#39;5&#39;</span>: <span class="st">&#39;0101&#39;</span>, <span class="st">&#39;6&#39;</span>: <span class="st">&#39;0110&#39;</span>, <span class="st">&#39;7&#39;</span>: <span class="st">&#39;0111&#39;</span>, <span class="st">&#39;8&#39;</span>: <span class="st">&#39;1000&#39;</span>, <span class="st">&#39;9&#39;</span>: <span class="st">&#39;1001&#39;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">&#39;A&#39;</span>: <span class="st">&#39;1010&#39;</span>, <span class="st">&#39;B&#39;</span>: <span class="st">&#39;1011&#39;</span>, <span class="st">&#39;C&#39;</span>: <span class="st">&#39;1100&#39;</span>, <span class="st">&#39;D&#39;</span>: <span class="st">&#39;1101&#39;</span>, <span class="st">&#39;E&#39;</span>: <span class="st">&#39;1110&#39;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>           <span class="st">&#39;F&#39;</span>: <span class="st">&#39;1111&#39;</span>}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">input</span> <span class="op">=</span> r.day16</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> key, val <span class="kw">in</span> hex_map.items():</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">input</span> <span class="op">=</span> <span class="bu">input</span>.replace(key, val)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decode_literal_value(<span class="bu">input</span>, i <span class="op">=</span> <span class="dv">0</span>):</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  literal_value <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    lv <span class="op">=</span> <span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">5</span>]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    literal_value <span class="op">+=</span> lv[<span class="dv">1</span>:]</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">5</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lv[<span class="dv">0</span>] <span class="op">==</span> <span class="st">&quot;0&quot;</span>: <span class="cf">break</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> i, <span class="bu">int</span>(literal_value, <span class="dv">2</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>sum_packet_vers <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decode_packet_part1(<span class="bu">input</span>, i <span class="op">=</span> <span class="dv">0</span>):</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">global</span> sum_packet_vers</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  sum_packet_vers <span class="op">+=</span> <span class="bu">int</span>(<span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">3</span>], <span class="dv">2</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  packet_type <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i<span class="op">+</span><span class="dv">3</span>:i<span class="op">+</span><span class="dv">6</span>], <span class="dv">2</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  i <span class="op">+=</span> <span class="dv">6</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> packet_type <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    i, value <span class="op">=</span> decode_literal_value(<span class="bu">input</span>, i)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> i, value</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  values <span class="op">=</span> []</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  length_type <span class="op">=</span> <span class="bu">input</span>[i]</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> length_type <span class="op">==</span> <span class="st">&quot;0&quot;</span>:</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    n_bits <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">15</span>], <span class="dv">2</span>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">15</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    end_bit <span class="op">=</span> i <span class="op">+</span> n_bits</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> i <span class="op">&lt;</span> end_bit:</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>      i, value <span class="op">=</span> decode_packet_part1(<span class="bu">input</span>, i)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>      values.append(value)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    n_subpackets <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">11</span>], <span class="dv">2</span>)</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">11</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_subpackets):</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>      i, value <span class="op">=</span> decode_packet_part1(<span class="bu">input</span>, i)</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>      values.append(value)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> i, values</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>_, _ <span class="op">=</span> decode_packet_part1(<span class="bu">input</span>)</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>sum_packet_vers</span></code></pre></div>
+<pre><code>852</code></pre>
+</div>
 <h3 id="part-2">Part 2</h3>
 <blockquote>
 <p>Now that you have the structure of your transmission decoded, you can calculate the value of the expression it represents.</p>
@@ -1774,6 +1831,62 @@ Very long puzzle statement
 </div>
 <pre><code>[1] &quot;19348959966392&quot;</code></pre>
 </div>
+<p>Python:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_packet_val(packet_type, values):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> packet_type <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(values)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">elif</span> packet_type <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    prod <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> v <span class="kw">in</span> values:</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      prod <span class="op">*=</span> v</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prod</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">elif</span> packet_type <span class="op">==</span> <span class="dv">2</span>:</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">min</span>(values)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">elif</span> packet_type <span class="op">==</span> <span class="dv">3</span>:</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(values)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">elif</span> packet_type <span class="op">==</span> <span class="dv">5</span>:</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>(values[<span class="dv">0</span>] <span class="op">&gt;</span> values[<span class="dv">1</span>]) </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">elif</span> packet_type <span class="op">==</span> <span class="dv">6</span>:</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>(values[<span class="dv">0</span>] <span class="op">&lt;</span> values[<span class="dv">1</span>]) </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">elif</span> packet_type <span class="op">==</span> <span class="dv">7</span>:</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>(values[<span class="dv">0</span>] <span class="op">==</span> values[<span class="dv">1</span>]) </span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decode_packet_part2(<span class="bu">input</span>, i <span class="op">=</span> <span class="dv">0</span>):</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  packet_vers <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">3</span>], <span class="dv">2</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  packet_type <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i<span class="op">+</span><span class="dv">3</span>:i<span class="op">+</span><span class="dv">6</span>], <span class="dv">2</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  i <span class="op">+=</span> <span class="dv">6</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> packet_type <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    i, value <span class="op">=</span> decode_literal_value(<span class="bu">input</span>, i)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> i, value</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  values <span class="op">=</span> []</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  length_type <span class="op">=</span> <span class="bu">input</span>[i]</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> length_type <span class="op">==</span> <span class="st">&quot;0&quot;</span>:</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    n_bits <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">15</span>], <span class="dv">2</span>)</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">15</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    end_bit <span class="op">=</span> i <span class="op">+</span> n_bits</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> i <span class="op">&lt;</span> end_bit:</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>      i, value <span class="op">=</span> decode_packet_part2(<span class="bu">input</span>, i)</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>      values.append(value)</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    n_subpackets <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>[i:i<span class="op">+</span><span class="dv">11</span>], <span class="dv">2</span>)</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">11</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_subpackets):</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>      i, value <span class="op">=</span> decode_packet_part2(<span class="bu">input</span>, i)</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>      values.append(value)</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>  value <span class="op">=</span> compute_packet_val(packet_type, values) </span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> i, value</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>_, value <span class="op">=</span> decode_packet_part2(<span class="bu">input</span>)</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>value</span></code></pre></div>
+<pre><code>19348959966392</code></pre>
+</div>
 <h2 id="day-17-trick-shot">Day 17: Trick Shot</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1845,7 +1958,7 @@ Very long puzzle statement
 </div>
 <pre><code>[1] 109</code></pre>
 </div>
-<p>Calculate the <span class="math inline">\(y\)</span> trajectory for this initial velocity, use <code>cumsum</code>:</p>
+<p>To calculate the <span class="math inline">\(y\)</span> trajectory for this initial velocity, use <code>cumsum</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>trajectory</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/expand.html'>crossing</a></span><span class='op'>(</span><span class='va'>vy_max</span>, step <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>1000</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
@@ -1888,7 +2001,7 @@ Very long puzzle statement
 <pre><code>[1] 5995</code></pre>
 </div>
 <p>And just to be sure, before answering, I need to verify that there is an initial <span class="math inline">\(x\)</span> velocity, <span class="math inline">\(v_x\)</span>, that is <em>slow</em> enough (while still being an integer) that the probe will be between <code>xmin</code> and <code>xmax</code> (156 and 202), when it reaches the target area.</p>
-<p>Due to drag, the <span class="math inline">\(x\)</span> position will be a cumulative sum of decreasing integers. As I learned on <a href="../2021-12-06-advent-of-code-2021-days-6-10/index.html#part-2-1">day 7</a>, the cumulative sum of a sequence of integers is a triangular number with the value:</p>
+<p>Due to drag, the <span class="math inline">\(x\)</span> position will be a cumulative sum of decreasing integers. As I learned on <a href="../2021-12-06-advent-of-code-2021-days-6-10/index.html#part-2-1">day 7</a>, this is a triangular number with the value:</p>
 <p><span class="math display">\[
 \sum_{i=1}^n k = \frac{n (n + 1)}{2}.
 \]</span></p>
@@ -2020,11 +2133,10 @@ x_{\text{max}} = \frac{v_x (v_x + 1)}{2}
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>vx_start</span><span class='op'>)</span>, <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>vy_start</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>vxy_candidates</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>vx_start</span>, <span class='va'>vy_start</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>steps <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_c.html'>str_c</a></span><span class='op'>(</span><span class='va'>step</span>, collapse <span class='op'>=</span> <span class='st'>", "</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>steps <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_c.html'>str_c</a></span><span class='op'>(</span><span class='va'>step</span>, collapse <span class='op'>=</span> <span class='st'>", "</span><span class='op'>)</span>, .groups <span class='op'>=</span> <span class='st'>"drop"</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code># A tibble: 3,202 x 3
-# Groups:   vx_start [121]
    vx_start vy_start steps     
       &lt;int&gt;    &lt;int&gt; &lt;chr&gt;     
  1       18       -2 13        
@@ -2070,13 +2182,13 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [ed4a44e] 2021-12-17: Day 17 in R</code></pre>
+Head:     [38e9ea8] 2021-12-17: Fixed slug link</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
 <p><a href="https://github.com/taylordunn/tdunn/tree/main/_posts/2021-12-16-advent-of-code-2021-days-16-20">Source code</a></p>
 </div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

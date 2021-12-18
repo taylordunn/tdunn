@@ -194,6 +194,65 @@ part1_results <- decode_packet_part1(input)
 sum(part1_results$packet_vers)
 ```
 
+Python:
+
+```{python}
+hex_map = {'0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100',
+           '5': '0101', '6': '0110', '7': '0111', '8': '1000', '9': '1001',
+           'A': '1010', 'B': '1011', 'C': '1100', 'D': '1101', 'E': '1110',
+           'F': '1111'}
+           
+input = r.day16
+for key, val in hex_map.items():
+  input = input.replace(key, val)
+  
+def decode_literal_value(input, i = 0):
+  literal_value = ""
+  while True:
+    lv = input[i:i+5]
+    literal_value += lv[1:]
+    i += 5
+    
+    if lv[0] == "0": break
+    
+  return i, int(literal_value, 2)
+
+sum_packet_vers = 0
+def decode_packet_part1(input, i = 0):
+  global sum_packet_vers
+  sum_packet_vers += int(input[i:i+3], 2)
+  packet_type = int(input[i+3:i+6], 2)
+  i += 6
+  
+  if packet_type == 4:
+    i, value = decode_literal_value(input, i)
+    return i, value
+  
+  values = []
+  length_type = input[i]
+  i += 1
+  
+  if length_type == "0":
+    n_bits = int(input[i:i+15], 2)
+    i += 15
+    end_bit = i + n_bits
+    while i < end_bit:
+      i, value = decode_packet_part1(input, i)
+      values.append(value)
+  else:
+    n_subpackets = int(input[i:i+11], 2)
+    i += 11
+    for _ in range(n_subpackets):
+      i, value = decode_packet_part1(input, i)
+      values.append(value)
+  
+  return i, values
+
+_, _ = decode_packet_part1(input)
+sum_packet_vers
+```
+
+
 
 ### Part 2
 
@@ -295,6 +354,63 @@ part2_results <- decode_packet_part2(input)
 format(part2_results$value, scientific = FALSE)
 ```
 
+Python:
+
+```{python}
+def compute_packet_val(packet_type, values):
+  if packet_type == 0:
+    return sum(values)
+  elif packet_type == 1:
+    prod = 1
+    for v in values:
+      prod *= v
+    return prod
+  elif packet_type == 2:
+    return min(values)
+  elif packet_type == 3:
+    return max(values)
+  elif packet_type == 5:
+    return int(values[0] > values[1]) 
+  elif packet_type == 6:
+    return int(values[0] < values[1]) 
+  elif packet_type == 7:
+    return int(values[0] == values[1]) 
+
+def decode_packet_part2(input, i = 0):
+  packet_vers = int(input[i:i+3], 2)
+  packet_type = int(input[i+3:i+6], 2)
+  i += 6
+  
+  if packet_type == 4:
+    i, value = decode_literal_value(input, i)
+    return i, value
+  
+  values = []
+  length_type = input[i]
+  i += 1
+  
+  if length_type == "0":
+    n_bits = int(input[i:i+15], 2)
+    i += 15
+    end_bit = i + n_bits
+    while i < end_bit:
+      i, value = decode_packet_part2(input, i)
+      values.append(value)
+  else:
+    n_subpackets = int(input[i:i+11], 2)
+    i += 11
+    for _ in range(n_subpackets):
+      i, value = decode_packet_part2(input, i)
+      values.append(value)
+  
+  value = compute_packet_val(packet_type, values) 
+  
+  return i, value
+
+_, value = decode_packet_part2(input)
+value
+```
+
 ## Day 17: Trick Shot
 
 ```{r}
@@ -356,7 +472,7 @@ The highest possible `vy_start` is the one that will reach `ymin` in a single st
 (vy_max <- abs(target_area$ymin) - 1)
 ```
 
-Calculate the $y$ trajectory for this initial velocity, use `cumsum`:
+To calculate the $y$ trajectory for this initial velocity, use `cumsum`:
 
 ```{r}
 trajectory <- crossing(vy_max, step = 1:1000) %>%
@@ -380,7 +496,7 @@ And just to be sure, before answering, I need to verify that there is an initial
 
 Due to drag, the $x$ position will be a cumulative sum of decreasing integers.
 As I learned on [day 7](../2021-12-06-advent-of-code-2021-days-6-10/index.html#part-2-1),
-the cumulative sum of a sequence of integers is a triangular number with the value:
+this is a triangular number with the value:
 
 $$
 \sum_{i=1}^n k = \frac{n (n + 1)}{2}.
@@ -466,7 +582,7 @@ vxy_candidates <- vx_candidates %>%
   filter(!is.na(vx_start), !is.na(vy_start))
 vxy_candidates %>%
   group_by(vx_start, vy_start) %>%
-  summarise(steps = str_c(step, collapse = ", "))
+  summarise(steps = str_c(step, collapse = ", "), .groups = "drop")
 ```
 
 There are 3202 unique combinations of `vx_start` and `vy_start` which reach the target area during one or more steps.
