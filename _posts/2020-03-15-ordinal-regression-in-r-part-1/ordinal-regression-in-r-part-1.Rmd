@@ -2,6 +2,7 @@
 title: "Ordinal regression in R: part 1"
 description: |
   A theoretical and applied walkthrough of ordinal regression.
+  Part 1: frequentist approach with `ordinal`.
 author:
   - name: Taylor Dunn
 date: 2020-03-15
@@ -46,7 +47,7 @@ Particularly, I'll be following along with
 * this excellent [primer](https://r-forge.r-project.org/scm/viewvc.php/*checkout*/pkg/ordinal/inst/doc/primer.pdf?revision=66&root=ordinal&pathrev=69) which includes theory and application, and
 * this [vignette](https://cran.r-project.org/web/packages/ordinal/vignettes/clmm2_tutorial.pdf) which is a tutorial on incorporating random effects.
 
-# Setup
+## Setup
 
 Import `ordinal`, and the included data set `wine`:
 
@@ -115,9 +116,9 @@ wine %>%
 
 At a glance, it looks like the `temp` = warm and `contact` = yes is associated with higher `rating`s.
 
-# The cumulative link model
+## The cumulative link model
 
-## Theory
+### Theory
 
 The ordinal response $y_i$ falls into response category $j$ (out of $J$ total) with probability $\pi_{ij}$.
 The cumulative probabilities are defined:
@@ -190,11 +191,11 @@ In this case, with $J$ = 5, the thresholds $\theta_j$ are capturing the adjusted
 * $j$ = 3: log-odds of `rating` = 1-3 vs. 4-5
 * $j$ = 4: log-odds of `rating` = 1-4 vs. 5
 
-## Fitting
+### Fitting
 
 Now with a surface-level understanding of what is being modeled, we will fit the data using `ordinal::clm` (cumulative link models) and `ordinal::clmm` (cumulative link mixed models), and logit links.
 
-### Fixed effects model
+#### Fixed effects model
 
 First, fit a simple model, by maximum likelihood, with `contact` as the sole predictor:
 
@@ -356,7 +357,7 @@ anova(clm_rating_contact_temp, clm_rating_contact_temp_inter)
 
 No, The interaction term `contact:temp` is not supported by the data.
 
-#### Comparison to linear model
+##### Comparison to linear model
 
 Consider the following linear model which treats `rating` as continuous:
 
@@ -402,7 +403,7 @@ In particular, the distance between thresholds is not equidistant, as we can see
 diff(coef(clm_rating_contact_temp_probit)[1:4]) %>% round(2)
 ```
 
-### Mixed effects model
+#### Mixed effects model
 
 Now that we have explored ordinal regression with just fixed effects, we will fit the following random effects model:
 
@@ -501,7 +502,7 @@ tibble(
   theme(panel.grid.major.x = element_line(color = "grey"))
 ```
 
-#### Predictions
+##### Predictions
 
 There are different ways to extract predicted probabilities.
 First, and most obviously, with the `predict` function:
@@ -573,7 +574,7 @@ tidy(clmm_rating_contact_temp) %>%
   )
 ```
 
-#### Estimated marginal means
+##### Estimated marginal means
 
 The `emmeans` package provides functionality for estimating marginal mean effects of ordinal models.
 The package documentation also provides an example using `ordinal` and `wine` data [here](https://cran.r-project.org/web/packages/emmeans/vignettes/sophisticated.html#ordinal).
@@ -614,7 +615,7 @@ emmeans(clmm_rating_contact_temp,
 ```
 
 
-#### Choice of link function
+##### Choice of link function
 
 So far, we have used the logit link (and briefly the probit link to compare estimates with linear regression).
 The links available to `ordinal::clmm` are logit, probit, cloglog, loglog, and cauchit.
@@ -681,7 +682,7 @@ wine %>%
 Note the change in degrees of freedom, resulting in the equidistant probit model having the lowest BIC.
 In terms of log likelihood, however, flexible always outperform equidistant thresholds.
 
-# Conclusion
+## Conclusion
 
 Thanks to detailed documentation, fitting cumulative link (mixed) models is very easy with `ordinal`.
 In this post, we first learned the theoretical basis for these models, then worked through examples using `wine` bitterness ratings from multiple judges.
