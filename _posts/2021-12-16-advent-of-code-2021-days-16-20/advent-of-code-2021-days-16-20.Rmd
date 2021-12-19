@@ -904,6 +904,89 @@ input <- read_lines(
 807,-499,-711
 755,-354,-619
 553,889,-390
+
+--- scanner 2 ---
+649,640,665
+682,-795,504
+-784,533,-524
+-644,584,-595
+-588,-843,648
+-30,6,44
+-674,560,763
+500,723,-460
+609,671,-379
+-555,-800,653
+-675,-892,-343
+697,-426,-610
+578,704,681
+493,664,-388
+-671,-858,530
+-667,343,800
+571,-461,-707
+-138,-166,112
+-889,563,-600
+646,-828,498
+640,759,510
+-630,509,768
+-681,-892,-333
+673,-379,-804
+-742,-814,-386
+577,-820,562
+
+--- scanner 3 ---
+-589,542,597
+605,-692,669
+-500,565,-823
+-660,373,557
+-458,-679,-417
+-488,449,543
+-626,468,-788
+338,-750,-386
+528,-832,-391
+562,-778,733
+-938,-730,414
+543,643,-506
+-524,371,-870
+407,773,750
+-104,29,83
+378,-903,-323
+-778,-728,485
+426,699,580
+-438,-605,-362
+-469,-447,-387
+509,732,623
+647,635,-688
+-868,-804,481
+614,-800,639
+595,780,-596
+
+--- scanner 4 ---
+727,592,562
+-293,-554,779
+441,611,-461
+-714,465,-776
+-743,427,-804
+-660,-479,-426
+832,-632,460
+927,-485,-438
+408,393,-506
+466,436,-512
+110,16,151
+-258,-428,682
+-393,719,612
+-211,-452,876
+808,-476,-593
+-575,615,604
+-485,667,467
+-680,325,-822
+-627,-443,-432
+872,-547,-609
+833,512,582
+807,604,487
+839,-516,451
+891,-625,532
+-652,-548,-490
+30,-46,-14
 "
 )
 ```
@@ -920,13 +1003,130 @@ scanners <-
   map_dfr(
     function(x) {
       enframe(x[-1], name = "i") %>%
-        #mutate(scanner = str_remove_all(x[1], "---") %>% str_trim())
         mutate(scanner = str_extract(x[1], "\\d+") %>% as.integer())
     }
   ) %>%
-  separate(value, into = c("x", "y", "z"), sep = ",")
+  separate(value, into = c("x", "y", "z"), sep = ",", convert = TRUE)
 scanners
 ```
+
+I want to generate a "blueprint" for each scanner that uniquely identifies it with relative positions of beacons.
+To do this, I will compute the pairwise distances ($x^2 + y^2 +z^2$) between each beacon for a single scanners.
+For 25 beacons per scanner, this means a total number of combinations given by "25 choose 2":
+
+$$
+{25 \choose 2} = 300
+$$
+
+```{r}
+scanners_pair_dist <- scanners %>%
+  split(.$scanner) %>%
+  map_dfr(
+    ~crossing(
+      rename_with(., ~paste0(.x, "1")),
+      rename_with(., ~paste0(.x, "2"))
+    ) %>%
+      filter(i1 != i2) %>%
+      mutate(dist2 = (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2) %>%
+      select(i = i1, i2, dist2) %>%
+      group_by(i) %>%
+      nest(pair_dist = c(i2, dist2)),
+    .id = "scanner"
+  ) %>%
+  ungroup() %>%
+  mutate(scanner = as.integer(scanner))
+scanners_pair_dist
+```
+
+
+```{r}
+scanners_overlap <- scanners_pair_dist %>%
+  unnest(pair_dist) %>%
+  nest_by(scanner) %>%
+  crossing(
+    rename_with(., ~paste0(.x, "2"))
+  ) %>%
+  filter(scanner < scanner2) %>%
+  mutate(
+    overlap = map2(
+      data, data2,
+      function(d, d2) {
+        d2 <- d2 %>% rename(j = i, j2 = i2)
+        inner_join(d, d2, by = "dist2")
+      }
+    ),
+    n_overlap = map_int(overlap, nrow)
+  ) %>%
+  select(-data, -data2)
+scanners_overlap
+```
+
+
+```{r}
+scanners_overlap$overlap[[1]]
+```
+
+```{r}
+d1 %>% select(i, i2, dist2)
+
+d1 <- scanners_overlap$overlap[[1]]
+d2 <- scanners_overlap$overlap[[1]]
+d2
+```
+
+
+Then the beacons in common between scanner 0 and 1 are:
+
+```{r}
+common_beacons <- scanners_overlap %>%
+  filter(scanner == 0, scanner2 == 1) %>%
+  unnest(overlap) %>%
+  transmute(scanner, scanner2, label = str_c("")
+            i, i2, j, j2) %>%
+  pivot_longer(cols = i:j2) %>%
+  mutate(name = str_remove(name, "2")) %>%
+  pivot_wider(names_from = name, values_from = value, values_fn = list) %>%
+  unnest(c(i, j))
+common_beacons %>%
+  filter(i == 1)
+```
+
+
+
+```{r}
+common_beacons <- scanners_overlap %>%
+  group_by(scanner, scanner2, i) %>%
+  nest() %>%
+  mutate(
+    j = map_chr(data,
+                ~sort(table(c(.x$j, .x$j2))) %>% tail(1) %>% names()),
+    j = as.integer(j)
+  ) %>%
+  select(-data)
+common_beacons
+```
+
+```{r}
+common_beacons %>%
+  left_join(scanners, by = c("i", "scanner"))
+```
+
+
+```{r}
+"459,-707,401"
+scanners %>%
+  filter(x == 459)
+```
+
+
+```{r}
+summarise(j = map2(j, j2, ~table(c(.x, .y))))
+  summarise(j = map2_int(j, j2, ))
+test %>%
+  filter(i == 1) %>%
+  unnest(j)
+```
+
 
 
 ## Reproducibility {.appendix}
