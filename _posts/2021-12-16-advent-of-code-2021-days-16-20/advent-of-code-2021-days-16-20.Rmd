@@ -1017,114 +1017,34 @@ For 25 beacons per scanner, this means a total number of combinations given by "
 $$
 {25 \choose 2} = 300
 $$
-
 ```{r}
-scanners_pair_dist <- scanners %>%
-  split(.$scanner) %>%
-  map_dfr(
-    ~crossing(
-      rename_with(., ~paste0(.x, "1")),
-      rename_with(., ~paste0(.x, "2"))
-    ) %>%
-      filter(i1 != i2) %>%
-      mutate(dist2 = (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2) %>%
-      select(i = i1, i2, dist2) %>%
-      group_by(i) %>%
-      nest(pair_dist = c(i2, dist2)),
-    .id = "scanner"
-  ) %>%
-  ungroup() %>%
-  mutate(scanner = as.integer(scanner))
+scanners_pair_dist <-
+  inner_join(scanners, scanners, by = "scanner", suffix = c("1", "2")) %>%
+  filter(i1 != i2) %>%
+  mutate(dist2 = (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2) %>%
+  select(scanner, i1, i2, dist2)  
 scanners_pair_dist
 ```
 
+Find the overlap between scanners:
+
 
 ```{r}
-scanners_overlap <- scanners_pair_dist %>%
-  unnest(pair_dist) %>%
-  nest_by(scanner) %>%
-  crossing(
-    rename_with(., ~paste0(.x, "2"))
-  ) %>%
-  filter(scanner < scanner2) %>%
-  mutate(
-    overlap = map2(
-      data, data2,
-      function(d, d2) {
-        d2 <- d2 %>% rename(j = i, j2 = i2)
-        inner_join(d, d2, by = "dist2")
-      }
-    ),
-    n_overlap = map_int(overlap, nrow)
-  ) %>%
-  select(-data, -data2)
+scanners_overlap <-
+  inner_join(scanners_pair_dist, scanners_pair_dist, by = "dist2",
+             suffix = c("_s1", "_s2")) %>%
+  filter(scanner_s1 < scanner_s2) %>%
+  pivot_longer(cols = c(i1_s2, i2_s2),
+               names_to = "name", values_to = "i_s2") %>%
+  count(scanner_s1, scanner_s2, i_s1 = i1_s1, i_s2) %>%
+  group_by(scanner_s1, scanner_s2, i_s1) %>%
+  slice_max(n) %>%
+  ungroup() %>%
+  group_by(scanner_s1, scanner_s2) %>%
+  filter(n() >= 12) %>%
+  ungroup() %>%
+  select(-n)
 scanners_overlap
-```
-
-
-```{r}
-scanners_overlap$overlap[[1]]
-```
-
-```{r}
-d1 %>% select(i, i2, dist2)
-
-d1 <- scanners_overlap$overlap[[1]]
-d2 <- scanners_overlap$overlap[[1]]
-d2
-```
-
-
-Then the beacons in common between scanner 0 and 1 are:
-
-```{r}
-common_beacons <- scanners_overlap %>%
-  filter(scanner == 0, scanner2 == 1) %>%
-  unnest(overlap) %>%
-  transmute(scanner, scanner2, label = str_c("")
-            i, i2, j, j2) %>%
-  pivot_longer(cols = i:j2) %>%
-  mutate(name = str_remove(name, "2")) %>%
-  pivot_wider(names_from = name, values_from = value, values_fn = list) %>%
-  unnest(c(i, j))
-common_beacons %>%
-  filter(i == 1)
-```
-
-
-
-```{r}
-common_beacons <- scanners_overlap %>%
-  group_by(scanner, scanner2, i) %>%
-  nest() %>%
-  mutate(
-    j = map_chr(data,
-                ~sort(table(c(.x$j, .x$j2))) %>% tail(1) %>% names()),
-    j = as.integer(j)
-  ) %>%
-  select(-data)
-common_beacons
-```
-
-```{r}
-common_beacons %>%
-  left_join(scanners, by = c("i", "scanner"))
-```
-
-
-```{r}
-"459,-707,401"
-scanners %>%
-  filter(x == 459)
-```
-
-
-```{r}
-summarise(j = map2(j, j2, ~table(c(.x, .y))))
-  summarise(j = map2_int(j, j2, ))
-test %>%
-  filter(i == 1) %>%
-  unnest(j)
 ```
 
 
