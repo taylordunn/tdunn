@@ -991,6 +991,20 @@ input <- read_lines(
 )
 ```
 
+```{r}
+input <- read_lines(
+"--- scanner 0 ---
+-1,-1,1
+-2,-2,2
+-3,-3,3
+-2,-3,1
+5,6,-4
+8,0,7
+"
+)
+```
+
+
 ### Part 1
 
 <details><summary>Long problem statement</summary>
@@ -1008,6 +1022,25 @@ scanners <-
   ) %>%
   separate(value, into = c("x", "y", "z"), sep = ",", convert = TRUE)
 scanners
+```
+
+For each scanner, I want a function that will give me all possible orientations
+
+```{r}
+# Multiplication factors to orient the (x,y,z) positions in 3d space
+directions <-
+  crossing(mx = c(-1, 1), my = c(-1, 1), mz = c(-1, 1))
+
+get_rotations <- function(x, y, z, choice = NULL) {
+  xyz <- combinat::permn(c(x, y, z)) %>%
+    enframe(name = "perm") %>%
+    unnest_wider(value, names_sep = "_") %>%
+    rename(x = value_1, y = value_2, z = value_3)
+  
+  crossing(directions, xyz) %>%
+    mutate(x = mx * x, y = my * y, z = mz * z) %>%
+    distinct()
+}
 ```
 
 I want to generate a "blueprint" for each scanner that uniquely identifies it with relative positions of beacons.
@@ -1028,7 +1061,6 @@ scanners_pair_dist
 
 Find the overlap between scanners:
 
-
 ```{r}
 scanners_overlap <-
   inner_join(scanners_pair_dist, scanners_pair_dist, by = "dist2",
@@ -1046,7 +1078,6 @@ scanners_overlap <-
   select(-n)
 scanners_overlap
 ```
-
 
 
 ## Reproducibility {.appendix}
