@@ -991,6 +991,20 @@ input <- read_lines(
 )
 ```
 
+```{r}
+input <- read_lines(
+"--- scanner 0 ---
+-1,-1,1
+-2,-2,2
+-3,-3,3
+-2,-3,1
+5,6,-4
+8,0,7
+"
+)
+```
+
+
 ### Part 1
 
 <details><summary>Long problem statement</summary>
@@ -1010,6 +1024,25 @@ scanners <-
 scanners
 ```
 
+For each scanner, I want a function that will give me all possible orientations
+
+```{r}
+# Multiplication factors to orient the (x,y,z) positions in 3d space
+directions <-
+  crossing(mx = c(-1, 1), my = c(-1, 1), mz = c(-1, 1))
+
+get_rotations <- function(x, y, z, choice = NULL) {
+  xyz <- combinat::permn(c(x, y, z)) %>%
+    enframe(name = "perm") %>%
+    unnest_wider(value, names_sep = "_") %>%
+    rename(x = value_1, y = value_2, z = value_3)
+  
+  crossing(directions, xyz) %>%
+    mutate(x = mx * x, y = my * y, z = mz * z) %>%
+    distinct()
+}
+```
+
 I want to generate a "blueprint" for each scanner that uniquely identifies it with relative positions of beacons.
 To do this, I will compute the pairwise distances ($x^2 + y^2 +z^2$) between each beacon for a single scanners.
 For 25 beacons per scanner, this means a total number of combinations given by "25 choose 2":
@@ -1026,7 +1059,7 @@ scanners_pair_dist <- scanners %>%
       rename_with(., ~paste0(.x, "1")),
       rename_with(., ~paste0(.x, "2"))
     ) %>%
-      filter(i1 != i2) %>%
+      filter(i1 < i2) %>%
       mutate(dist2 = (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2) %>%
       select(i = i1, i2, dist2) %>%
       group_by(i) %>%
@@ -1062,69 +1095,79 @@ scanners_overlap
 ```
 
 
+Then for scanner 0, we find the other scanner with the largest overlap is scanner 1:
+
 ```{r}
-scanners_overlap$overlap[[1]]
+d <- scanners_overlap %>% filter(scanner == 0, n_overlap == max(n_overlap))
+d
 ```
 
-```{r}
-d1 %>% select(i, i2, dist2)
-
-d1 <- scanners_overlap$overlap[[1]]
-d2 <- scanners_overlap$overlap[[1]]
-d2
-```
-
-
-Then the beacons in common between scanner 0 and 1 are:
+Then find the overlapping points from each scanner:
 
 ```{r}
-common_beacons <- scanners_overlap %>%
-  filter(scanner == 0, scanner2 == 1) %>%
+overlap_points <- d %>%
   unnest(overlap) %>%
-  transmute(scanner, scanner2, label = str_c("")
-            i, i2, j, j2) %>%
-  pivot_longer(cols = i:j2) %>%
-  mutate(name = str_remove(name, "2")) %>%
-  pivot_wider(names_from = name, values_from = value, values_fn = list) %>%
-  unnest(c(i, j))
-common_beacons %>%
-  filter(i == 1)
-```
-
-
-
-```{r}
-common_beacons <- scanners_overlap %>%
-  group_by(scanner, scanner2, i) %>%
-  nest() %>%
-  mutate(
-    j = map_chr(data,
-                ~sort(table(c(.x$j, .x$j2))) %>% tail(1) %>% names()),
-    j = as.integer(j)
+  select(scanner, scanner2, i, j, j2) %>%
+  pivot_longer(cols = c(j, j2)) %>%
+  group_by(scanner, scanner2, i, value) %>%
+  tally() %>%
+  slice_max(n) %>%
+  ungroup() %>%
+  select(scanner, scanner2, i, j = value) %>%
+  left_join(
+    scanners %>% rename(xi = x, yi = y, zi = z),
+    by = c("i", "scanner")
   ) %>%
-  select(-data)
-common_beacons
+  left_join(
+    scanners %>% rename(j = i, xj = x, yj = y, zj = z, scanner2 = scanner),
+    by = c("j", "scanner2")
+  )
+overlap_points
 ```
 
+Now I have to determine the correct orientation of scanner 2:
+
 ```{r}
-common_beacons %>%
-  left_join(scanners, by = c("i", "scanner"))
+overlap_points %>%
+  select(xj, yj, zj) %>%
+  mutate(
+    test = pmap(list(xj, yj, zj), get_rotations) 
+  ) %>%
+  unnest(test)
 ```
 
 
 ```{r}
-"459,-707,401"
-scanners %>%
-  filter(x == 459)
+overlap_points
+
+scanner2 <- scanners
+
+relative_pos <- overlap_points %>%
+  mutate(dx = xi - xj, dy = yi - yj, dz = zi - zj)
+
+while ()
 ```
+
+### Testing
 
 
 ```{r}
-summarise(j = map2(j, j2, ~table(c(.x, .y))))
-  summarise(j = map2_int(j, j2, ))
-test %>%
-  filter(i == 1) %>%
-  unnest(j)
+path <- "_posts/2021-12-16-advent-of-code-2021-days-16-20/day19-input-example.txt"
+path <- "day19-input-example.txt"
+parse_data <- function(path) {
+  dat <- str_extract_all(readLines(path), '-?[:digit:]+') %>% 
+    map(as.numeric)
+  scanners <- which(map(dat, length) == 1)
+  
+  beacons <- map(1:(length(scanners)), 
+                 ~ matrix(unlist(dat[
+                   (scanners[.] + 1):ifelse(. == length(scanners), length(dat), scanners[. + 1] - 1)
+                 ]), 
+                 nrow = 3)
+  )
+  return(beacons)
+}
+beacons <- parse_data(path)
 ```
 
 
