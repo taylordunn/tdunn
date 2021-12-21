@@ -1,0 +1,235 @@
+---
+title: "Advent of Code: Days 21-25"
+description: |
+  My solutions to the #AdventOfCode2021 coding challenges, days 16 through 20.
+author:
+  - name: Taylor Dunn
+date: 2021-12-21
+params:
+  date: 2021-12-21
+  slug: "advent-of-code-2021-days-21-25"
+categories:
+  - Advent of Code
+  - Python
+  - R
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+---
+
+```{r setup, include=TRUE, code_folding="R setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(gt)
+library(tictoc)
+library(lubridate)
+```
+
+<details><summary>Python setup</summary>
+
+```{r py-setup1}
+Sys.setenv(
+  RETICULATE_PYTHON = here("..", "python", ".venv", "Scripts", "python.exe")
+)
+library(reticulate)
+```
+
+```{python py-setup2}
+import numpy as np
+import pandas as pd
+import timeit
+```
+
+</details>
+
+## Day 21: Dirac Dice
+
+```{r}
+day21 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day21-input.txt"))
+day21 %>% str_trunc(80)
+```
+
+### Part 1
+
+>
+There's not much to do as you slowly descend to the bottom of the ocean. The submarine computer challenges you to a nice game of Dirac Dice.
+>
+This game consists of a single die, two pawns, and a game board with a circular track containing ten spaces marked `1` through `10` clockwise. Each player's starting space is chosen randomly (your puzzle input). Player 1 goes first.
+>
+Players take turns moving. On each player's turn, the player rolls the die three times and adds up the results. Then, the player moves their pawn that many times forward around the track (that is, moving clockwise on spaces in order of increasing value, wrapping back around to `1` after `10`). So, if a player is on space `7` and they roll `2`, `2`, and `1`, they would move forward 5 times, to spaces `8`, `9`, `10`, `1`, and finally stopping on `2`.
+>
+After each player moves, they increase their score by the value of the space their pawn stopped on. Players' scores start at `0`. So, if the first player starts on space `7` and rolls a total of `5`, they would stop on space `2` and add `2` to their score (for a total score of `2`). The game immediately ends as a win for any player whose score reaches at least `1000`.
+>
+Since the first game is a practice game, the submarine opens a compartment labeled deterministic dice and a 100-sided die falls out. This die always rolls `1` first, then `2`, then `3`, and so on up to `100`, after which it starts over at 1 again. Play using this die.
+>
+The moment either player wins, what do you get if you multiply the score of the losing player by the number of times the die was rolled during the game?
+
+```{r}
+player1 <- str_extract(day21[1], "position: \\d") %>% readr::parse_number()
+player2 <- str_extract(day21[2], "position: \\d") %>% readr::parse_number()
+player1; player2
+```
+
+Define a custom modulo function that returns 1-10 instead of 0-9:
+
+```{r}
+custom_mod <- function(val) {
+  ((val - 1) %% 10) + 1
+}
+```
+
+Loop until a winner is found:
+
+```{r}
+player1_score <- player2_score <- dice <- turn <- 0
+
+while (player1_score < 1000 & player2_score < 1000) {
+  turn <- turn + 1
+  dice <- dice + 3
+  
+  roll <- sum(seq(dice, dice - 2))
+  if (turn %% 2 == 1) {
+    player1 <- custom_mod(player1 + roll)
+    player1_score <- player1_score + player1
+  } else {
+    player2 <- custom_mod(player2 + roll)
+    player2_score <- player2_score + player2
+  }
+}
+player1_score; player2_score
+```
+
+Multiply the turn number by 3 to get the number of dice rolls, then multiply that by the losing players score:
+
+```{r}
+(turn * 3) * player2_score
+```
+
+### Part 2
+
+>
+Now that you're warmed up, it's time to play the real game.
+>
+A second compartment opens, this time labeled Dirac dice. Out of it falls a single three-sided die.
+>
+As you experiment with the die, you feel a little strange. An informational brochure in the compartment explains that this is a quantum die: when you roll it, the universe splits into multiple copies, one copy for each possible outcome of the die. In this case, rolling the die always splits the universe into three copies: one where the outcome of the roll was `1`, one where it was `2`, and one where it was `3`.
+>
+The game is played the same as before, although to prevent things from getting too far out of hand, the game now ends when either player's score reaches at least `21`.
+
+On each turn, the Dirac dice is rolled three times, leading to $3 \times 3 \times 3 = 27$ permutations, i.e. 27 universes.
+However, the sum of these three rolls can only take on the following values:
+
+```{r}
+roll_perm <- crossing(r1 = 1:3, r2 = 1:3, r3 = 1:3) %>%
+  mutate(roll = r1 + r2 + r3) %>%
+  count(roll)
+roll_perm
+```
+
+Define a function to roll the dice for a single player, but keep track of the *states* of the game (instead of each game individually), where a state is uniquely identified by the positions and scores of players 1 and 2.
+
+```{r}
+roll_dirac <- function(players, player = 1) {
+  if (player == 1) {
+    crossing(players, roll_perm) %>%
+      mutate(pos1 = custom_mod(pos1 + roll),
+             score1 = score1 + pos1,
+             n_univ = n_univ * n) %>%
+      group_by(pos1, score1, pos2, score2) %>%
+      summarise(n_univ = sum(n_univ), .groups = "drop")
+  } else {
+    crossing(players, roll_perm) %>%
+      mutate(pos2 = custom_mod(pos2 + roll),
+             score2 = score2 + pos2,
+             n_univ = n_univ * n) %>%
+      group_by(pos1, score1, pos2, score2) %>%
+      summarise(n_univ = sum(n_univ), .groups = "drop")
+  }
+}
+
+# Sample input
+players <- tibble(pos1 = 4, score1 = 0, pos2 = 8, score2 = 0, n_univ = 1)
+# After two turns
+players %>%
+  roll_dirac(player = 1) %>%
+  roll_dirac(player = 2)
+```
+
+After each roll, the number of universes (`n_univ`) is updated for each state.
+
+Then a function to find the winners in each universe.
+The loop works by removing winning states (`winner_universes`) from the active states (`players`) until none remain:
+
+```{r}
+find_winners <- function(players) {
+  turn <- 0
+  winner_universes <- players %>% filter(FALSE)
+  
+  while (nrow(players) > 0) {
+    turn <- turn + 1
+    
+    players <- roll_dirac(players,
+                          player = ifelse(turn %% 2 == 1, 1, 2))
+    
+    winners <- (players$score1 > 20) | (players$score2 > 20)
+    if (any(winners)) {
+      winner_universes <- winner_universes %>%
+        bind_rows(players %>% filter(winners))
+      
+      players <- players %>% filter(!winners)
+    }
+  }
+  winner_universes
+}
+
+winner_universes <- find_winners(players)
+
+winner_universes %>%
+  mutate(winner = ifelse(score1 > 20, "Player 1", "Player 2")) %>%
+  group_by(winner) %>%
+  summarise(n_univ = sum(n_univ), .groups = "drop") %>%
+  mutate(n_univ = format(n_univ, scientific = FALSE))
+```
+
+Now apply it to my input to find the puzzle answer:
+
+```{r}
+players <- tibble(pos1 = player1, score1 = 0, pos2 = player2, score2 = 0,
+                  n_univ = 1)
+winner_universes <- find_winners(players)
+
+winner_universes %>%
+  mutate(winner = ifelse(score1 > 20, "Player 1", "Player 2")) %>%
+  group_by(winner) %>%
+  summarise(n_univ = sum(n_univ), .groups = "drop") %>%
+  mutate(n_univ = format(n_univ, scientific = FALSE))
+```
+
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
