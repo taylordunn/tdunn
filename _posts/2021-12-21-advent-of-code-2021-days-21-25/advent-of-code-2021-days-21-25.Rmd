@@ -1,7 +1,7 @@
 ---
 title: "Advent of Code: Days 21-25"
 description: |
-  My solutions to the #AdventOfCode2021 coding challenges, days 16 through 20.
+  My solutions to the #AdventOfCode2021 coding challenges, days 21 through 25.
 author:
   - name: Taylor Dunn
 date: 2021-12-21
@@ -108,6 +108,29 @@ Multiply the turn number by 3 to get the number of dice rolls, then multiply tha
 (turn * 3) * player2_score
 ```
 
+Python:
+
+```{python}
+player1 = int(r.day21[0][-1])
+player2 = int(r.day21[1][-1])
+
+player1_score, player2_score, dice, turn = 0, 0, 0, 0
+
+while player1_score < 1000 and player2_score < 1000:
+  turn += 1
+  dice += 3
+  
+  roll = sum(range(dice - 2, dice + 1))
+  if turn % 2 == 1:
+    player1 = ((player1 + roll - 1) % 10) + 1
+    player1_score += player1
+  else:
+    player2 = ((player2 + roll - 1) % 10) + 1
+    player2_score += player2
+
+turn * 3 * player2_score
+```
+
 ### Part 2
 
 >
@@ -208,6 +231,69 @@ winner_universes %>%
   mutate(n_univ = format(n_univ, scientific = FALSE))
 ```
 
+Python with `numpy` and `pandas`:
+
+```{python}
+from itertools import product
+roll_perm = list(product([1, 2, 3], [1, 2, 3], [1, 2, 3]))
+roll_perm = [sum(rolls) for rolls in roll_perm]
+roll_perm = pd.DataFrame(roll_perm, columns = ['roll']) \
+  .value_counts().to_frame('n').reset_index()
+  
+def roll_dirac(players, player = 1):
+  if player == 1:
+    players = players.merge(roll_perm, how = 'outer', on = 'join_key')
+    players = players \
+      .assign(pos1 = (players['pos1'] + players['roll'] - 1) % 10 + 1)
+    players = players \
+      .assign(score1 = players['score1'] + players['pos1'],
+              n_univ = players['n_univ'] * players['n'])
+  else:
+    players = players.merge(roll_perm, how = 'outer', on = 'join_key')
+    players = players \
+      .assign(pos2 = (players['pos2'] + players['roll'] - 1) % 10 + 1)
+    players = players \
+      .assign(score2 = players['score2'] + players['pos2'],
+              n_univ = players['n_univ'] * players['n'])
+    
+  players = players \
+    .groupby(['pos1', 'score1', 'pos2', 'score2', 'join_key']) \
+    .agg({'n_univ': 'sum'}).reset_index()
+  return players
+
+def find_winners(players):
+  turn = 0
+  winner_universes = players.drop(players.index)
+  
+  while len(players) > 0:
+    turn += 1
+    
+    player = 1 if (turn % 2 == 1) else 2
+    players = roll_dirac(players, player)
+    
+    winners = (players['score1'].values > 20) | (players['score2'].values > 20)
+    if any(winners):
+      winner_universes = winner_universes.append(players.loc[winners])
+      players = players.loc[~winners]
+  
+  return winner_universes
+
+players = pd.DataFrame({'pos1': player1, 'pos2': player2,
+                        'score1': 0, 'score2': 0, 'n_univ': 1}, index = [0])
+  
+# I'm not aware of a pandas function similar to tidyr::crossing, so use a hacky
+#  join_key column
+roll_perm['join_key'] = 0
+players['join_key'] = 0
+
+winner_universes = find_winners(players)
+
+winner_universes \
+  .assign(winner = np.where(winner_universes['score1'] > 20,
+                            'Player 1', 'Player 2')) \
+  .groupby(['winner']) \
+  .agg({'n_univ': 'sum'})
+```
 
 ## Reproducibility {.appendix}
 
