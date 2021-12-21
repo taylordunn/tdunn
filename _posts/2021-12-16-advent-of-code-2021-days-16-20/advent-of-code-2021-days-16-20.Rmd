@@ -25,7 +25,7 @@ library(tidyverse)
 library(here)
 library(gt)
 library(tictoc)
-#library(lubridate)
+library(lubridate)
 ```
 
 <details><summary>Python setup</summary>
@@ -41,8 +41,6 @@ library(reticulate)
 import numpy as np
 import pandas as pd
 import timeit
-#import matplotlib.pylab as plt
-#plt.switch_backend('agg') # needed for knitting in rmarkdown
 ```
 
 </details>
@@ -661,7 +659,6 @@ find_adjacent_idx <- function(sn, ei, side = c("L", "R")) {
     ei[length(ei)] <- ei[length(ei)] - 1
     
     # Add levels until we find the right-most regular number
-    #while (length(pluck(sn, !!!ei)) > 1) {
     while (is.list(pluck(sn, !!!ei))) {
       ei <- c(ei, length(pluck(sn, !!!ei)))
     }
@@ -850,168 +847,36 @@ head(day19, 30)
 ```
 
 ```{r}
-input <- read_lines(
-"--- scanner 0 ---
-404,-588,-901
-528,-643,409
--838,591,734
-390,-675,-793
--537,-823,-458
--485,-357,347
--345,-311,381
--661,-816,-575
--876,649,763
--618,-824,-621
-553,345,-567
-474,580,667
--447,-329,318
--584,868,-557
-544,-627,-890
-564,392,-477
-455,729,728
--892,524,684
--689,845,-530
-423,-701,434
-7,-33,-71
-630,319,-379
-443,580,662
--789,900,-551
-459,-707,401
-
---- scanner 1 ---
-686,422,578
-605,423,415
-515,917,-361
--336,658,858
-95,138,22
--476,619,847
--340,-569,-846
-567,-361,727
--460,603,-452
-669,-402,600
-729,430,532
--500,-761,534
--322,571,750
--466,-666,-811
--429,-592,574
--355,545,-477
-703,-491,-529
--328,-685,520
-413,935,-424
--391,539,-444
-586,-435,557
--364,-763,-893
-807,-499,-711
-755,-354,-619
-553,889,-390
-
---- scanner 2 ---
-649,640,665
-682,-795,504
--784,533,-524
--644,584,-595
--588,-843,648
--30,6,44
--674,560,763
-500,723,-460
-609,671,-379
--555,-800,653
--675,-892,-343
-697,-426,-610
-578,704,681
-493,664,-388
--671,-858,530
--667,343,800
-571,-461,-707
--138,-166,112
--889,563,-600
-646,-828,498
-640,759,510
--630,509,768
--681,-892,-333
-673,-379,-804
--742,-814,-386
-577,-820,562
-
---- scanner 3 ---
--589,542,597
-605,-692,669
--500,565,-823
--660,373,557
--458,-679,-417
--488,449,543
--626,468,-788
-338,-750,-386
-528,-832,-391
-562,-778,733
--938,-730,414
-543,643,-506
--524,371,-870
-407,773,750
--104,29,83
-378,-903,-323
--778,-728,485
-426,699,580
--438,-605,-362
--469,-447,-387
-509,732,623
-647,635,-688
--868,-804,481
-614,-800,639
-595,780,-596
-
---- scanner 4 ---
-727,592,562
--293,-554,779
-441,611,-461
--714,465,-776
--743,427,-804
--660,-479,-426
-832,-632,460
-927,-485,-438
-408,393,-506
-466,436,-512
-110,16,151
--258,-428,682
--393,719,612
--211,-452,876
-808,-476,-593
--575,615,604
--485,667,467
--680,325,-822
--627,-443,-432
-872,-547,-609
-833,512,582
-807,604,487
-839,-516,451
-891,-625,532
--652,-548,-490
-30,-46,-14
-"
-)
-```
-
-```{r}
-input <- read_lines(
-"--- scanner 0 ---
--1,-1,1
--2,-2,2
--3,-3,3
--2,-3,1
-5,6,-4
-8,0,7
-"
-)
+day19_ex <- read_lines(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                            "day19-input-example.txt"))
 ```
 
 
 ### Part 1
 
 <details><summary>Long problem statement</summary>
-text
+
+>
+As your probe drifted down through this area, it released an assortment of beacons and scanners into the water. It's difficult to navigate in the pitch black open waters of the ocean trench, but if you can build a map of the trench using data from the scanners, you should be able to safely reach the bottom.
+>
+The beacons and scanners float motionless in the water; they're designed to maintain the same position for long periods of time. Each scanner is capable of detecting all beacons in a large cube centered on the scanner; beacons that are at most 1000 units away from the scanner in each of the three axes (x, y, and z) have their precise position determined relative to the scanner. However, scanners cannot detect other scanners. The submarine has automatically summarized the relative positions of beacons detected by each scanner (your puzzle input).
+>
+For example, if a scanner is at `x,y,z` coordinates `500,0,-500` and there are beacons at `-500,1000,-1500` and `1501,0,-500`, the scanner could report that the first beacon is at `-1000,1000,-1000` (relative to the scanner) but would not detect the second beacon at all.
+>
+Unfortunately, while each scanner can report the positions of all detected beacons relative to itself, the scanners do not know their own position. You'll need to determine the positions of the beacons and scanners yourself.
+>
+The scanners and beacons map a single contiguous 3d region. This region can be reconstructed by finding pairs of scanners that have overlapping detection regions such that there are at least 12 beacons that both scanners detect within the overlap. By establishing 12 common beacons, you can precisely determine where the scanners are relative to each other, allowing you to reconstruct the beacon map one scanner at a time.
+>
+Unfortunately, there's a second problem: the scanners also don't know their rotation or facing direction. Due to magnetic alignment, each scanner is rotated some integer number of 90-degree turns around all of the `x`, `y`, and `z` axes. That is, one scanner might call a direction positive `x`, while another scanner might call that direction negative `y`. Or, two scanners might agree on which direction is positive `x`, but one scanner might be upside-down from the perspective of the other scanner. In total, each scanner could be in any of 24 different orientations: facing positive or negative `x`, `y`, or `z`, and considering any of four directions "up" from that facing.
+>
+Because all coordinates are relative, in this example, all "absolute" positions will be expressed relative to scanner `0` (using the orientation of scanner `0` and as if scanner `0` is at coordinates `0,0,0`).
+>
+Assemble the full map of beacons. How many beacons are there?
+
 </details>
 
 ```{r}
+input <- day19
 scanners <-
   split(input[input != ""], cumsum(input == "")[input != ""]) %>%
   map_dfr(
@@ -1024,32 +889,9 @@ scanners <-
 scanners
 ```
 
-For each scanner, I want a function that will give me all possible orientations
-
-```{r}
-# Multiplication factors to orient the (x,y,z) positions in 3d space
-directions <-
-  crossing(mx = c(-1, 1), my = c(-1, 1), mz = c(-1, 1))
-
-get_rotations <- function(x, y, z, choice = NULL) {
-  xyz <- combinat::permn(c(x, y, z)) %>%
-    enframe(name = "perm") %>%
-    unnest_wider(value, names_sep = "_") %>%
-    rename(x = value_1, y = value_2, z = value_3)
-  
-  crossing(directions, xyz) %>%
-    mutate(x = mx * x, y = my * y, z = mz * z) %>%
-    distinct()
-}
-```
-
 I want to generate a "blueprint" for each scanner that uniquely identifies it with relative positions of beacons.
-To do this, I will compute the pairwise distances ($x^2 + y^2 +z^2$) between each beacon for a single scanners.
-For 25 beacons per scanner, this means a total number of combinations given by "25 choose 2":
+To do this, I will compute the pairwise squared distances ($x^2 + y^2 +z^2$) between each beacon for a single scanner.
 
-$$
-{25 \choose 2} = 300
-$$
 ```{r}
 scanners_pair_dist <-
   inner_join(scanners, scanners, by = "scanner", suffix = c("1", "2")) %>%
@@ -1059,7 +901,7 @@ scanners_pair_dist <-
 scanners_pair_dist
 ```
 
-Find the overlap between scanners:
+Find the overlap between scanners by joining with pairwise distances:
 
 ```{r}
 scanners_overlap <-
@@ -1077,6 +919,407 @@ scanners_overlap <-
   ungroup() %>%
   select(-n)
 scanners_overlap
+```
+
+This is where I got stuck.
+Couldn't figure out how to reorient the scanners, until I read [David Robinson's solution](https://twitter.com/drob/status/1472748122275291137?s=20).
+I'll slightly adapt my solution following his code.
+
+First, put each scanner's beacon positions into a three-column matrix:
+
+```{r}
+scanner_matrices <- scanners %>%
+  group_by(scanner) %>%
+  summarize(matrix = list(cbind(x, y, z)))
+scanner_matrices
+```
+
+Then get the matrix representations of just the overlapping beacons of each scanner pair:
+
+```{r}
+overlap_matrices <- scanners_overlap %>%
+  group_by(scanner_s1, scanner_s2) %>%
+  summarize(i_s1 = list(i_s1), i_s2 = list(i_s2), .groups = "drop") %>%
+  ungroup() %>%
+  # Attach the matrix of beacon positions for each scanner
+  inner_join(scanner_matrices %>% select(scanner, matrix1 = matrix),
+             by = c("scanner_s1" = "scanner")) %>%
+  inner_join(scanner_matrices %>% select(scanner, matrix2 = matrix),
+             by = c("scanner_s2" = "scanner")) %>%
+  # Index the matrices by the overlapping beacons
+  mutate(matrix1 = map2(matrix1, i_s1, ~ .x[.y, ]),
+         matrix2 = map2(matrix2, i_s2, ~ .x[.y, ]))
+overlap_matrices
+```
+
+Thought this part was clever from David -- matching the standard deviations of the of the columns to determine the correct ordering of (x,y,z), then using relative positions to correct direction:
+
+```{r}
+find_matrix_trans <- function(m1, m2) {
+  m1_sds <- round(apply(m1, 2, sd))
+  m2_sds <- round(apply(m2, 2, sd))
+
+  # Reorient m2's xyz to match m1
+  reorderer <- match(m2_sds, m1_sds)
+  m1 <- m1[, reorderer]
+
+  # Reorient the direction
+  facing <- (m2[2, ] - m2[1, ]) / (m1[2, ] - m1[1, ])
+  m1 <- t(facing * t(m1))
+
+  # Find the difference
+  delta <- (m2 - m1)[1, ]
+  list(reorderer = reorderer, facing = facing, delta = delta)
+}
+overlap_matrices_trans <- overlap_matrices %>%
+  transmute(scanner_s1, scanner_s2,
+            trans = map2(matrix1, matrix2, find_matrix_trans))
+overlap_matrices_trans$trans[[1]]
+```
+
+Then this function applies the transformation:
+
+```{r}
+apply_matrix_trans <- function(m, trans) {
+  ret <- t(trans$facing * t(m[, trans$reorderer]) + trans$delta)
+  colnames(ret) <- c("x", "y", "z")
+  ret
+}
+overlap_matrices$matrix2[[1]] %>%
+  apply_matrix_trans(overlap_matrices_trans$trans[[1]])
+```
+
+Compile the transformations in both directions:
+
+```{r}
+overlap_matrices_trans <- overlap_matrices_trans %>%
+  bind_rows(
+    overlap_matrices %>%
+      mutate(trans = map2(matrix2, matrix1, find_matrix_trans)) %>%
+      select(scanner_s1 = scanner_s2, scanner_s2 = scanner_s1, trans)
+  )
+```
+
+Put the matrix transformations into a `tbl_graph`:
+
+```{r}
+library(tidygraph)
+library(igraph)
+# Need to re-assign tidyr::crossing from igraph::crossing
+crossing <- tidyr::crossing
+
+g <- graph_from_data_frame(overlap_matrices_trans) %>%
+  as_tbl_graph() %>%
+  arrange(as.integer(name))
+g
+```
+
+Finally, apply the series of transformations.
+This is done in a shortest path graph type fashion, with edges connecting the scanners with 12 or more beacons in common:
+
+```{r}
+res <- map(
+  seq_len(nrow(scanner_matrices)),
+  function(i) {
+    edges <-
+      as.numeric(igraph::shortest_paths(g, i, 1, output = "epath")$epath[[1]])
+    
+    trans <- overlap_matrices_trans$trans[edges]
+    
+    reduce(trans, apply_matrix_trans, .init = scanner_matrices$matrix[[i]])
+  }
+)
+```
+
+Then the unique beacon locations:
+
+```{r}
+map_dfr(res, as_tibble) %>% distinct(x, y, z)
+```
+
+### Part 2
+
+>
+Sometimes, it's a good idea to appreciate just how big the ocean is. Using the Manhattan distance, how far apart do the scanners get?
+>
+What is the largest Manhattan distance between any two scanners?
+
+```{r}
+map_dfr(res, as_tibble) %>%
+  distinct(x1 = x, y1 = y, z1 = z) %>%
+  mutate(b1 = row_number()) %>%
+  crossing(., rename(., b2 = b1, x2 = x1, y2 = y1, z2 = z1)) %>%
+  filter(b1 < b2) %>%
+  mutate(manhattan = abs(x1 - x2) + abs(y1 - y2) + abs(z1 - z2)) %>%
+  pull(manhattan) %>%
+  max(na.rm = TRUE)
+```
+
+Definitely the hardest puzzle yet.
+And reading online, that seems to be the consensus.
+Big shout outs to David Robinson and the [R for Data Science Slack group](https://www.rfordatasci.com/) for posting their solutions.
+
+## Day 20: Trench Map
+
+```{r}
+day20 <- read_lines(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                         "day20-input.txt"))
+head(day20) %>% str_trunc(80)
+```
+
+### Part 1
+
+>
+With the scanners fully deployed, you turn their attention to mapping the floor of the ocean trench.
+>
+When you get back the image from the scanners, it seems to just be random noise. Perhaps you can combine an image enhancement algorithm and the input image (your puzzle input) to clean it up a little.
+>
+The first section is the image enhancement algorithm. It is normally given on a single line, but it has been wrapped to multiple lines in this example for legibility. The second section is the input image, a two-dimensional grid of light pixels (`#`) and dark pixels (`.`).
+>
+The image enhancement algorithm describes how to enhance an image by simultaneously converting all pixels in the input image into an output image. Each pixel of the output image is determined by looking at a 3x3 square of pixels centered on the corresponding input image pixel.
+>
+Starting from the top-left and reading across each row, these pixels are `...`, then `#..`, then `.#.`; combining these forms `...#...#..` By turning dark pixels (`.`) into `0` and light pixels (`#`) into `1`, the binary number `000100010` can be formed, which is `34` in decimal.
+The image enhancement algorithm string is exactly 512 characters long, enough to match every possible 9-bit binary number.
+>
+Through advances in imaging technology, the images being operated on here are infinite in size. Every pixel of the infinite output image needs to be calculated exactly based on the relevant pixels of the input image. The small input image you have is only a small region of the actual infinite input image; the rest of the input image consists of dark pixels (`.`).
+>
+Start with the original input image and apply the image enhancement algorithm twice, being careful to account for the infinite size of the images. How many pixels are lit in the resulting image?
+
+Split the algorithm from the input image:
+
+```{r}
+get_input <- function(raw_input) {
+  algo <- str_split(raw_input[1], "")[[1]]
+  raw_input <- tibble(x = raw_input[-c(1, 2)]) %>%
+    transmute(row = row_number(),
+              value = str_split(x, pattern = "")) %>%
+    unnest(value) %>%
+    group_by(row) %>%
+    mutate(col = 1:n()) %>%
+    ungroup()
+  list(algo, raw_input)
+}
+day20 <- get_input(day20)
+```
+
+Also get the example input to show how the functions work:
+
+```{r}
+day20_ex <- read_lines(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                         "day20-input-example.txt"))
+day20_ex <- get_input(day20_ex)
+algo <- day20_ex[[1]]; input <- day20_ex[[2]]
+```
+
+Define a helper function to visualize the grid:
+
+```{r fig.height=1, fig.width=1}
+plot_grid <- function(input) {
+  input %>%
+    mutate(value = str_replace(value, "\\.", "·")) %>%
+    ggplot(aes(x = col, y = -row)) +
+    geom_text(aes(label = value)) +
+    theme_void()
+}
+plot_grid(input)
+```
+
+A function to add border rows and columns:
+
+```{r fig.height=1, fig.width=2}
+add_borders <- function(input) {
+  crossing(
+    row = seq(min(input$row) - 1, max(input$row) + 1),
+    col = seq(min(input$col) - 1, max(input$col) + 1)
+  ) %>% 
+    left_join(input, by = c("row", "col"))
+}
+add_borders(input) %>%
+  # Visualize borders with a "B"
+  mutate(value = replace_na(value, "B")) %>%
+  plot_grid()
+```
+
+This function returns the numeric representation of the binary "#" and "." strings:
+
+```{r}
+get_output_bin_num <- function(value) {
+  value %>%
+    str_replace_all("\\.", "0") %>%
+    str_replace_all("\\#", "1") %>%
+    strtoi(base = 2)
+}
+get_output_bin_num("...#...#.")
+```
+
+Now the function to enhance the image.
+
+```{r fig.height=1, fig.width=2, preview=TRUE}
+neighbors <- tibble(drow = c(-1, -1, -1, 0, 0, 0, 1, 1, 1),
+                    dcol = c(-1, 0, 1, -1, 0, 1, -1, 0, 1))
+enhance_image <- function(input, border_value) {
+  input <- add_borders(input)
+  
+  input %>%
+    crossing(neighbors) %>%
+    mutate(row2 = row + drow, col2 = col + dcol) %>%
+    left_join(input %>% rename(value2 = value),
+              by = c("row2" = "row", "col2" = "col")) %>%
+    mutate(value2 = replace_na(value2, border_value)) %>%
+    group_by(row, col) %>%
+    summarise(bin_str = paste0(value2, collapse = ""), .groups = "drop") %>%
+    mutate(bin_num = get_output_bin_num(bin_str),
+           value = algo[bin_num + 1]) %>%
+    select(row, col, value)
+}
+input %>%
+  enhance_image(border_value = ".") %>%
+  enhance_image(border_value = ".") %>%
+  plot_grid()
+```
+
+Get the real input:
+
+```{r}
+algo <- day20[[1]]
+input <- day20[[2]]
+```
+
+There is a trick to the real input: the infinitely expanding border does not always expand with "." values like in the example.
+A string of 9 "." or "#" gives the following values from the algorithm:
+
+```{r}
+algo[get_output_bin_num(".........") + 1]
+algo[get_output_bin_num("#########") + 1]
+```
+
+So the expanding border alternates between "." and "#" values.
+
+Enhance the image twice, alternating the border symbol, and count the "#":
+
+```{r}
+part1 <- reduce(
+  1:2, function(prev, current) {
+    list(
+      image = enhance_image(prev$image, prev$border_value),
+      border_value = if_else(prev$border_value == ".", "#", ".")
+    )
+  }, .init = list(image = input, border_value = ".")
+)
+sum(part1$image$value == "#")
+```
+
+### Part 2
+
+>
+You still can't quite make out the details in the image. Maybe you just didn't enhance it enough.
+>
+If you enhance the starting input image in the above example a total of 50 times, 3351 pixels are lit in the final output image.
+>
+Start again with the original input image and apply the image enhancement algorithm 50 times. How many pixels are lit in the resulting image?
+
+Same implementation as part 1, just takes a little longer:
+
+```{r}
+tic()
+part2 <- reduce(
+  1:50, function(prev, current) {
+    list(
+      image = enhance_image(prev$image, prev$border_value),
+      border_value = if_else(prev$border_value == ".", "#", ".")
+    )
+  }, .init = list(image = input, border_value = ".")
+)
+toc()
+sum(part2$image$value == "#")
+```
+
+## Stats
+
+Here are my personal stats for these last 5 days:
+
+```{r warning=FALSE}
+tibble::tribble(
+  ~Part, ~Day, ~Time, ~Rank, ~Score,
+  1, 20, "19:01:44", 14482, 0,
+  2, 20, "19:02:45", 14121, 0,
+  1, 19, ">24h", 10784, 0,
+  2, 19, ">24h", 10507, 0,
+  1, 18, "16:49:00", 10889, 0,
+  2, 18, "23:57:22", 13109, 0,
+  1, 17, "11:28:12", 16798, 0,
+  2, 17, "11:58:11", 15435, 0,
+  1, 16, "12:48:03", 14816, 0,
+  2, 16, "14:50:34", 14616, 0,
+  1, 15, "15:00:27", 22738, 0,
+  2, 15, "16:34:36", 19838, 0
+) %>%
+  select(-Score) %>%
+  pivot_wider(names_from = Part, values_from = c(Time, Rank),
+              names_glue = "Part {Part}_{.value}") %>%
+  mutate(
+    `Time between parts` = as.numeric(hms(`Part 2_Time`) - hms(`Part 1_Time`),
+                                      "minutes") %>% round(1)
+  ) %>%
+  gt() %>%
+  tab_spanner_delim(delim = "_", split = "first") %>%
+  fmt_missing(columns = "Time between parts", missing_text = "")
+```
+
+And here is my position on the private leaderboard:
+
+```{r eval=FALSE, echo=FALSE}
+Sys.setenv(
+  AOC_COOKIE = "53616c7465645f5fbe570e13f71d70a18d97192d755bd2476a103db08d06ce8afc8fe162aee4d2bbecfbd75a9e9f2e65"
+)
+```
+
+```{r eval=FALSE}
+library(httr)
+
+leaderboard <- httr::GET(
+  url = "https://adventofcode.com/2021/leaderboard/private/view/1032765.json",
+  httr::set_cookies(session = Sys.getenv("AOC_COOKIE"))
+) %>%
+  content() %>%
+  as_tibble() %>%
+  unnest_wider(members) %>%
+  arrange(desc(local_score)) %>%
+  transmute(
+    Rank = 1:n(), Name = name, Score = local_score, Stars = stars
+  )
+```
+
+```{r echo=FALSE, eval=FALSE}
+leaderboard %>%
+  write_rds(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                 "leaderboard_2021-12-20.rds"))
+```
+
+```{r echo=FALSE}
+leaderboard <-
+  read_rds(here("_posts", "2021-12-16-advent-of-code-2021-days-16-20",
+                "leaderboard_2021-12-20.rds"))
+```
+
+```{r}
+leaderboard %>%
+  gt() %>%
+  text_transform(
+    locations = cells_body(columns = Stars),
+    fn = function(stars_col) {
+      map_chr(stars_col,
+              ~html(paste0(.x, fontawesome::fa('star', fill = 'gold'))))
+    }
+  ) %>%
+  cols_align("left") %>%
+  tab_style(
+    style = list(cell_text(weight = "bold")),
+    locations = cells_body(
+      rows = (Name == "taylordunn")
+    )
+  ) %>%
+  tab_options(container.height = 500)
 ```
 
 

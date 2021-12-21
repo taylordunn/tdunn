@@ -16,7 +16,6 @@ output:
   distill::distill_article:
     self_contained: false
     toc: true
-#bibliography: references.bib
 ---
 
 ```{r setup, include=TRUE, code_folding="R setup"}
