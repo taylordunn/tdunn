@@ -156,29 +156,25 @@ Define a function to roll the dice for a single player, but keep track of the *s
 
 ```{r}
 roll_dirac <- function(players, player = 1) {
+  players <- players %>% crossing(roll_perm)
   if (player == 1) {
-    crossing(players, roll_perm) %>%
-      mutate(pos1 = custom_mod(pos1 + roll),
-             score1 = score1 + pos1,
-             n_univ = n_univ * n) %>%
-      group_by(pos1, score1, pos2, score2) %>%
-      summarise(n_univ = sum(n_univ), .groups = "drop")
+    players <- players %>%
+      mutate(pos1 = custom_mod(pos1 + roll), score1 = score1 + pos1,
+             n_univ = n_univ * n)
   } else {
-    crossing(players, roll_perm) %>%
-      mutate(pos2 = custom_mod(pos2 + roll),
-             score2 = score2 + pos2,
-             n_univ = n_univ * n) %>%
+    players <- players %>%
+      mutate(pos2 = custom_mod(pos2 + roll), score2 = score2 + pos2,
+             n_univ = n_univ * n)
+  }
+  players %>%
       group_by(pos1, score1, pos2, score2) %>%
       summarise(n_univ = sum(n_univ), .groups = "drop")
-  }
 }
 
 # Sample input
 players <- tibble(pos1 = 4, score1 = 0, pos2 = 8, score2 = 0, n_univ = 1)
 # After two turns
-players %>%
-  roll_dirac(player = 1) %>%
-  roll_dirac(player = 2)
+players %>% roll_dirac(player = 1) %>% roll_dirac(player = 2)
 ```
 
 After each roll, the number of universes (`n_univ`) is updated for each state.
@@ -189,6 +185,7 @@ The loop works by removing winning states (`winner_universes`) from the active s
 ```{r}
 find_winners <- function(players) {
   turn <- 0
+  # Empty tibble to compile winners
   winner_universes <- players %>% filter(FALSE)
   
   while (nrow(players) > 0) {

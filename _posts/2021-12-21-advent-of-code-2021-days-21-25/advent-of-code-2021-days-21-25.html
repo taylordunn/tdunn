@@ -1660,29 +1660,25 @@ Python setup
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>roll_dirac</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>players</span>, <span class='va'>player</span> <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>players</span> <span class='op'>&lt;-</span> <span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/expand.html'>crossing</a></span><span class='op'>(</span><span class='va'>roll_perm</span><span class='op'>)</span>
   <span class='kw'>if</span> <span class='op'>(</span><span class='va'>player</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='fu'><a href='https://tidyr.tidyverse.org/reference/expand.html'>crossing</a></span><span class='op'>(</span><span class='va'>players</span>, <span class='va'>roll_perm</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pos1 <span class='op'>=</span> <span class='fu'>custom_mod</span><span class='op'>(</span><span class='va'>pos1</span> <span class='op'>+</span> <span class='va'>roll</span><span class='op'>)</span>,
-             score1 <span class='op'>=</span> <span class='va'>score1</span> <span class='op'>+</span> <span class='va'>pos1</span>,
-             n_univ <span class='op'>=</span> <span class='va'>n_univ</span> <span class='op'>*</span> <span class='va'>n</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>pos1</span>, <span class='va'>score1</span>, <span class='va'>pos2</span>, <span class='va'>score2</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>n_univ <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>n_univ</span><span class='op'>)</span>, .groups <span class='op'>=</span> <span class='st'>"drop"</span><span class='op'>)</span>
+    <span class='va'>players</span> <span class='op'>&lt;-</span> <span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pos1 <span class='op'>=</span> <span class='fu'>custom_mod</span><span class='op'>(</span><span class='va'>pos1</span> <span class='op'>+</span> <span class='va'>roll</span><span class='op'>)</span>, score1 <span class='op'>=</span> <span class='va'>score1</span> <span class='op'>+</span> <span class='va'>pos1</span>,
+             n_univ <span class='op'>=</span> <span class='va'>n_univ</span> <span class='op'>*</span> <span class='va'>n</span><span class='op'>)</span>
   <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
-    <span class='fu'><a href='https://tidyr.tidyverse.org/reference/expand.html'>crossing</a></span><span class='op'>(</span><span class='va'>players</span>, <span class='va'>roll_perm</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pos2 <span class='op'>=</span> <span class='fu'>custom_mod</span><span class='op'>(</span><span class='va'>pos2</span> <span class='op'>+</span> <span class='va'>roll</span><span class='op'>)</span>,
-             score2 <span class='op'>=</span> <span class='va'>score2</span> <span class='op'>+</span> <span class='va'>pos2</span>,
-             n_univ <span class='op'>=</span> <span class='va'>n_univ</span> <span class='op'>*</span> <span class='va'>n</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+    <span class='va'>players</span> <span class='op'>&lt;-</span> <span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pos2 <span class='op'>=</span> <span class='fu'>custom_mod</span><span class='op'>(</span><span class='va'>pos2</span> <span class='op'>+</span> <span class='va'>roll</span><span class='op'>)</span>, score2 <span class='op'>=</span> <span class='va'>score2</span> <span class='op'>+</span> <span class='va'>pos2</span>,
+             n_univ <span class='op'>=</span> <span class='va'>n_univ</span> <span class='op'>*</span> <span class='va'>n</span><span class='op'>)</span>
+  <span class='op'>}</span>
+  <span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
       <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>pos1</span>, <span class='va'>score1</span>, <span class='va'>pos2</span>, <span class='va'>score2</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
       <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>n_univ <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>n_univ</span><span class='op'>)</span>, .groups <span class='op'>=</span> <span class='st'>"drop"</span><span class='op'>)</span>
-  <span class='op'>}</span>
 <span class='op'>}</span>
 
 <span class='co'># Sample input</span>
 <span class='va'>players</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span>pos1 <span class='op'>=</span> <span class='fl'>4</span>, score1 <span class='op'>=</span> <span class='fl'>0</span>, pos2 <span class='op'>=</span> <span class='fl'>8</span>, score2 <span class='op'>=</span> <span class='fl'>0</span>, n_univ <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='co'># After two turns</span>
-<span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>roll_dirac</span><span class='op'>(</span>player <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>roll_dirac</span><span class='op'>(</span>player <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span> <span class='fu'>roll_dirac</span><span class='op'>(</span>player <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span> <span class='fu'>roll_dirac</span><span class='op'>(</span>player <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code># A tibble: 49 x 5
@@ -1706,6 +1702,7 @@ Python setup
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>find_winners</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>players</span><span class='op'>)</span> <span class='op'>{</span>
   <span class='va'>turn</span> <span class='op'>&lt;-</span> <span class='fl'>0</span>
+  <span class='co'># Empty tibble to compile winners</span>
   <span class='va'>winner_universes</span> <span class='op'>&lt;-</span> <span class='va'>players</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span>
   
   <span class='kw'>while</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>players</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>)</span> <span class='op'>{</span>
@@ -1856,7 +1853,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [7c034cf] 2021-12-21: Day 21 in R</code></pre>
+Head:     [3fd75c5] 2021-12-21: Day 21 in Python</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
