@@ -439,10 +439,10 @@ plot(brm_rating_contact_temp_weak_prior)
 
 Here are what @Burkner2019 had to say about the adjacent-category class of ordinal models.
 
-* Predict the decision between two adjacent categories $k$ and $k+1$
-* Latent variables $\tilde{Y}_k$ with thresholds $\tau_k$ and cumulative distribution function $F$
-* If $\tilde{Y}_k < \tau_k$, we choose category $k$; $k+1$ otherwise
-* It is difficult to think of a natural process leading to them; chosen for its mathematical convenience rather than quality of interpretation
+* Predict the decision between two adjacent categories $k$ and $k+1$.
+* Latent variables $\tilde{Y}_k$ with thresholds $\tau_k$ and cumulative distribution function $F$.
+* If $\tilde{Y}_k < \tau_k$, we choose category $k$; $k+1$ otherwise.
+* It is difficult to think of a natural process leading to them; chosen for its mathematical convenience rather than quality of interpretation.
 
 Mathematically:
 
@@ -467,6 +467,7 @@ brm_rating_contact_temp_default_prior_acat <-
     file = "brm_rating_contact_temp_default_prior_acat"
   )
 ```
+
 How do these estimates compare to the cumulative model?
 
 ```{r}
@@ -521,7 +522,7 @@ For example, the effect of `temp` = warm had a mean effect of $\beta_1$ =
 This may not be an appropriate assumption.
 For example, `temp` warm might have little relation to the highest `rating`, but it may strongly predict `rating`s of 3 relative to 1 or 2.
 
-If this is a possibility, then we can model the predictor as having a *category-sepcific* effect by estimating $K-1$ coefficients for it.
+If this is a possibility, then we can model the predictor as having a *category-specific* effect by estimating $K-1$ coefficients for it.
 The reason we've introduced the adjacent-category model is that it is unproblematic to incorporate these effects (sequential models work as well).
 Cumulative models, however, can lead to negative probabilities, and so should be avoided when using category-specific effects.
 

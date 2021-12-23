@@ -25,6 +25,12 @@ library(here)
 library(gt)
 library(tictoc)
 library(lubridate)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
 ```
 
 <details><summary>Python setup</summary>
@@ -290,6 +296,329 @@ winner_universes \
                             'Player 1', 'Player 2')) \
   .groupby(['winner']) \
   .agg({'n_univ': 'sum'})
+```
+
+## Day 22: Reactor Reboot
+
+```{r}
+day22 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day22-input.txt"))
+day22 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day22-example.txt"))
+day22 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day22-example-1.txt"))
+day22 %>% head()
+```
+
+### Part 1
+
+Parse the reboot steps:
+
+```{r}
+reboot_steps <- tibble(x = day22) %>%
+  extract(
+    col = x, into = c("on", "xmin", "xmax", "ymin", "ymax", "zmin", "zmax"),
+    regex = "(.*) x=(.*)\\.\\.(.*),y=(.*)\\.\\.(.*),z=(.*)\\.\\.(.*)",
+    convert = TRUE
+  ) %>%
+  # Use a logical to indicate on/off
+  mutate(on = on == "on", step_num = row_number())
+reboot_steps
+```
+
+For part 1, I only need the steps within -50 and +50 in each dimension:
+
+```{r}
+reboot_steps_part1 <- reboot_steps %>%
+  filter(xmax >= -50, ymax >= -50, zmax >= -50,
+         xmin <= 50, ymin <= 50, zmin <= 50)
+```
+
+Represent the 100x100x100 grid of cubes with an `array` and a function to update the it in a single step:
+
+```{r}
+cubes <- array(FALSE, dim = c(100, 100, 100))
+
+# For my own convenience, add 50 to each range so that I can index the array
+#  with 1-100
+reboot_steps_part1 <- reboot_steps_part1 %>%
+  mutate(across(xmin:zmax, ~ . + 50))
+
+switch_cubes <- function(cubes, reboot_step) {
+  cubes[reboot_step$xmin:reboot_step$xmax,
+        reboot_step$ymin:reboot_step$ymax,
+        reboot_step$zmin:reboot_step$zmax] <- reboot_step$on
+  return(cubes)
+}
+
+for (reboot_step in reboot_steps_part1 %>% split(.$step_num)) {
+  cubes <- switch_cubes(cubes, reboot_step)
+}
+sum(cubes)
+```
+
+
+### Part 2
+
+```{r}
+cube1 <- reboot_steps %>% slice(1) %>% select(xmin, xmax, ymin, ymax)
+cube1_inner <- cube1 %>% mutate(across(c(xmin, ymin), ~ .x + 5),
+                                across(c(xmax, ymax), ~ .x - 5))
+cube2 <- reboot_steps %>% slice(2) %>% select(xmin, xmax, ymin, ymax)
+cube3 <- reboot_steps %>% slice(10) %>% select(xmin, xmax, ymin, ymax)
+bind_rows(cube1, cube2, cube3)
+bind_rows(cube1, cube2)
+```
+
+```{r}
+find_intersection <- function(cube1, cube2) {
+  # Is there any overlap?
+  x_overlap <- (cube1$xmin <= cube2$xmax) | (cube1$xmax >= cube2$xmin)
+  y_overlap <- (cube1$ymin <= cube2$ymax) | (cube1$ymax >= cube2$ymin)
+  
+  if (any(c(x_overlap, y_overlap))) {
+    # Return the intersecting regions of the cubes
+    bind_rows(cube1, cube2) %>%
+      summarise(
+        across(c(xmin, ymin), max),
+        across(c(xmax, ymax), min)
+      )
+  } else {
+    NULL
+  }
+}
+find_intersection(cube1, cube2)
+```
+
+```{r fig.height=3, fig.width=5}
+p <- bind_rows(cube1, cube2) %>%
+  mutate(cube_num = factor(row_number())) %>%
+  ggplot(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+  geom_rect(aes(fill = cube_num), alpha = 0.5) +
+  dunnr::theme_td_grid()
+p +
+  geom_rect(data = find_intersection(cube1, cube2),
+            fill = NA, color = "black")
+```
+
+```{r}
+plot_cubes <- function(cube1, cube2) {
+  bind_rows(cube1, cube2) %>%
+    mutate(cube_num = factor(row_number())) %>%
+    ggplot(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+    geom_rect(aes(fill = cube_num), alpha = 0.5) +
+    dunnr::theme_td_grid() +
+    geom_rect(data = separate_cubes_2d(cube1, cube2),
+              fill = NA, color = "black", lty = 2)
+}
+```
+
+```{r}
+separate_cubes_2d <- function(cube1, cube2) {
+  cube_inter <- find_intersection(cube1, cube2)
+  
+  if (is.null(cube_inter)) bind_rows(cube1, cube2)
+   
+  
+  xmins <- c(cube1$xmin, cube2$xmin)
+  xmaxs <- c(cube1$xmax, cube2$xmax)
+  x_range <- tribble(~x1, ~x2,
+                     min(xmins), cube_inter$xmin - 1,
+                     cube_inter$xmin, cube_inter$xmax,
+                     cube_inter$xmax + 1, max(xmaxs))
+  ymins <- c(cube1$ymin, cube2$ymin)
+  ymaxs <- c(cube1$ymax, cube2$ymax)
+  y_range <- tribble(~y1, ~y2,
+                     min(ymins), cube_inter$ymin - 1,
+                     cube_inter$ymin, cube_inter$ymax,
+                     cube_inter$ymax + 1, max(ymaxs))
+  crossing(x_range, y_range) %>%
+    rename(xmin = x1, xmax = x2, ymin = y1, ymax = y2) %>%
+    filter(
+      xmin >= cube1$xmin 
+      # (ymin <= max(ymins)) | (xmin >= max(xmins)),
+      # (ymin >= max(ymins)) | (xmax <= min(xmaxs))
+    )
+}
+```
+
+```{r}
+plot_cubes(cube1, cube2)
+```
+
+
+```{r fig.height=3, fig.width=5}
+bind_rows(cube1, cube1_inner) %>%
+  mutate(cube_num = factor(row_number())) %>%
+  ggplot(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+  geom_rect(aes(fill = cube_num), alpha = 0.5) +
+  dunnr::theme_td_grid() +
+  geom_rect(data = separate_cubes_2d(cube1_inner, cube1),
+            fill = NA, color = "black", lty = 2)
+```
+
+```{r}
+bind_rows(cube1, cube1_inner,
+          separate_cubes_2d(cube1, cube1_inner))
+```
+
+
+```{r fig.height=3, fig.width=5}
+bind_rows(cube1, cube3) %>%
+  mutate(cube_num = factor(row_number())) %>%
+  ggplot(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+  geom_rect(aes(fill = cube_num), alpha = 0.5) +
+  dunnr::theme_td_grid() +
+  geom_rect(data = separate_cubes_2d(cube3, cube1),
+            fill = NA, color = "black", lty = 2)
+```
+
+```{r}
+separate_cubes_2d(cube1, cube2) %>%
+  filter(x <= 0, y <= -41)
+```
+
+
+```{r}
+cube1 <- reboot_steps %>% slice(1)
+cube2 <- reboot_steps %>% slice(2)
+bind_rows(cube1, cube2)
+```
+
+```{r}
+find_intersection <- function(cube1, cube2) {
+  # Is there any overlap?
+  x_overlap <- (cube1$xmin <= cube2$xmax) | (cube1$xmax >= cube2$xmin)
+  y_overlap <- (cube1$ymin <= cube2$ymax) | (cube1$ymax >= cube2$ymin)
+  z_overlap <- (cube1$zmin <= cube2$zmax) | (cube1$zmax >= cube2$zmin)
+  
+  if (any(c(x_overlap, y_overlap, z_overlap))) {
+    # Return the intersecting regions of the cubes
+    bind_rows(cube1, cube2) %>%
+      summarise(
+        across(c(xmin, ymin, zmin), max),
+        across(c(xmax, ymax, zmax), min)
+      )
+  } else {
+    NULL
+  }
+}
+find_intersection(cube1, cube2)
+```
+
+Using that intersection, create new cubes:
+
+```{r}
+separate_cubes <- function(cube1, cube2) {
+  cube_inter <- find_intersection(cube1, cube2)
+  
+  if (is.null(cube_inter)) return(cube1)
+  
+  # Based on the intersection, find the 6 new cubes formed by the intersection
+  with(
+    cube1,
+    tribble(
+      ~xmin, ~xmax, ~ymin, ~ymax, ~zmin, ~zmax,
+      # Two cubes to either side of the x intersection
+      xmin, cube_inter$xmin - 1, ymin, ymax, zmin, zmax,
+      cube_inter$xmax + 1, xmax, ymin, ymax, zmin, zmax,
+      # Two cubes to either side of the y intersection
+      xmin, xmax, ymin, cube_inter$ymin - 1, zmin, zmax,
+      xmin, xmax, cube_inter$ymax + 1, ymax, zmin, zmax,
+      # Two cubes to either side of the z intersection
+      xmin, xmax, ymin, ymax, zmin, cube_inter$zmin - 1,
+      xmin, xmax, ymin, ymax, cube_inter$zmax + 1, zmax,
+    ) %>%
+      # Only keep valid cubes
+      filter(xmin <= xmax, ymin <= ymax, zmin <= zmax)
+  )
+}
+
+separate_cubes(cube1, cube2)
+```
+
+```{r}
+separate_cubes(cube1, cube2) %>%
+  slice(1:2) %>%
+  bind_rows(cube1) %>%
+  mutate(cube_num = row_number()) %>%
+  ggplot(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,
+             fill = factor(cube_num))) +
+  geom_rect(alpha = 0.5)
+bind_rows(cube1, cube2) %>%
+  mutate(cube_num = row_number()) %>%
+  ggplot(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+  geom_rect(aes(fill = factor(cube_num)), alpha = 0.5) +
+  geom_rect(
+    data = separate_cubes(cube1, cube2) %>% slice(1:2),
+    fill = NA, color = "black"
+  )
+```
+
+
+
+```{r}
+bind_rows(cube1, cube2) %>%
+  filter()
+  summarise()
+  transmute(xr = range(xmin, xmax))
+  summarise()
+
+    
+    xmin = max(xmin), xmax = min(xmax),
+    ymin = max(xmin), 
+  )
+```
+
+
+```{python}
+def intersection(cube1, cube2):
+  xb1, yb1, zb1 = cube1
+  xb2, yb2, zb2 = cube2
+  for a, b in zip(cube1, cube2):
+    print(a, b)
+    if a[0] > b[1] or a[1] < b[0]:
+      print("exit")
+      return None
+    else:
+      print("continue")
+  return tuple((max(a[0], b[0]), min(a[1], b[1])) for a, b in zip(cube1, cube2))
+  
+#with open('_posts/2021-12-21-advent-of-code-2021-days-21-25/day22-example.txt') as fid:
+with open('day22-example.txt') as fid:
+  lines = []
+  for line in fid:
+    s = line.strip()
+    onoff = s.split()[0]
+    bounds = [[int(x) for x in s.split()[1].split(',')[i].split('=')[1].split('..')] for i in range(3)]
+    lines.append((onoff, *bounds))
+
+lines
+```
+
+
+```{python}
+cubes = []
+for line in lines:
+  onoff = line[0]
+  this_cube = line[1:]
+  # print(onoff)
+  # print(this_cube)
+  cubes.append(this_cube)
+
+cube1 = cubes[0]
+cube2 = cubes[1]
+```
+
+```{python}
+for a, b in zip(cube1, cube2):
+  print(a, b)
+  if a[0] > b[1] or a[1] < b[0]:
+    print("exit")
+    #return None
+  else:
+    print("continue")
+    
 ```
 
 ## Reproducibility {.appendix}
