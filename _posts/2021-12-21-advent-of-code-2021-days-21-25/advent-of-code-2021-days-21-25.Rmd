@@ -506,6 +506,19 @@ cubes %>%
   summarise(n_on = sum(volume) %>% format(scientific = FALSE))
 ```
 
+## Day 23: Amphipod
+
+```{r}
+day23 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day23-input.txt"))
+day23 %>% str_c(collapse = "\n") %>%
+  message()
+```
+
+### Part 1
+
+
+
 ## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
