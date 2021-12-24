@@ -545,66 +545,8 @@ hall_to_room = {2: 1, 4: 2, 6: 3, 8: 4}
 energy_costs = {'A': 1, 'B': 10, 'C': 100, 'D': 1000}
 ```
 
-```{python}
-for i in range(1, 5):
-  # Look for the first non-empty space
-  if state[i][0] is not None:
-    # The top spot is occupied
-    top_loc = 0
-  elif state[i][1] is not None:
-    # The bottom spot is occupied 
-    top_loc = 1
-  else:
-    # Otherwise, nothing in this room so continue
-    continue
-  
-  # In order to mutate the state, need to convert to list of lists
-  state_list = list(map(list, state))
-  letter = state_list[i][top_loc]
-  
-  # If this letter is in the right room, and everything below it is as well
-  if target_rooms[letter] == i and \
-        all(letter == letter_below for letter_below in state[i][top_loc:]):
-    continue # Don't move it
-        
-  steps = top_loc
-  # Move it
-  state_list[i][top_loc] = None
-  possible_locs = []
-  
-  # Find spaces in the hallway
-  # Look to the left of the room first
-  for j in range(room_to_hall[i]):
-    # If not in front of the door
-    if j not in [2, 4, 6, 8]:
-      possible_locs.append(j)
-    # If that space in the hallway is occupied, it is not possible to move
-    if state_list[0][j] is not None:
-      possible_locs.clear()
-  for j in range(room_to_hall[i], 11):
-    if state_list[0][j] is not None:
-      break
-    if j not in [2, 4, 6, 8]:
-      possible_locs.append(j)
-  
-  # The new states will have unique hallways, as a letter moves from a room
-  new_state = list(map(tuple, state_list))
-  hallway = state[0]
-  
-  for loc in possible_locs:
-    hallway_list = list(hallway)
-    hallway_list[loc] = letter
-    new_state[0] = tuple(hallway_list)
-    # Count the number of steps to get to this space, and multiply by energy
-    energy = (steps + 1 + abs(loc - room_to_hall[i])) * energy_costs[letter]
-    print(tuple(new_state))
-    print(energy)
-
-```
-
 
 ```{python}
-
 def get_possible_moves(state):
   # For each room, consider moving the top-most amphipods
   for i in range(1, 5):
@@ -705,11 +647,11 @@ def get_possible_moves(state):
       
       energy = steps * energy_costs[letter]
       yield tuple(map(tuple, state_list)), steps * energy
-      
 ```
 
 
 ```{python}
+from functools import cache
 
 @cache
 def steps_to_target(state):
@@ -721,20 +663,121 @@ def steps_to_target(state):
     possible_costs.append(energy + steps_to_target(new_state))
     
   return min(possible_costs)
-
 ```
 
-```{python}
-steps_to_target(initial_state)
-```
-
-
-```{python}
+```{python, eval=FALSE}
 import sys
 print(sys.getrecursionlimit())
 sys.setrecursionlimit(30000)
+
+steps_to_target(initial_state)
 ```
 
+## Day 24: Arithmetic Logic Unit
+
+```{r}
+day24 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day24-input.txt"))
+head(day24)
+```
+
+### Part 1
+
+These are some very confusing instructions.
+My TLDR is that the puzzle input is the code, through which I run many different 14 digit model numbers, and find the largest valid number (that contains no `0` digits).
+Parse the MONAD instruction list:
+
+```{r}
+monad <- tibble(x = day24) %>%
+  mutate(step_num = row_number()) %>%
+  separate(x, into = c("operation", "var1", "var2"), sep = " ", fill = "right")
+monad
+```
+
+`r nrow(monad)` steps in the program.
+How many input operations are there?
+
+```{r}
+monad %>% count(operation)
+```
+
+14 inputs for the 14 digit model number.
+So I need make a function which takes any 14 digit model number (that doesn't contain 0), and will be considered valid if the `z` variable is non-zero.
+
+```{r}
+check_model_number <- function(model_number) {
+  model_number <- strsplit(model_number, "")[[1]]
+  
+  # Place the model number into the input instructions
+  monad$var2[is.na(monad$var2)] <- model_number
+  
+  reduce(monad %>% split(.$step_num), run_monad_instruction,
+         .init = list(w = 0, x = 0, y = 0, z = 0))
+}
+
+run_monad_instruction <- function(vars, instr) {
+  # Variable 2 is either a number
+  if (!is.na(as.numeric(instr$var2))) {
+    var2 <- as.numeric(instr$var2)
+  # Or variable which has a number assigned
+  } else {
+    var2 <- as.numeric(vars[[instr$var2]])
+  }
+  
+  switch(instr$operation,
+    "inp" = {
+      vars[[instr$var1]] <- var2
+    },
+    "add" = {
+      vars[[instr$var1]] <- vars[[instr$var1]] + var2
+    },
+    "div" = {
+      stopifnot(var2 != 0)
+      vars[[instr$var1]] <- floor(vars[[instr$var1]] / var2)
+    },
+    "mod" = {
+      stopifnot(vars[[instr$var1]] >= 0)
+      stopifnot(var2 > 0)
+      vars[[instr$var1]] <- vars[[instr$var1]] %% var2
+    },
+    "eql" = {
+      vars[[instr$var1]] <- ifelse(vars[[instr$var1]] == var2, 1, 0)
+    }
+  )
+  return(vars)
+}
+```
+
+Now I can check any 14 digit number, like the example input `13579246899999`:
+
+```{r warning=FALSE}
+test_model_number <- "13579246899999"
+check_model_number(test_model_number)
+```
+
+This number returns a non-zero `z`, and so is invalid.
+
+The problem now is: how to check so many model numbers?
+I could start from `99999999999999` and decrease by 1 until I find a valid number.
+
+```{r warning=FALSE}
+check_model_number("99999999999999")
+```
+
+But with 9^14 = `r scales::comma(9^14)` possible numbers to check, I doubt the brute force approach would finish in any reasonable time frame.
+There has to be a simpler way to approach the problem.
+Looking at the raw input, there is definitely a pattern to the instructions.
+The input instructions come at regular intervals (1st, 19th, 37th, 55th, ...).
+Split the `monad` by the input instructions, and compare instructions side-by-side:
+
+```{r message=FALSE}
+day24 %>%
+  split(cumsum(str_detect(., "inp"))) %>%
+  map_dfc(as_tibble) %>%
+  rename_with(~str_replace(., "value...", "input ")) %>%
+  mutate(step_num = row_number()) %>%
+  gt(rowname_col = "step_num")
+```
 
 ## Reproducibility {.appendix}
 
