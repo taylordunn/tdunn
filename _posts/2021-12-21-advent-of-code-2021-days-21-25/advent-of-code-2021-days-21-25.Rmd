@@ -701,7 +701,7 @@ How many input operations are there?
 monad %>% count(operation)
 ```
 
-14 inputs for the 14 digit model number.
+14 inputs (`inp`) for the 14 digit model number.
 So I need make a function which takes any 14 digit model number (that doesn't contain 0), and will be considered valid if the `z` variable is non-zero.
 
 ```{r}
@@ -765,6 +765,7 @@ check_model_number("99999999999999")
 ```
 
 This is not a valid number.
+
 But with 9^14 = `r scales::comma(9^14)` possible numbers to check, I doubt the brute force approach would finish in any reasonable time frame.
 There has to be a simpler way to approach the problem.
 Looking at the raw input, there is definitely a pattern to the instructions.
@@ -782,9 +783,26 @@ day24 %>%
 
 The only steps which differ from input to input to:
 
-* Step 5: `div z 1` and `div z `26`
+* Step 1: `inp w` which will take a different input every time
+* Step 5: `div z 1` and `div z 26`
+  * Because the `div` operation rounds down the result, this 
 * Step 6: `add x 10`, `13`, `15`, `-12`, `14`, `-2`, `11`, `-3`, `-13`
-* Step 16: 
+* Step 16: `add y 10`, `5`, `12`, `6`, `4`, `15`, `3`, `7`, `11`, `2`
+
+So I can write a simple function which takes the input `w`, divides `z`
+
+```{r}
+function(input_w, step5 = 1, step6 = 10, step16 = 10) {
+  # Step 2
+  x <- 0
+  # Step 3
+  x <- z
+  # Step 4
+  x <- x %% 26
+  z <- floor(z / step5)
+}
+```
+
 
 ## Reproducibility {.appendix}
 
