@@ -792,7 +792,7 @@ The only steps which differ from input to input to:
 So I can write a simple function which takes a few variables and runs through all the steps:
 
 ```{r}
-monad_simple_step <- function(w, z = 3, step5 = 1, step6 = 10, step16 = 10) {
+monad_simple_step <- function(z = 0, w = 1, step5 = 1, step6 = 10, step16 = 3) {
   # Step 2
   x <- 0
   # Step 3
@@ -830,20 +830,20 @@ monad_simple_step <- function(w, z = 3, step5 = 1, step6 = 10, step16 = 10) {
   # Output
   z
 }
-monad_simple_step(5)
-monad_simple_step(3, z = 8, step5 = 26, step6 = -12, step16 = 4)
+monad_simple_step(w = 5)
+monad_simple_step(z = 8, w = 3, step5 = 26, step6 = -12, step16 = 4)
 ```
 
 Obviously a lot of these steps can be simplified further.
 A simpler function could have two lines like this:
 
 ```{r}
-monad_simple_step <- function(w, z = 3, step5 = 1, step6 = 10, step16 = 10) {
+monad_simple_step <- function(z = 0, w = 1, step5 = 1, step6 = 10, step16 = 3) {
   x <- as.numeric(((z %% 26) + step6) != w)
   trunc(z / step5) * ((25 * x) + 1) + (w + step16) * x
 }
-monad_simple_step(5)
-monad_simple_step(3, z = 8, step5 = 26, step6 = -12, step16 = 4)
+monad_simple_step(w = 5)
+monad_simple_step(z = 8, w = 3, step5 = 26, step6 = -12, step16 = 4)
 ```
 
 ```{r}
@@ -855,23 +855,56 @@ monad_simple <- monad %>%
   filter(sub_step %in% c(5, 6, 16)) %>%
   select(input_step, sub_step, var2) %>%
   pivot_wider(names_from = sub_step, values_from = var2) %>%
-  rename_with(~str_replace(., "value...", "input ")) %>%
-  rename_with(~paste0("step", .), .cols = c(`5`, `6`, `16`))
+  rename_with(~paste0("step", .), .cols = c(`5`, `6`, `16`)) %>%
+  mutate(across(everything(), as.integer))
+monad_simple
+```
+
+
+
+```{r}
+check_model_number_simple <- function(model_number) {
+  m <- monad_simple %>%
+    mutate(w = as.integer(strsplit(model_number, "")[[1]]))
+  
+  reduce(
+    transpose(m),
+    function(z, args) {
+      monad_simple_step(z, args$w, args$step5, args$step6, args$step16)
+    },
+    .init = 0
+  )
+}
+```
+
+
+```{r}
+library(furrr)
+future::plan(multisession, workers = 4)
+
+max_number <- 99999999999999
+min_number <- max_number * 0.999
+model_numbers <- as.character(seq(max_number, max_number - 1e6))
+
+tic()
+for (model_number in model_numbers) {
+  if (grepl("0", model_number)) {
+    z <- check_model_number_simple(model_number)
+    if (z == 0) break
+  }
+}
+toc()
 ```
 
 ```{r}
 model_number <- test_model_number
-check_model_number_simple <- function(model_number) {
-  m <- monad_simple %>%
-    mutate(w = strsplit(model_number, "")[[1]])
-  
-  reduce(transpose(m), ~paste0(.$w, collapse = "_"))
-  
-  reduce2(model_number, monad_simple$input_step, paste0) 
-  
-  reduce(monad %>% split(.$step_num), run_monad_instruction,
-         .init = list(w = 0, x = 0, y = 0, z = 0))
-}
+check_model_number("99999999999999")
+check_model_number_simple("99999999999999")
+```
+
+
+
+```{r}
 check_model_number_simple <- function(model_number) {
   
 }
@@ -881,6 +914,7 @@ run_monad_simple <- function(model_number) {
 reduce(monad %>% split(.$step_num), run_monad_instruction,
        .init = list(w = 0, x = 0, y = 0, z = 0))
 
+run_monad_instruction
 ```
 
 
