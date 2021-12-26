@@ -516,6 +516,8 @@ day23 %>% str_c(collapse = "\n") %>% message()
 
 ### Part 1
 
+I've been slacking a bit on my Python, so I'll attempt this one in Python first (and if I have time, reproduce the solution in R).
+
 ```{python}
 # Extract the letters into a list
 letters = [[c for c in line if c.isalpha()] for line in r.day23[2:4]]
@@ -731,6 +733,9 @@ run_monad_instruction <- function(vars, instr) {
     "add" = {
       vars[[instr$var1]] <- vars[[instr$var1]] + var2
     },
+    "mul" = {
+      vars[[instr$var1]] <- vars[[instr$var1]] * var2
+    },
     "div" = {
       stopifnot(var2 != 0)
       vars[[instr$var1]] <- trunc(vars[[instr$var1]] / var2)
@@ -785,7 +790,6 @@ The only steps which differ from input to input to:
 
 * Step 1: `inp w` which will take a different input every time
 * Step 5: `div z 1` and `div z 26`
-  * Because the `div` operation rounds down the result, this 
 * Step 6: `add x 10`, `13`, `15`, `-12`, `14`, `-2`, `11`, `-3`, `-13`
 * Step 16: `add y 10`, `5`, `12`, `6`, `4`, `15`, `3`, `7`, `11`, `2`
 
@@ -846,6 +850,8 @@ monad_simple_step(w = 5)
 monad_simple_step(z = 8, w = 3, step5 = 26, step6 = -12, step16 = 4)
 ```
 
+I can also simplify my `monad` input down to just the important numbers for each digit of the model number:
+
 ```{r}
 monad_simple <- monad %>%
   mutate(input_step = cumsum(operation == "inp")) %>%
@@ -860,6 +866,7 @@ monad_simple <- monad %>%
 monad_simple
 ```
 
+This function will run a model number through the above steps and return the value of `z`:
 
 ```{r}
 check_model_number_simple <- function(model_number) {
@@ -877,7 +884,8 @@ check_model_number_simple <- function(model_number) {
 check_model_number_simple("99999999999999")
 ```
 
-But this still requires checking too many numbers, aid needs to be broken down even more.
+This will be run much faster than my previous `check_model_number` function, but doesn't solve the main problem: it requires checking every number until `z = 0`.
+So it needs to be broken down even more.
 
 Consider the line:
 
@@ -893,9 +901,15 @@ monad_simple %>% count(step5, step6)
 ```
 
 Since `w` can only take values `1` to `9`, any values of `step6 > 9` will also lead to inequality with `w` and therefore `x = 1`.
-The values of `step6 > 9` correspond to `step5 = 1`, and so `x` is always `1`.
+The values of `step6 > 9` correspond to `step5 = 1`, and so `x` is always `1` in these cases.
 
 So the `x` value works sort of as an on/off switch that feeds into the next line:
+
+```{r eval=FALSE}
+z <- trunc(z / step5) * ((25 * x) + 1) + (w + step16) * x
+```
+
+Break this down into three terms:
 
 ```{r eval=FALSE}
 term1 <- trunc(z / step5)
@@ -910,7 +924,7 @@ z <- term1 * term2 + term3
 * If `x = 1`, then `term3 = w + step16`
 
 The number 26 occurring so frequently means we should be thinking in base 26 numbers.
-Here is what happens to `z` if `x = 1, and how we can think of `z` in base 26:
+Here is what happens to `z` under different conditions, and how we can think of `z` in base 26:
 
 * `term1`
     * `step5 = 1`
@@ -921,16 +935,17 @@ Here is what happens to `z` if `x = 1, and how we can think of `z` in base 26:
     * `= 1` (no change)
     * `= 26` (add an order)
 * `term3`
-    * `w + step16` (add to the number)
+    * `= 0` no change)
+    * `= w + step16` (add to the number)
         
-I'm not very familiar with these terms as a non-CS grad, but apparently this mimics a [stack data structure](https://en.wikipedia.org/wiki/Stack_(abstract_data_type) which can *push* a value `w` (adds it to the stack) or *pop* the most recent (remove from the stack).
-`term3` is *pushing* the value of `w + step16` onto the stack (in base 26), if `step5 = 1`, otherwise `step5 = 26` pops the last value.
+I'm not very familiar with these terms as a non-CS grad, but apparently this mimics a [stack data structure](https://en.wikipedia.org/wiki/Stack_(abstract_data_type) which can *push* a value (adds it to the stack) or *pop* the most recent (remove from the stack).
+`term3` is *pushing* the value of `w + step16` onto the stack (in base 26) if `step5 = 1`, otherwise `step5 = 26` pops the last value.
 To get a valid model number, we need `z = 0`, so these digits need to be *popped* off the stack.
 There are 7 each of `step5 = 1` and `step5 = 26` so we can equally add and remove the digits until the stack is empty.
 
 This means that the lines with `step5 = 26`, `x = as.numeric(((z %% 26) + step6) != w)` must be 0, which requires that the pushed digit `w + step16` from the previous step be equal to the next step's `w - step6`.
 
-My input is as follows:
+My input corresponds to the following push an pop operations on the 14 digits of a model number:
 
 ```{r}
 monad_simple %>%
@@ -958,6 +973,8 @@ So the model number requirements unique to my MONAD input are:
 * `model_num[13] = model_num[2] - 12 + 5`
 * `model_num[14] = model_num[1] - 13 + 10`
 
+Then the maximum valid model number doesn't require any programming, just some basic logic and picking the maximum possible digit for each:
+
 * `model_num[1] = 9`
     * `model_num[14] = 9 - 3 = 6`
 * `model_num[2] = 9`
@@ -973,13 +990,17 @@ So the model number requirements unique to my MONAD input are:
 * `model_num[9] = 9`
     * `model_num[12] = 9 - 6 = 3`
     
-`99995969919326`
+This corresponds to `99995969919326`.
+Before submitting it, I can check that `z = 0` with my functions:
 
-```{r}
+```{r warning=FALSE}
+check_model_number("99995969919326")
 check_model_number_simple("99995969919326")
 ```
 
 ### Part 2
+
+The same rules as part 1 apply, I just need to pick the lowest digits possible:
 
 * `model_num[1] = 4`
     * `model_num[14] = 4 - 3 = 1`
@@ -996,12 +1017,60 @@ check_model_number_simple("99995969919326")
 * `model_num[9] = 7`
     * `model_num[12] = 7 - 6 = 1`
     
-`48111514719111`
+This corresponds to `48111514719111`.
 
-```{r}
+```{r warning=FALSE}
+check_model_number("48111514719111")
 check_model_number_simple("48111514719111")
 ```
 
+## Day 25: Sea Cucumber
+
+```{r}
+day25 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day25-input.txt"))
+day25 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                         "day25-example.txt"))
+head(day25) %>% str_trunc(80)
+```
+
+### Part 1
+
+```{r}
+seafloor <- day25 %>%
+  map(~strsplit(., "")[[1]]) %>%
+  unlist() %>%
+  matrix(nrow = length(day25), byrow = TRUE)
+seafloor  
+```
+
+```{r}
+max_col <- ncol(seafloor)
+max_row <- nrow(seafloor)
+
+move_east <- function(seafloor) {
+  east_idx <- which(seafloor == ">", arr.ind = TRUE)
+  
+  seafloor_new <- seafloor
+  for (i in 1:nrow(east_idx)) {
+    # Find the adjacent space (one column over)
+    adjacent_col <- east_idx[i, 2] + 1
+    # If off the right edge of the map, back to the left edge
+    if (adjacent_col > max_col) {
+      adjacent_col <- adjacent_col - max_col
+    }
+    # If unoccupied, move it
+    if (seafloor[east_idx[i, 1], adjacent_col] == ".") {
+      seafloor_new[east_idx[i, 1], adjacent_col] <- ">"
+      seafloor_new[east_idx[i, 1], east_idx[, 2]] <- "."
+    }
+  }
+  return(seafloor_new)
+}
+```
+
+
+### Part 2
 
 ## Reproducibility {.appendix}
 
