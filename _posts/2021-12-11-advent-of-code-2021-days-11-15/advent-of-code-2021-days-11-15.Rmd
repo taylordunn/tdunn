@@ -1095,7 +1095,7 @@ About 30 minutes, which is pretty bad.
 
 ## Stats
 
-Here are my personal stats for these last 5 days:
+Here are my personal stats for days 10-15:
 
 ```{r}
 tibble::tribble(

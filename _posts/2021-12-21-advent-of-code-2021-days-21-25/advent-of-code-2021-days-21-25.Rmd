@@ -1041,7 +1041,7 @@ seafloor <- day25 %>%
   map(~strsplit(., "")[[1]]) %>%
   unlist() %>%
   matrix(nrow = length(day25), byrow = TRUE)
-seafloor  
+seafloor[1:10, 1:10]
 ```
 
 ```{r}
@@ -1062,15 +1062,138 @@ move_east <- function(seafloor) {
     # If unoccupied, move it
     if (seafloor[east_idx[i, 1], adjacent_col] == ".") {
       seafloor_new[east_idx[i, 1], adjacent_col] <- ">"
-      seafloor_new[east_idx[i, 1], east_idx[, 2]] <- "."
+      seafloor_new[east_idx[i, 1], east_idx[i, 2]] <- "."
+    }
+  }
+  return(seafloor_new)
+}
+
+move_south <- function(seafloor) {
+  south_idx <- which(seafloor == "v", arr.ind = TRUE)
+  
+  seafloor_new <- seafloor
+  for (i in 1:nrow(south_idx)) {
+    # Find the adjacent space (one row down)
+    adjacent_row <- south_idx[i, 1] + 1
+    # If off the right edge of the map, back to the left edge
+    if (adjacent_row > max_row) {
+      adjacent_row <- adjacent_row - max_row
+    }
+    # If unoccupied, move it
+    if (seafloor[adjacent_row, south_idx[i, 2]] == ".") {
+      seafloor_new[adjacent_row, south_idx[i, 2]] <- "v"
+      seafloor_new[south_idx[i, 1], south_idx[i, 2]] <- "."
     }
   }
   return(seafloor_new)
 }
 ```
 
+```{r}
+seafloor_part1 <- seafloor
+step <- 0
+repeat {
+  step <- step + 1
+  seafloor_new <- seafloor_part1 %>% move_east() %>% move_south()
+  
+  # If the map hasn't changed, break
+  if (all(seafloor_new == seafloor_part1)) break
+  seafloor_part1 <- seafloor_new
+}
+step
+```
+
 
 ### Part 2
+
+## Stats
+
+Here are my personal stats for these last 5 days:
+
+```{r warning=FALSE}
+tibble::tribble(
+  ~Part, ~Day, ~Time, ~Rank,
+  1, 25, ">24h", 11179,
+  2, 25, ">24h", 6765,
+  1, 24, ">24h", 8152, 
+  2, 24, ">24h", 8018,
+  1, 23, ">24h", 9585, 
+  2, 23, ">24h", 6847,
+  1, 22, "12:44:05", 12908,
+  2, 22, "23:02:28", 8867,
+  1, 21, "09:40:13", 14341,
+  2, 21, "11:35:27", 9163
+) %>%
+  pivot_wider(names_from = Part, values_from = c(Time, Rank),
+              names_glue = "Part {Part}_{.value}") %>%
+  mutate(
+    `Time between parts` = as.numeric(hms(`Part 2_Time`) - hms(`Part 1_Time`),
+                                      "minutes") %>% round(1)
+  ) %>%
+  gt() %>%
+  tab_spanner_delim(delim = "_", split = "first") %>%
+  fmt_missing(columns = "Time between parts", missing_text = "")
+```
+
+I really lagged behind in the last few days, mostly due to work and spending time with family, but I also found the puzzles more difficult.
+This is probably a similar story to others on the private leaderboard:
+
+```{r eval=FALSE, echo=FALSE}
+Sys.setenv(
+  AOC_COOKIE = "53616c7465645f5fbe570e13f71d70a18d97192d755bd2476a103db08d06ce8afc8fe162aee4d2bbecfbd75a9e9f2e65"
+)
+```
+
+```{r eval=FALSE}
+library(httr)
+
+leaderboard <- httr::GET(
+  url = "https://adventofcode.com/2021/leaderboard/private/view/1032765.json",
+  httr::set_cookies(session = Sys.getenv("AOC_COOKIE"))
+) %>%
+  content() %>%
+  as_tibble() %>%
+  unnest_wider(members) %>%
+  arrange(desc(local_score)) %>%
+  transmute(
+    Rank = 1:n(), Name = name, Score = local_score, Stars = stars
+  )
+```
+
+```{r echo=FALSE, eval=FALSE}
+leaderboard %>%
+  write_rds(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                 "leaderboard_2021-12-25.rds"))
+```
+
+```{r echo=FALSE}
+leaderboard <-
+  read_rds(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
+                "leaderboard_2021-12-25.rds"))
+```
+
+```{r}
+leaderboard %>%
+  gt() %>%
+  text_transform(
+    locations = cells_body(columns = Stars),
+    fn = function(stars_col) {
+      map_chr(stars_col,
+              ~html(paste0(.x, fontawesome::fa('star', fill = 'gold'))))
+    }
+  ) %>%
+  cols_align("left") %>%
+  tab_style(
+    style = list(cell_text(weight = "bold")),
+    locations = cells_body(
+      rows = (Name == "taylordunn")
+    )
+  ) %>%
+  tab_options(container.height = 500)
+```
+
+13th place out of 126, which I'm very happy with.
+Especially considering that the puzzles released at 1AM my time, so I generally didn't get to start until after work the next day.
 
 ## Reproducibility {.appendix}
 
