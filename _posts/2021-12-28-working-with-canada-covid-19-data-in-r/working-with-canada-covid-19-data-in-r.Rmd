@@ -50,6 +50,31 @@ get_summary <- function(split = c("overall", "province", "region")) {
 
   data <- httr::content(resp, as = "parsed")
 
+  bind_rows(data$data) %>%
+    bind_cols(data["last_updated"]) %>%
+    mutate(
+      across(matches("^change|total"), as.integer),
+      across(matches("date"), as.Date),
+      last_updated = as.POSIXct(last_updated)
+    )
+}
+
+summary_region <- get_summary("region")
+```
+
+### Regions
+
+```{r}
+get_regions <- function() {
+  api_url <- paste0("https://api.covid19tracker.ca/", "regions")
+  resp <- httr::GET(api_url)
+
+  if (resp$status_code != 200) {
+    stop(paste0("Unsuccessful HTTP response returned: ", resp$status_code))
+  }
+
+  data <- httr::content(resp, as = "parsed")
+
   map_dfr(
     data$data,
     ~unlist(.x) %>% enframe() %>% pivot_wider()
@@ -62,12 +87,8 @@ get_summary <- function(split = c("overall", "province", "region")) {
     )
 }
 
-summary_region <- get_summary("region")
 
 ```
-
-### Regions
-
 
 
 ## Reproducibility {.appendix}
