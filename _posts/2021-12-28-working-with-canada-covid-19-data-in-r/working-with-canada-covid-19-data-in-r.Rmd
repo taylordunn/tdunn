@@ -1,0 +1,96 @@
+---
+title: "Working with Canada COVID-19 data in R"
+description: |
+  A short description of the post.
+author:
+  - name: Taylor Dunn
+date: 2021-12-28
+params:
+  date: 2021-12-28
+  slug: "2021-12-28-working-with-canada-covid-19-data-in-r"
+categories:
+  - R
+  - package development
+  - COVID-19
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+---
+
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dunnr)
+library(httr)
+
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+```{r}
+get_summary <- function(split = c("overall", "province", "region")) {
+  split <- match.arg(split)
+
+  api_url <- paste0(
+    "https://api.covid19tracker.ca/",
+    switch(split,
+           overall = "summary",
+           province = "summary/split",
+           region = "summary/split/hr")
+  )
+  resp <- httr::GET(api_url)
+
+  if (resp$status_code != 200) {
+    stop(paste0("Unsuccessful HTTP response returned: ", resp$status_code))
+  }
+
+  data <- httr::content(resp, as = "parsed")
+
+  map_dfr(
+    data$data,
+    ~unlist(.x) %>% enframe() %>% pivot_wider()
+  ) %>%
+    bind_cols(data["last_updated"]) %>%
+    mutate(
+      across(matches("^change|total"), as.integer),
+      across(matches("date"), as.Date),
+      last_updated = as.POSIXct(last_updated)
+    )
+}
+
+summary_region <- get_summary("region")
+
+```
+
+### Regions
+
+
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
