@@ -1,5 +1,5 @@
 ---
-title: "Advent of Code: Days 21-25"
+title: "Advent of Code 2021: Days 21-25"
 description: |
   My solutions to the #AdventOfCode2021 coding challenges, days 21 through 25.
 author:
@@ -581,10 +581,10 @@ target_state = ((None, ) * 11, ('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D'))
 Also define some helpful `dict` mappings that define connections between rooms, halls, amphipods and their energy costs to move:
 
 ```{python}
-# The rooms targetted by each ampihpod
+# The rooms targetted by each amphipod
 target_rooms = {'A': 1, 'B': 2, 'C': 3, 'D': 4}
 # This dict maps rooms (numeric 1 = A, 2 = B, etc) to numeric locations in the
-#  hallway, e.g. room B (2) leads to hallway location 4
+#  hallway, e.g. room B leads to hallway location 4
 room_to_hall = {1: 2, 2: 4, 3: 6, 4: 8}
 energy_costs = {'A': 1, 'B': 10, 'C': 100, 'D': 1000}
 ```
@@ -914,8 +914,7 @@ run_monad_instruction <- function(vars, instr) {
 Now I can check any 14 digit number, like the example input `13579246899999`:
 
 ```{r warning=FALSE}
-test_model_number <- "13579246899999"
-check_model_number(test_model_number)
+check_model_number("13579246899999")
 ```
 
 This number returns a non-zero `z`, and so is invalid.
@@ -944,7 +943,7 @@ day24 %>%
 
 The only steps which differ from input to input are:
 
-* Step 1: `inp w` which will take a different input every time
+* Step 1: `inp w` which will take a different digit from the model number every time
 * Step 5: `div z 1` and `div z 26`
 * Step 6: `add x 10`, `13`, `15`, `-12`, `14`, `-2`, `11`, `-3`, `-13`
 * Step 16: `add y 10`, `5`, `12`, `6`, `4`, `15`, `3`, `7`, `11`, `2`
@@ -1416,7 +1415,7 @@ leaderboard %>%
   tab_options(container.height = 500)
 ```
 
-13th place out of 126, which I'm very happy with, especially since the puzzles released at 1AM my time so I generally didn't get to start until after work the next day.
+13th place out of 130, which I'm very happy with, especially since the puzzles released at 1AM my time so I generally didn't get to start until after work the next day.
 
 My main takeaways, which may help me in future years of Advent of Code:
 
