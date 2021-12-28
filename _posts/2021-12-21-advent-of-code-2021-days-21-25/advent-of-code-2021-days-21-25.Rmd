@@ -516,37 +516,80 @@ day23 %>% str_c(collapse = "\n") %>% message()
 
 ### Part 1
 
-I've been slacking a bit on my Python, so I'll attempt this one in Python first (and if I have time, reproduce the solution in R).
+>
+A group of amphipods notice your fancy submarine and flag you down. "With such an impressive shell," one amphipod says, "surely you can help us with a question that has stumped our best scientists."
+>
+They go on to explain that a group of timid, stubborn amphipods live in a nearby burrow. Four types of amphipods live there: Amber (`A`), Bronze (`B`), Copper (`C`), and Desert (`D`). They live in a burrow that consists of a hallway and four side rooms. The side rooms are initially full of amphipods, and the hallway is initially empty.
+>
+They give you a diagram of the situation (your puzzle input), including locations of each amphipod (`A`, `B`, `C`, or `D`, each of which is occupying an otherwise open space), walls (#), and open space (.).
+>
+For example:
 
-```{python}
-# Extract the letters into a list
-letters = [[c for c in line if c.isalpha()] for line in r.day23[2:4]]
-
-# Use tuples instead of lists, because they are fixed in size, just like the
-#  rooms/hallway
-rooms = [(letter1, letter2) for letter1, letter2 in zip(*letters)]
-# The hallway is 11 empty spaces, represented by None
-hallway = (None, ) * 11
-# The initial state is represented with a tuple of tuples
-initial_state = (hallway, *rooms)
+```
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########`
 ```
 
-Define the target state -- A, B, C and D in the rooms in order left to right:
+>The amphipods would like a method to organize every amphipod into side rooms so that each side room contains one type of amphipod and the types are sorted `A`-`D` going left to right, like this:
+
+```
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #########
+```
+
+>Amphipods can move up, down, left, or right so long as they are moving into an unoccupied open space. Each type of amphipod requires a different amount of energy to move one step: Amber amphipods require `1` energy per step, Bronze amphipods require `10` energy, Copper amphipods require `100`, and Desert ones require `1000`. The amphipods would like you to find a way to organize the amphipods that requires the least total energy.
+>
+However, because they are timid and stubborn, the amphipods have some extra rules:
+>
+* Amphipods will never stop on the space immediately outside any room. They can move into that space so long as they immediately continue moving. (Specifically, this refers to the four open spaces in the hallway that are directly above an amphipod starting position.)
+* Amphipods will never move from the hallway into a room unless that room is their destination room and that room contains no amphipods which do not also have that room as their own destination. If an amphipod's starting room is not its destination room, it can stay in that room until it leaves the room. (For example, an Amber amphipod will not move from the hallway into the right three rooms, and will only move into the leftmost room if that room is empty or if it only contains other Amber amphipods.)
+* Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room. (That is, once any amphipod starts moving, any other amphipods currently in the hallway are locked in place and will not move again until they can move fully into a room.)
+>
+What is the least energy required to organize the amphipods?
+
+I've been slacking a bit on my Python, so I'll attempt this one in Python first (and if I have time, reproduce the solution in R).
+Parse the data into a list of lists:
+
+```{python}
+letters = [[c for c in line if c.isalpha()] for line in r.day23[2:4]]
+letters
+```
+
+The first element is the top row of each room, and the second is the bottom.
+Now represent the *initial state* of the amphipod locations with a tuple of the hallway (starting empty) and the rooms:
+
+```{python}
+rooms = [(letter1, letter2) for letter1, letter2 in zip(*letters)]
+# Represent the empty hallway with 11 None values
+hallway = (None, ) * 11
+initial_state = (hallway, *rooms)
+initial_state
+```
+
+Define the *target state* -- `A`, `B`, `C` and `D` in the rooms in order left to right:
 
 ```{python}
 target_state = ((None, ) * 11, ('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D'))
-target_rooms = {'A': 1, 'B': 2, 'C': 3, 'D': 4}
 ```
 
+Also define some helpful `dict` mappings that define connections between rooms, halls, amphipods and their energy costs to move:
 
 ```{python}
+# The rooms targetted by each ampihpod
+target_rooms = {'A': 1, 'B': 2, 'C': 3, 'D': 4}
 # This dict maps rooms (numeric 1 = A, 2 = B, etc) to numeric locations in the
-#  hallway, e.g. room B leads to hallway location 4
+#  hallway, e.g. room B (2) leads to hallway location 4
 room_to_hall = {1: 2, 2: 4, 3: 6, 4: 8}
-hall_to_room = {2: 1, 4: 2, 6: 3, 8: 4}
 energy_costs = {'A': 1, 'B': 10, 'C': 100, 'D': 1000}
 ```
 
+Define the workhorse function of the problem, which loops over all amphipods and returns possible states and their energy costs:
 
 ```{python}
 def get_possible_moves(state):
@@ -563,8 +606,9 @@ def get_possible_moves(state):
       # Otherwise, nothing in this room so continue
       continue
     
-    # In order to mutate the state, need to convert to list of lists
+    # In order to mutate the tuple state, need to convert to list of lists
     state_list = list(map(list, state))
+    # The amphipod letter at the top of the room
     letter = state_list[i][top_loc]
     
     # If this letter is in the right room, and everything below it is as well
@@ -572,12 +616,12 @@ def get_possible_moves(state):
         all(letter == letter_below for letter_below in state[i][top_loc:]):
       continue # Don't move it
           
-    steps = top_loc
     # Move it
+    steps = top_loc 
     state_list[i][top_loc] = None
-    possible_locs = []
     
-    # Find spaces in the hallway
+    # Find spaces in the hallway that it could possibly move
+    possible_locs = []
     # Look to the left of the room first
     for j in range(room_to_hall[i]):
       # If not in front of the door
@@ -586,6 +630,7 @@ def get_possible_moves(state):
       # If that space in the hallway is occupied, it is not possible to move
       if state_list[0][j] is not None:
         possible_locs.clear()
+    # Look to the right of the room second
     for j in range(room_to_hall[i], 11):
       if state_list[0][j] is not None:
         break
@@ -651,6 +696,9 @@ def get_possible_moves(state):
       yield tuple(map(tuple, state_list)), steps * energy
 ```
 
+Now to define a function that repeatedly looks for new states until it finds the target state.
+To drastically reduce computation time, I will take advantage of [memoization](https://en.wikipedia.org/wiki/Memoization) from the `functools` package.
+This works by caching the results of a function for specific inputs (here the `state`), and returning the cached result instead of re-computing it.
 
 ```{python}
 from functools import cache
@@ -667,13 +715,85 @@ def steps_to_target(state):
   return min(possible_costs)
 ```
 
-```{python, eval=FALSE}
+
+```{python, error=TRUE}
+steps_to_target(initial_state)
+```
+Even with memoization, this requires me to adjust the recursion depth:
+
+```{python}
 import sys
 print(sys.getrecursionlimit())
 sys.setrecursionlimit(30000)
+```
 
+```{python, eval=FALSE}
 steps_to_target(initial_state)
 ```
+
+Unfortunately, I can't get this working in the RStudio IDE with `reticulate` -- the R session immediately crashes.
+I had to run it in Visual Studio instead and found that the least energy required to reach the target state was `13495`.
+
+### Part 2
+
+>
+As you prepare to give the amphipods your solution, you notice that the diagram they handed you was actually folded up. As you unfold it, you discover an extra part of the diagram.
+>
+Between the first and second lines of text that contain amphipod starting positions, insert the following lines:
+
+```
+  #D#C#B#A#
+  #D#B#A#C#
+```
+
+>
+So, the above example now becomes:
+
+```
+#############
+#...........#
+###B#C#B#D###
+  #D#C#B#A#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+```
+
+>The amphipods still want to be organized into rooms similar to before:
+
+```
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #A#B#C#D#
+  #A#B#C#D#
+  #########
+```
+
+>Using the initial configuration from the full diagram, what is the least energy required to organize the amphipods?
+
+Thankfully I predicted the rooms getting bigger in part 2, so I only have to add a couple lines of code to the `get_possible_moves` function:
+
+```{python, eval=FALSE}
+def get_possible_moves(state):
+  for i in range(1, 5):
+    if state[i][0] is not None:
+      top_loc = 0
+    elif state[i][1] is not None:
+      top_loc = 1
+    elif state[i][2] is not None:
+      top_loc = 2
+    elif state[i][3] is not None:
+      top_loc = 3
+    else:
+      # Otherwise, nothing in this room so continue
+      continue
+  # Rest of the function remains the same
+  # ...
+```
+
+The answer to this part is `53767` energy.
 
 ## Day 24: Arithmetic Logic Unit
 
@@ -684,6 +804,44 @@ head(day24)
 ```
 
 ### Part 1
+
+<details><summary>Very long puzzle statement</summary>
+
+>
+Magic smoke starts leaking from the submarine's arithmetic logic unit (ALU). Without the ability to perform basic arithmetic and logic functions, the submarine can't produce cool patterns with its Christmas lights!
+>
+It also can't navigate. Or run the oxygen system.
+>
+Don't worry, though - you probably have enough oxygen left to give you enough time to build a new ALU.
+>
+The ALU is a four-dimensional processing unit: it has integer variables `w`, `x`, `y`, and `z`. These variables all start with the value `0`. The ALU also supports six instructions:
+>
+* `inp a` - Read an input value and write it to variable `a`.
+* `add a b` - Add the value of `a` to the value of `b`, then store the result in variable `a`.
+* `mul a b` - Multiply the value of `a` by the value of `b`, then store the result in variable `a`.
+* `div a b` - Divide the value of `a` by the value of `b`, truncate the result to an integer, then store the result in variable `a`. (Here, "truncate" means to round the value toward zero.)
+* `mod a b` - Divide the value of `a` by the value of `b`, then store the remainder in variable `a`. (This is also called the modulo operation.)
+* `eql a b` - If the value of `a` and `b` are equal, then store the value `1` in variable `a`. Otherwise, store the value `0` in variable `a`.
+>
+In all of these instructions, `a` and `b` are placeholders; `a` will always be the variable where the result of the operation is stored (one of `w`, `x`, `y`, or `z)`, while `b` can be either a variable or a number. Numbers can be positive or negative, but will always be integers.
+>
+The ALU has no jump instructions; in an ALU program, every instruction is run exactly once in order from top to bottom. The program halts after the last instruction has finished executing.
+>
+(Program authors should be especially cautious; attempting to execute div with b=0 or attempting to execute mod with `a<0` or `b<=0` will cause the program to crash and might even damage the ALU. These operations are never intended in any serious ALU program.)
+>
+Once you have built a replacement ALU, you can install it in the submarine, which will immediately resume what it was doing when the ALU failed: validating the submarine's model number. To do this, the ALU will run the MOdel Number Automatic Detector program (MONAD, your puzzle input).
+>
+Submarine model numbers are always fourteen-digit numbers consisting only of digits `1` through `9`. The digit `0` cannot appear in a model number.
+>
+When MONAD checks a hypothetical fourteen-digit model number, it uses fourteen separate inp instructions, each expecting a single digit of the model number in order of most to least significant. (So, to check the model number `13579246899999`, you would give `1` to the first `inp` instruction, `3` to the second `inp` instruction, `5` to the third `inp` instruction, and so on.) This means that when operating MONAD, each input instruction should only ever be given an integer value of at least `1` and at most `9`.
+>
+Then, after MONAD has finished running all of its instructions, it will indicate that the model number was valid by leaving a `0` in variable `z`. However, if the model number was invalid, it will leave some other non-zero value in `z`.
+>
+MONAD imposes additional, mysterious restrictions on model numbers, and legend says the last copy of the MONAD documentation was eaten by a tanuki. You'll need to figure out what MONAD does some other way.
+>
+To enable as many submarine features as possible, find the largest valid fourteen-digit model number that contains no `0` digits. What is the largest model number accepted by MONAD?
+
+</details>
 
 These are some very confusing instructions.
 My TLDR is that the puzzle input is the code, through which I run many different 14 digit model numbers, and find the largest valid number (that contains no `0` digits).
@@ -769,8 +927,6 @@ I could start from `99999999999999` and decrease by 1 until I find a valid numbe
 check_model_number("99999999999999")
 ```
 
-This is not a valid number.
-
 But with 9^14 = `r scales::comma(9^14)` possible numbers to check, the brute force approach would not finish in any reasonable time frame.
 There has to be a simpler way to approach the problem.
 Looking at the raw input, there is definitely a pattern to the instructions.
@@ -786,7 +942,7 @@ day24 %>%
   gt(rowname_col = "step_num")
 ```
 
-The only steps which differ from input to input to:
+The only steps which differ from input to input are:
 
 * Step 1: `inp w` which will take a different input every time
 * Step 5: `div z 1` and `div z 26`
@@ -850,7 +1006,7 @@ monad_simple_step(w = 5)
 monad_simple_step(z = 8, w = 3, step5 = 26, step6 = -12, step16 = 4)
 ```
 
-I can also simplify my `monad` input down to just the important numbers for each digit of the model number:
+I can also simplify my `monad` input down to just the important steps:
 
 ```{r}
 monad_simple <- monad %>%
@@ -884,7 +1040,7 @@ check_model_number_simple <- function(model_number) {
 check_model_number_simple("99999999999999")
 ```
 
-This will be run much faster than my previous `check_model_number` function, but doesn't solve the main problem: it requires checking every number until `z = 0`.
+This will run much faster than my previous `check_model_number` function, but doesn't solve the main problem: it still requires checking every model number until we find `z = 0`.
 So it needs to be broken down even more.
 
 Consider the line:
@@ -893,7 +1049,7 @@ Consider the line:
 x <- as.numeric(((z %% 26) + step6) != w)
 ```
 
-The will only ever be `0` or `1`, depending on equality with the input value `w` (which ranges `1` to `9`).
+This will only ever be `0` or `1`, depending on equality with the input value `w` (which ranges `1` to `9`).
 Also notice that `step6` and the sign of `step5` are related:
 
 ```{r}
@@ -903,7 +1059,7 @@ monad_simple %>% count(step5, step6)
 Since `w` can only take values `1` to `9`, any values of `step6 > 9` will also lead to inequality with `w` and therefore `x = 1`.
 The values of `step6 > 9` correspond to `step5 = 1`, and so `x` is always `1` in these cases.
 
-So the `x` value works sort of as an on/off switch that feeds into the next line:
+The `x` value works sort of as an on/off binary switch that feeds into the next line:
 
 ```{r eval=FALSE}
 z <- trunc(z / step5) * ((25 * x) + 1) + (w + step16) * x
@@ -938,14 +1094,16 @@ Here is what happens to `z` under different conditions, and how we can think of 
     * `= 0` no change)
     * `= w + step16` (add to the number)
         
-I'm not very familiar with these terms as a non-CS grad, but apparently this mimics a [stack data structure](https://en.wikipedia.org/wiki/Stack_(abstract_data_type) which can *push* a value (adds it to the stack) or *pop* the most recent (remove from the stack).
-`term3` is *pushing* the value of `w + step16` onto the stack (in base 26) if `step5 = 1`, otherwise `step5 = 26` pops the last value.
-To get a valid model number, we need `z = 0`, so these digits need to be *popped* off the stack.
-There are 7 each of `step5 = 1` and `step5 = 26` so we can equally add and remove the digits until the stack is empty.
+I'm not very familiar with these terms as a non-CS grad, but apparently this mimics a [stack data structure](https://www.tutorialspoint.com/data_structures_algorithms/stack_algorithm.htm) which can *push* a value (adds it to the stack) or *pop* the most recent (remove from the stack).
+
+If `step5 = 1`, then `term3` is pushing the value of `w + step16` onto the stack (which will be less than 26 for the possible values of `w` and `step16`).
+Otherwise `step5 = 26`, which pops the last value from the stack.
+To get a valid model number, we need `z = 0`, so all digits need to be popped off the stack.
+There are 7 each of `step5 = 1` and `26` so we can equally push and pop the digits until the stack is empty.
 
 This means that the lines with `step5 = 26`, `x = as.numeric(((z %% 26) + step6) != w)` must be 0, which requires that the pushed digit `w + step16` from the previous step be equal to the next step's `w - step6`.
 
-My input corresponds to the following push an pop operations on the 14 digits of a model number:
+My specific input corresponds to the following push and pop operations on the 14 digits of a model number:
 
 ```{r}
 monad_simple %>%
@@ -963,7 +1121,7 @@ monad_simple %>%
 ```
 
 
-So the model number requirements unique to my MONAD input are:
+So the model number requirements unique to my MONAD are:
 
 * `model_num[4] = model_num[3] - 12 + 12`
 * `model_num[6] = model_num[5] - 2 + 6`
@@ -973,7 +1131,7 @@ So the model number requirements unique to my MONAD input are:
 * `model_num[13] = model_num[2] - 12 + 5`
 * `model_num[14] = model_num[1] - 13 + 10`
 
-Then the maximum valid model number doesn't require any programming, just some basic logic and picking the maximum possible digit for each:
+Then finding the maximum valid model number doesn't require any programming, just some basic logic and picking the max possible value for each digit in order:
 
 * `model_num[1] = 9`
     * `model_num[14] = 9 - 3 = 6`
@@ -999,6 +1157,11 @@ check_model_number_simple("99995969919326")
 ```
 
 ### Part 2
+
+>
+As the submarine starts booting up things like the Retro Encabulator, you realize that maybe you don't need all these submarine features after all.
+>
+What is the smallest model number accepted by MONAD?
 
 The same rules as part 1 apply, I just need to pick the lowest digits possible:
 
@@ -1029,12 +1192,35 @@ check_model_number_simple("48111514719111")
 ```{r}
 day25 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
                          "day25-input.txt"))
-day25 <- read_lines(here("_posts", "2021-12-21-advent-of-code-2021-days-21-25",
-                         "day25-example.txt"))
 head(day25) %>% str_trunc(80)
 ```
 
 ### Part 1
+
+>
+This is it: the bottom of the ocean trench, the last place the sleigh keys could be. Your submarine's experimental antenna still isn't boosted enough to detect the keys, but they must be here. All you need to do is reach the seafloor and find them.
+>
+At least, you'd touch down on the seafloor if you could; unfortunately, it's completely covered by two large herds of sea cucumbers, and there isn't an open space large enough for your submarine.
+>
+You suspect that the Elves must have done this before, because just then you discover the phone number of a deep-sea marine biologist on a handwritten note taped to the wall of the submarine's cockpit.
+>
+"Sea cucumbers? Yeah, they're probably hunting for food. But don't worry, they're predictable critters: they move in perfectly straight lines, only moving forward when there's space to do so. They're actually quite polite!"
+>
+You explain that you'd like to predict when you could land your submarine.
+>
+"Oh that's easy, they'll eventually pile up and leave enough space for-- wait, did you say submarine? And the only place with that many sea cucumbers would be at the very bottom of the Mariana--" You hang up the phone.
+>
+There are two herds of sea cucumbers sharing the same region; one always moves east (`>`), while the other always moves south (`v`). Each location can contain at most one sea cucumber; the remaining locations are empty (`.`). The submarine helpfully generates a map of the situation (your puzzle input).
+>
+Every step, the sea cucumbers in the east-facing herd attempt to move forward one location, then the sea cucumbers in the south-facing herd attempt to move forward one location. When a herd moves forward, every sea cucumber in the herd first simultaneously considers whether there is a sea cucumber in the adjacent location it's facing (even another sea cucumber facing the same direction), and then every sea cucumber facing an empty location simultaneously moves into that location.
+>
+Due to strong water currents in the area, sea cucumbers that move off the right edge of the map appear on the left edge, and sea cucumbers that move off the bottom edge of the map appear on the top edge. Sea cucumbers always check whether their destination location is empty before moving, even if that destination is on the opposite side of the map.
+To find a safe place to land your submarine, the sea cucumbers need to stop moving.
+>
+Find somewhere safe to land your submarine. What is the first step on which no sea cucumbers move?
+
+Seems like a nice easy one to finish.
+Put the input into a matrix:
 
 ```{r}
 seafloor <- day25 %>%
@@ -1043,6 +1229,8 @@ seafloor <- day25 %>%
   matrix(nrow = length(day25), byrow = TRUE)
 seafloor[1:10, 1:10]
 ```
+
+Define functions to move sea cucumbers east or south:
 
 ```{r}
 max_col <- ncol(seafloor)
@@ -1055,7 +1243,7 @@ move_east <- function(seafloor) {
   for (i in 1:nrow(east_idx)) {
     # Find the adjacent space (one column over)
     adjacent_col <- east_idx[i, 2] + 1
-    # If off the right edge of the map, back to the left edge
+    # If off the right edge of the map, back to the left
     if (adjacent_col > max_col) {
       adjacent_col <- adjacent_col - max_col
     }
@@ -1075,7 +1263,7 @@ move_south <- function(seafloor) {
   for (i in 1:nrow(south_idx)) {
     # Find the adjacent space (one row down)
     adjacent_row <- south_idx[i, 1] + 1
-    # If off the right edge of the map, back to the left edge
+    # If off the bottom edge of the map, back to the top
     if (adjacent_row > max_row) {
       adjacent_row <- adjacent_row - max_row
     }
@@ -1089,22 +1277,58 @@ move_south <- function(seafloor) {
 }
 ```
 
+Repeat steps in a loop until the matrix isn't changing:
+
 ```{r}
-seafloor_part1 <- seafloor
 step <- 0
 repeat {
   step <- step + 1
-  seafloor_new <- seafloor_part1 %>% move_east() %>% move_south()
+  seafloor_new <- seafloor %>% move_east() %>% move_south()
   
   # If the map hasn't changed, break
   if (all(seafloor_new == seafloor_part1)) break
-  seafloor_part1 <- seafloor_new
+  seafloor <- seafloor_new
 }
 step
 ```
 
-
 ### Part 2
+
+>
+Suddenly, the experimental antenna control console lights up:
+>
+`Sleigh keys detected!`
+>
+According to the console, the keys are directly under the submarine. You landed right on them! Using a robotic arm on the submarine, you move the sleigh keys into the airlock.
+>
+Now, you just need to get them to Santa in time to save Christmas! You check your clock - it is Christmas. There's no way you can get them back to the surface in time.
+>
+Just as you start to lose hope, you notice a button on the sleigh keys: remote start. You can start the sleigh from the bottom of the ocean! You just need some way to boost the signal from the keys so it actually reaches the sleigh. Good thing the submarine has that experimental antenna! You'll definitely need 50 stars to boost it that far, though.
+>
+The experimental antenna control console lights up again:
+>
+
+```
+Energy source detected.
+Integrating energy source from device "sleigh keys"...done.
+Installing device drivers...done.
+Recalibrating experimental antenna...done.
+Boost strength due to matching signal phase: 1 star
+```
+>
+Only 49 stars to go.
+>
+If you like, you can [Remotely Start the Sleigh Again].
+
+Thankfully I solved all the puzzles in order, and so immediately had all 49 stars required to get the 50th.
+Clicking on the remote start link reveals the end page:
+
+>
+You use all fifty stars to boost the signal and remotely start the sleigh! Now, you just have to find your way back to the surface...
+>
+...did you know crab submarines come with colored lights?
+>
+Congratulations! You've finished every puzzle in Advent of Code 2021! I hope you had as much fun solving them as I had making them for you.
 
 ## Stats
 
@@ -1135,7 +1359,7 @@ tibble::tribble(
   fmt_missing(columns = "Time between parts", missing_text = "")
 ```
 
-I really lagged behind in the last few days, mostly due to work and spending time with family, but I also found the puzzles more difficult.
+I really lagged behind in the last few days, mostly due to work and family time around Christmas, but I also found the puzzle difficulty ramped up a lot.
 This is probably a similar story to others on the private leaderboard:
 
 ```{r eval=FALSE, echo=FALSE}
@@ -1192,8 +1416,19 @@ leaderboard %>%
   tab_options(container.height = 500)
 ```
 
-13th place out of 126, which I'm very happy with.
-Especially considering that the puzzles released at 1AM my time, so I generally didn't get to start until after work the next day.
+13th place out of 126, which I'm very happy with, especially since the puzzles released at 1AM my time so I generally didn't get to start until after work the next day.
+
+My main takeaways, which may help me in future years of Advent of Code:
+
+* Read the full puzzle instruction.
+* Don't be afraid of base R. As a huge `tidyvese` advocate, I found some problems much easier to approach with base R, especially the `matrix` class.
+* That being said, wow does my `pandas` code feel more cumbersome/ugly compared to the `tidyverse` equivalent (though this may just be because I am much more experienced with the latter).
+* When a problem seems like it will take too long to run, consider these in order:
+    * keeping track of unique *states*, rather than each state individually,
+    * parallelization with `future` and `furrr`, and
+    * memoization (caching the result of computationally expensive functions).
+* *Read the full puzzle instruction.*
+* Joining a private leaderboard makes for great motivation. I really enjoyed "competing" in [Tan Ho's leaderboard](https://twitter.com/_TanHo/status/1465310512716173313) -- "competing" in quotes because it served more as a place to complain and help each other via the [R for Data Science Slack group](https://www.rfordatasci.com/).
 
 ## Reproducibility {.appendix}
 
