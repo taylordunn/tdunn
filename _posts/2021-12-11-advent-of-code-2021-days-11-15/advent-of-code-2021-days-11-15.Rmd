@@ -46,7 +46,7 @@ plt.switch_backend('agg') # needed for knitting in rmarkdown
 
 </details>
 
-## Day 11
+## Day 11: Dumbo Octopus
 
 ```{r}
 day11 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
@@ -287,7 +287,7 @@ step
 ```
 
 
-## Day 12
+## Day 12: Passage Pathing
 
 ```{r}
 day12 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
@@ -525,7 +525,7 @@ timeit.repeat("day12_part2()", "from __main__ import day12_part2",
 
 Much, much faster.
 
-## Day 13
+## Day 13: Transparent Origami
 
 ```{r}
 day13 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
@@ -712,7 +712,7 @@ fig.savefig('day13-fig.png', bbox_inches = 'tight')
 
 Looks like `PCPHARKL`.
 
-## Day 14
+## Day 14: Extended Polymerization
 
 ```{r}
 day14 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
@@ -936,7 +936,7 @@ for _ in range(40):
 max(elements_counter.values()) - min(elements_counter.values())
 ```
 
-## Day 15
+## Day 15: Chiton
 
 ```{r}
 day15 <- read_lines(here("_posts", "2021-12-11-advent-of-code-2021-days-11-15",
@@ -1109,9 +1109,7 @@ tibble::tribble(
   1, 12, "10:15:12", 21781, 0,
   2, 12, "10:27:19", 19557, 0,
   1, 11, "12:25:31", 27526, 0,
-  2, 11,  "12:31:12", 27190, 0,
-  1, 10, "11:11:48", 34029, 0,
-  2, 10, "11:25:31", 32045, 0
+  2, 11,  "12:31:12", 27190, 0
 ) %>%
   select(-Score) %>%
   pivot_wider(names_from = Part, values_from = c(Time, Rank),
@@ -1182,7 +1180,6 @@ leaderboard %>%
 ```
 
 Pretty happy with 37th place so far.
-
 
 ## Reproducibility {.appendix}
 

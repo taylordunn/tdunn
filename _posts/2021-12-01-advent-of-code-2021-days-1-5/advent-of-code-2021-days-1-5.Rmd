@@ -17,7 +17,6 @@ output:
   distill::distill_article:
     self_contained: false
     toc: true
-#bibliography: references.bib
 ---
 
 ```{r setup, include=TRUE, code_folding="Setup"}
@@ -28,8 +27,7 @@ library(gt)
 library(lubridate)
 ```
 
-
-The [Advent of Code](https://adventofcode.com/) has begun for 2021, and I decided to participate this year to work on my programming and problem solving skills in R and, where possible, I'll try to translate the solutions to Python.
+The [Advent of Code](https://adventofcode.com/) has begun for 2021, and I decided to participate this year to work on my programming and problem solving skills in R and, when I have the time, I'll try to translate the solutions to Python.
 Load the `reticulate` package and activate my virtual Python environment:
 
 ```{r python-setup}
@@ -45,7 +43,7 @@ I'll also be "competing" in a private leaderboard started by [Tan Ho](https://tw
 I don't expect to rank highly here because the puzzles are released at 1AM my time (and scores are based on time from release) but it'll be a good source of motivation throughout the month.
 There are 25 days of challenges, so my current plan is to split up the posts into 5-day chunks.
 
-## Day 1
+## Day 1: Sonar Sweep
 
 ### Part 1
 
@@ -137,7 +135,7 @@ np.convolve(r.day1, np.ones(3, dtype = int), mode = 'valid')
   .sum()
 ```
 
-## Day 2
+## Day 2: Dive!
 
 ### Part 1
 
@@ -294,7 +292,7 @@ I've also added the `horizontal_position` variable, so that I can compute the su
 day2_df[['depth', 'horizontal_position']].aggregate('sum')
 ```
 
-## Day 3
+## Day 3: Binary Diagnostic
 
 ### Part 1
 
@@ -524,7 +522,7 @@ oxygen_rating = oxygen_rating.astype(str).aggregate(''.join, axis = 1).values[0]
 int(co2_rating, 2) * int(oxygen_rating, 2)
 ```
 
-## Day 4
+## Day 4: Giant Squid
 
 ### Part 1
 
@@ -751,7 +749,7 @@ for called_number in called_numbers:
 bingo_board_final[bingo_board_final > 0].sum() * called_number
 ```
 
-## Day 5
+## Day 5: Hydrothermal Venture
 
 ### Part 1
 

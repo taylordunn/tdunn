@@ -1286,7 +1286,7 @@ repeat {
   seafloor_new <- seafloor %>% move_east() %>% move_south()
   
   # If the map hasn't changed, break
-  if (all(seafloor_new == seafloor_part1)) break
+  if (all(seafloor_new == seafloor)) break
   seafloor <- seafloor_new
 }
 step
@@ -1330,7 +1330,7 @@ You use all fifty stars to boost the signal and remotely start the sleigh! Now, 
 >
 Congratulations! You've finished every puzzle in Advent of Code 2021! I hope you had as much fun solving them as I had making them for you.
 
-## Stats
+## Stats and conclusions
 
 Here are my personal stats for these last 5 days:
 

@@ -25,6 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(gt)
+library(lubridate)
 ```
 
 <details><summary>Python setup</summary>
@@ -43,7 +44,7 @@ import pandas as pd
 
 </details>
 
-## Day 6
+## Day 6: Lanternfish
 
 ```{r}
 day6 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
@@ -170,7 +171,7 @@ for day in range(256):
 fish_timers_df.sum()
 ```
 
-## Day 7
+## Day 7: The Treachery of Whales
 
 ```{r}
 day7 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
@@ -277,7 +278,7 @@ for x0 in range(min(crab_positions), max(crab_positions)):
 fuel_spent.sort_values().head()
 ```
 
-## Day 8
+## Day 8: Seven Segment Search
 
 ```{r}
 day8 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
@@ -553,7 +554,7 @@ And finally, the sum:
 sum(day8_df$output_decoded)
 ```
 
-## Day 9
+## Day 9: Smoke Basin
 
 ```{r}
 day9 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
@@ -776,7 +777,7 @@ basin_size.sort(reverse = True)
 np.prod(basin_size[0:3])
 ```
 
-## Day 10
+## Day 10: Syntax Scoring
 
 ```{r}
 day10 <- read_lines(here("_posts", "2021-12-06-advent-of-code-2021-days-6-10",
@@ -962,6 +963,35 @@ day10_incomplete <- day10_incomplete %>%
     )
   )
 sort(day10_incomplete$total_score)[(nrow(day10_incomplete) + 1) / 2]
+```
+
+## Stats
+
+My personal stats for this period:
+
+```{r warning=FALSE}
+tibble::tribble(
+  ~Part, ~Day, ~Time, ~Rank,
+  1, 10, "11:11:48", 34029,
+  2, 10, "11:25:31", 32045,
+  1, 9, "14:58:48", 42395,
+  2, 9, "16:04:08", 33905,
+  1, 8, "16:37:13", 49102,
+  2, 8, "16:55:20", 34954,
+  1, 7, "11:23:20", 45816,
+  2, 7, "11:42:48", 43886,
+  1, 6, "10:38:42", 41671,
+  2, 6, "10:58:31", 34999
+) %>%
+  pivot_wider(names_from = Part, values_from = c(Time, Rank),
+              names_glue = "Part {Part}_{.value}") %>%
+  mutate(
+    `Time between parts` = as.numeric(hms(`Part 2_Time`) - hms(`Part 1_Time`),
+                                      "minutes") %>% round(1)
+  ) %>%
+  gt() %>%
+  tab_spanner_delim(delim = "_", split = "first") %>%
+  fmt_missing(columns = "Time between parts", missing_text = "")
 ```
 
 
