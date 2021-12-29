@@ -58,9 +58,91 @@ get_summary <- function(split = c("overall", "province", "region")) {
       last_updated = as.POSIXct(last_updated)
     )
 }
-
 summary_region <- get_summary("region")
 ```
+
+## Reports
+
+```{r}
+
+api_params <- paste0(
+  c(ifelse(fill_dates, "fill_dates=true", "fill_dates=false"),
+    date,
+  collapse = "&"
+  )
+param
+```
+
+
+```{r}
+get_reports <- function(fill_dates = FALSE, stat = NULL, date = NULL,
+                        after = NULL, before = NULL) {
+  base_url <- "https://api.covid19tracker.ca/"
+  
+  api_url <- paste0("https://api.covid19tracker.ca/", "reports")
+  
+  if (fill_dates) {
+    fill_dates <- "fill_dates=true"
+  }
+  else {
+    fill_dates <- NULL
+  }
+  if (!is.null(stat)) stat <- paste0("stat=", stat)
+  if (!is.null(date)) date <- paste0("date=", date)
+  if (!is.null(after)) after <- paste0("after=", after)
+  if (!is.null(before)) before <- paste0("before=", before)
+  
+  api_params <- paste(c(fill_dates, stat, date, after, before),
+                      collapse = "&")
+  
+  if (nchar(api_params) > 0) {
+    api_url <- paste0(api_url, "?", api_params)
+  }
+  return(api_url)
+  
+  resp <- httr::GET(api_url)
+
+  if (resp$status_code != 200) {
+    stop(paste0("Unsuccessful HTTP response returned: ", resp$status_code))
+  }
+
+  data <- httr::content(resp, as = "parsed")
+
+  bind_rows(data$data) %>%
+    bind_cols(data["last_updated"]) %>%
+    mutate(
+      across(matches("^change|total"), as.integer),
+      across(matches("date"), as.Date),
+      last_updated = as.POSIXct(last_updated)
+    )
+}
+get_reports(before = "2021-10-10")
+```
+
+
+```{r}
+paste0(
+    base_url, "reports?",
+    ifelse(fill_dates, )
+  )
+  
+}
+reports <- get_reports()
+reports
+get_reports(date = "2021-12-27")
+```
+
+```{r}
+reports %>%
+  ggplot(aes(x = date, y = total_boosters_1)) +
+  geom_line() +
+  scale_x_date(limits = as.Date(c("2021-03-01", "2022-01-01")))
+```
+
+```{r}
+
+```
+
 
 ### Regions
 
@@ -75,21 +157,18 @@ get_regions <- function() {
 
   data <- httr::content(resp, as = "parsed")
 
-  map_dfr(
-    data$data,
-    ~unlist(.x) %>% enframe() %>% pivot_wider()
-  ) %>%
-    bind_cols(data["last_updated"]) %>%
-    mutate(
-      across(matches("^change|total"), as.integer),
-      across(matches("date"), as.Date),
-      last_updated = as.POSIXct(last_updated)
-    )
+  bind_rows(data$data)
 }
-
-
+regions <- get_regions()
 ```
 
+```{r}
+summary_region %>%
+  left_join(
+    regions, by = "hr_uid"
+  ) %>%
+  filter(province == "NS")
+```
 
 ## Reproducibility {.appendix}
 
