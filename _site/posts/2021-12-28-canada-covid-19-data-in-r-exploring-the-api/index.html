@@ -2595,7 +2595,7 @@ Setup
 </code></pre>
 </div>
 <pre><code>Response [https://api.covid19tracker.ca/summary]
-  Date: 2021-12-30 19:51
+  Date: 2021-12-30 19:54
   Status: 200
   Content-Type: application/json
   Size: 645 B</code></pre>
@@ -2614,8 +2614,8 @@ Setup
  $ all_headers:List of 1
  $ cookies    :&#39;data.frame&#39;:    0 obs. of  7 variables:
  $ content    : raw [1:645] 7b 22 64 61 ...
- $ date       : POSIXct[1:1], format: &quot;2021-12-30 19:51:15&quot;
- $ times      : Named num [1:6] 0 0.00345 0.04323 0.13599 0.18437 ...
+ $ date       : POSIXct[1:1], format: &quot;2021-12-30 19:54:39&quot;
+ $ times      : Named num [1:6] 0 0.00383 0.04411 0.13218 0.18173 ...
   ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;redirect&quot; &quot;namelookup&quot; &quot;connect&quot; &quot;pretransfer&quot; ...
  $ request    :List of 7
   ..- attr(*, &quot;class&quot;)= chr &quot;request&quot;
@@ -2685,8 +2685,10 @@ Setup
 <p>Here, the data is JSON, which is a type that can be parsed with <code>httr::content</code> (via the <code>jsonlite</code> package). We can also parse this data manually as follows (not run):</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, <span class='st'>"text"</span><span class='op'>)</span>,
-                   simplifyVector <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, <span class='st'>"text"</span><span class='op'>)</span>,
+  simplifyVector <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -3417,10 +3419,10 @@ $ data &lt;chr&gt; &quot;{\&quot;80+\&quot;: {\&quot;full\&quot;: 0, \&quot;grou
 <p>Look at the first element of <code>data</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_trunc.html'>str_trunc</a></span><span class='op'>(</span><span class='fl'>90</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_trunc.html'>str_trunc</a></span><span class='op'>(</span><span class='fl'>80</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>[1] &quot;{\&quot;80+\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;80+\&quot;, \&quot;partial\&quot;: 335, \&quot;atleast1\&quot;: 335}, \&quot;0-15\&quot;: {\&quot;full\&quot;: ...&quot;</code></pre>
+<pre><code>[1] &quot;{\&quot;80+\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;80+\&quot;, \&quot;partial\&quot;: 335, \&quot;atleast1\&quot;: 335}, \&quot;0-15\&quot;:...&quot;</code></pre>
 </div>
 <p>Parse the JSON:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -3994,7 +3996,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [3227bcf] 2021-12-29: Slight edit</code></pre>
+Head:     [de7f27e] 2021-12-30: Added the COVID API post</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">

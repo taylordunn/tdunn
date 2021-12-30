@@ -99,8 +99,10 @@ Here, the data is JSON, which is a type that can be parsed with `httr::content` 
 We can also parse this data manually as follows (not run):
 
 ```{r eval=FALSE}
-jsonlite::fromJSON(content(resp, "text"),
-                   simplifyVector = FALSE)
+jsonlite::fromJSON(
+  content(resp, "text"),
+  simplifyVector = FALSE
+)
 ```
 
 </aside>
@@ -415,7 +417,7 @@ Per the API documentation, it has to do with shifting reporting standards across
 Look at the first element of `data`:
 
 ```{r}
-vaccine_age_groups$data[[1]] %>% str_trunc(90)
+vaccine_age_groups$data[[1]] %>% str_trunc(80)
 ```
 
 Parse the JSON:
