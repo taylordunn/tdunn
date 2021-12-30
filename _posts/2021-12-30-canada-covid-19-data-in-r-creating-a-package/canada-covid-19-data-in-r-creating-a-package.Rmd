@@ -1,17 +1,18 @@
 ---
-title: "Working with Canada COVID-19 data in R"
+title: "Canada COVID-19 data in R: creating a package"
 description: |
-  A short description of the post.
+  Creating an R package that wraps the Canadian COVID-19 tracker API.
 author:
   - name: Taylor Dunn
-date: 2021-12-28
+date: 2021-12-30
 params:
-  date: 2021-12-28
-  slug: "2021-12-28-working-with-canada-covid-19-data-in-r"
+  date: 2021-12-30
+  slug: "2021-12-30-canada-covid-19-data-in-r-creating-a-package"
 categories:
   - R
-  - package development
   - COVID-19
+  - API
+  - package development
 output:
   distill::distill_article:
     self_contained: false
@@ -23,13 +24,32 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dunnr)
-library(httr)
 
 extrafont::loadfonts(device = "win", quiet = TRUE)
 theme_set(theme_td())
 set_geom_fonts()
 set_palette()
 ```
+
+## Package
+
+[Naming things](https://www.njtierney.com/post/2018/06/20/naming-things/) is hard.
+
+https://devguide.ropensci.org/building.html#package-name-and-metadata
+
+https://r-pkgs.org/workflows101.html#create-a-package
+
+I'm a fan of the all lowercase names.
+Here are some I was considering, and their availability on CRAN, Bioconductor and GitHub:
+
+```{r}
+available::available("cancovid", browse = FALSE)
+available::available("canadacovid", browse = FALSE)
+available::available("cancovidtrackr", browse = FALSE)
+```
+
+All of these are available.
+
 
 ```{r}
 get_summary <- function(split = c("overall", "province", "region")) {
@@ -62,17 +82,6 @@ summary_region <- get_summary("region")
 ```
 
 ## Reports
-
-```{r}
-
-api_params <- paste0(
-  c(ifelse(fill_dates, "fill_dates=true", "fill_dates=false"),
-    date,
-  collapse = "&"
-  )
-param
-```
-
 
 ```{r}
 get_reports <- function(fill_dates = FALSE, stat = NULL, date = NULL,
@@ -119,31 +128,6 @@ get_reports <- function(fill_dates = FALSE, stat = NULL, date = NULL,
 get_reports(before = "2021-10-10")
 ```
 
-
-```{r}
-paste0(
-    base_url, "reports?",
-    ifelse(fill_dates, )
-  )
-  
-}
-reports <- get_reports()
-reports
-get_reports(date = "2021-12-27")
-```
-
-```{r}
-reports %>%
-  ggplot(aes(x = date, y = total_boosters_1)) +
-  geom_line() +
-  scale_x_date(limits = as.Date(c("2021-03-01", "2022-01-01")))
-```
-
-```{r}
-
-```
-
-
 ### Regions
 
 ```{r}
@@ -154,9 +138,11 @@ get_regions <- function() {
   if (resp$status_code != 200) {
     stop(paste0("Unsuccessful HTTP response returned: ", resp$status_code))
   }
+  if (http_type(resp) != "application/json") {
+    stop("API did not return json", call. = FALSE)
+  }
 
   data <- httr::content(resp, as = "parsed")
-
   bind_rows(data$data)
 }
 regions <- get_regions()
@@ -169,6 +155,7 @@ summary_region %>%
   ) %>%
   filter(province == "NS")
 ```
+
 
 ## Reproducibility {.appendix}
 

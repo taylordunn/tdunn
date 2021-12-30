@@ -1,0 +1,2995 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007ba5; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #007ba5; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #007ba5; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+
+  <!--radix_placeholder_meta_tags-->
+  <title>Canada COVID-19 data in R: exploring the API</title>
+
+  <meta property="description" itemprop="description" content="An exploration of the Canadian COVID-19 tracker API."/>
+
+
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2021-12-28"/>
+  <meta property="article:created" itemprop="dateCreated" content="2021-12-28"/>
+  <meta name="article:author" content="Taylor Dunn"/>
+
+  <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+  <meta property="og:title" content="Canada COVID-19 data in R: exploring the API"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:description" content="An exploration of the Canadian COVID-19 tracker API."/>
+  <meta property="og:locale" content="en_US"/>
+
+  <!--  https://dev.twitter.com/cards/types/summary -->
+  <meta property="twitter:card" content="summary"/>
+  <meta property="twitter:title" content="Canada COVID-19 data in R: exploring the API"/>
+  <meta property="twitter:description" content="An exploration of the Canadian COVID-19 tracker API."/>
+
+  <!--/radix_placeholder_meta_tags-->
+  <!--radix_placeholder_rmarkdown_metadata-->
+
+  <script type="text/json" id="radix-rmarkdown-metadata">
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","params","categories","output"]}},"value":[{"type":"character","attributes":{},"value":["Canada COVID-19 data in R: exploring the API"]},{"type":"character","attributes":{},"value":["An exploration of the Canadian COVID-19 tracker API.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Taylor Dunn"]}]}]},{"type":"character","attributes":{},"value":["2021-12-28"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["date","slug"]}},"value":[{"type":"character","attributes":{},"value":["2021-12-28"]},{"type":"character","attributes":{},"value":["2021-12-28-canada-covid-19-data-in-r-exploring-the-api"]}]},{"type":"character","attributes":{},"value":["R","COVID-19","API"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc"]}},"value":[{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]}]}]}]}
+  </script>
+  <!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["canada-covid-19-data-in-r-exploring-the-api_files/anchor-4.2.2/anchor.min.js","canada-covid-19-data-in-r-exploring-the-api_files/bowser-1.9.3/bowser.min.js","canada-covid-19-data-in-r-exploring-the-api_files/distill-2.2.21/template.v2.js","canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-46-1.png","canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-48-1.png","canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-49-1.png","canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-50-1.png","canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-51-1.png","canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-52-1.png","canada-covid-19-data-in-r-exploring-the-api_files/header-attrs-2.11/header-attrs.js","canada-covid-19-data-in-r-exploring-the-api_files/jquery-3.6.0/jquery-3.6.0.js","canada-covid-19-data-in-r-exploring-the-api_files/jquery-3.6.0/jquery-3.6.0.min.js","canada-covid-19-data-in-r-exploring-the-api_files/jquery-3.6.0/jquery-3.6.0.min.map","canada-covid-19-data-in-r-exploring-the-api_files/pagedtable-1.1/css/pagedtable.css","canada-covid-19-data-in-r-exploring-the-api_files/pagedtable-1.1/js/pagedtable.js","canada-covid-19-data-in-r-exploring-the-api_files/popper-2.6.0/popper.min.js","canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy-bundle.umd.min.js","canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy-light-border.css","canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy.css","canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy.umd.min.js","canada-covid-19-data-in-r-exploring-the-api_files/webcomponents-2.0.0/webcomponents.js"]}
+  </script>
+  <!--radix_placeholder_navigation_in_header-->
+  <!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+
+  <style type="text/css">
+
+  body {
+    background-color: white;
+  }
+
+  .pandoc-table {
+    width: 100%;
+  }
+
+  .pandoc-table>caption {
+    margin-bottom: 10px;
+  }
+
+  .pandoc-table th:not([align]) {
+    text-align: left;
+  }
+
+  .pagedtable-footer {
+    font-size: 15px;
+  }
+
+  d-byline .byline {
+    grid-template-columns: 2fr 2fr;
+  }
+
+  d-byline .byline h3 {
+    margin-block-start: 1.5em;
+  }
+
+  d-byline .byline .authors-affiliations h3 {
+    margin-block-start: 0.5em;
+  }
+
+  .authors-affiliations .orcid-id {
+    width: 16px;
+    height:16px;
+    margin-left: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+    padding-bottom: 2px;
+  }
+
+  d-title .dt-tags {
+    margin-top: 1em;
+    grid-column: text;
+  }
+
+  .dt-tags .dt-tag {
+    text-decoration: none;
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0em 0.4em;
+    margin-right: 0.5em;
+    margin-bottom: 0.4em;
+    font-size: 70%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  d-article table.gt_table td,
+  d-article table.gt_table th {
+    border-bottom: none;
+  }
+
+  .html-widget {
+    margin-bottom: 2.0em;
+  }
+
+  .l-screen-inset {
+    padding-right: 16px;
+  }
+
+  .l-screen .caption {
+    margin-left: 10px;
+  }
+
+  .shaded {
+    background: rgb(247, 247, 247);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .shaded .html-widget {
+    margin-bottom: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .shaded .shaded-content {
+    background: white;
+  }
+
+  .text-output {
+    margin-top: 0;
+    line-height: 1.5em;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  d-article {
+    padding-top: 2.5rem;
+    padding-bottom: 30px;
+  }
+
+  d-appendix {
+    padding-top: 30px;
+  }
+
+  d-article>p>img {
+    width: 100%;
+  }
+
+  d-article h2 {
+    margin: 1rem 0 1.5rem 0;
+  }
+
+  d-article h3 {
+    margin-top: 1.5rem;
+  }
+
+  d-article iframe {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2.0em;
+    width: 100%;
+  }
+
+  /* Tweak code blocks */
+
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: auto;
+  }
+
+  d-article div.sourceCode {
+    background-color: white;
+  }
+
+  d-article div.sourceCode pre {
+    padding-left: 10px;
+    font-size: 12px;
+    border-left: 2px solid rgba(0,0,0,0.1);
+  }
+
+  d-article pre {
+    font-size: 12px;
+    color: black;
+    background: none;
+    margin-top: 0;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  d-article pre a {
+    border-bottom: none;
+  }
+
+  d-article pre a:hover {
+    border-bottom: none;
+    text-decoration: underline;
+  }
+
+  d-article details {
+    grid-column: text;
+    margin-bottom: 0.8em;
+  }
+
+  @media(min-width: 768px) {
+
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: visible !important;
+  }
+
+  d-article div.sourceCode pre {
+    padding-left: 18px;
+    font-size: 14px;
+  }
+
+  d-article pre {
+    font-size: 14px;
+  }
+
+  }
+
+  figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  /* CSS for d-contents */
+
+  .d-contents {
+    grid-column: text;
+    color: rgba(0,0,0,0.8);
+    font-size: 0.9em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    padding-left: 0.25em;
+    justify-self: start;
+  }
+
+  @media(min-width: 1000px) {
+    .d-contents.d-contents-float {
+      height: 0;
+      grid-column-start: 1;
+      grid-column-end: 4;
+      justify-self: center;
+      padding-right: 3em;
+      padding-left: 2em;
+    }
+  }
+
+  .d-contents nav h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
+
+  .d-contents li {
+    list-style-type: none
+  }
+
+  .d-contents nav > ul {
+    padding-left: 0;
+  }
+
+  .d-contents ul {
+    padding-left: 1em
+  }
+
+  .d-contents nav ul li {
+    margin-top: 0.6em;
+    margin-bottom: 0.2em;
+  }
+
+  .d-contents nav a {
+    font-size: 13px;
+    border-bottom: none;
+    text-decoration: none
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .d-contents nav a:hover {
+    text-decoration: underline solid rgba(0, 0, 0, 0.6)
+  }
+
+  .d-contents nav > ul > li > a {
+    font-weight: 600;
+  }
+
+  .d-contents nav > ul > li > ul {
+    font-weight: inherit;
+  }
+
+  .d-contents nav > ul > li > ul > li {
+    margin-top: 0.2em;
+  }
+
+
+  .d-contents nav ul {
+    margin-top: 0;
+    margin-bottom: 0.25em;
+  }
+
+  .d-article-with-toc h2:nth-child(2) {
+    margin-top: 0;
+  }
+
+
+  /* Figure */
+
+  .figure {
+    position: relative;
+    margin-bottom: 2.5em;
+    margin-top: 1.5em;
+  }
+
+  .figure img {
+    width: 100%;
+  }
+
+  .figure .caption {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    line-height: 1.5em;
+  }
+
+  .figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  .figure .caption a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .figure .caption b,
+  .figure .caption strong, {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 1.0);
+  }
+
+  /* Citations */
+
+  d-article .citation {
+    color: inherit;
+    cursor: inherit;
+  }
+
+  div.hanging-indent{
+    margin-left: 1em; text-indent: -1em;
+  }
+
+  /* Citation hover box */
+
+  .tippy-box[data-theme~=light-border] {
+    background-color: rgba(250, 250, 250, 0.95);
+  }
+
+  .tippy-content > p {
+    margin-bottom: 0;
+    padding: 2px;
+  }
+
+
+  /* Tweak 1000px media break to show more text */
+
+  @media(min-width: 1000px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 16px;
+    }
+
+    .grid {
+      grid-column-gap: 16px;
+    }
+
+    d-article {
+      font-size: 1.06rem;
+      line-height: 1.7em;
+    }
+    figure .caption, .figure .caption, figure figcaption {
+      font-size: 13px;
+    }
+  }
+
+  @media(min-width: 1180px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 32px;
+    }
+
+    .grid {
+      grid-column-gap: 32px;
+    }
+  }
+
+
+  /* Get the citation styles for the appendix (not auto-injected on render since
+     we do our own rendering of the citation appendix) */
+
+  d-appendix .citation-appendix,
+  .d-appendix .citation-appendix {
+    font-size: 11px;
+    line-height: 15px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    padding-left: 18px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.02);
+    padding: 10px 18px;
+    border-radius: 3px;
+    color: rgba(150, 150, 150, 1);
+    overflow: hidden;
+    margin-top: -12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Include appendix styles here so they can be overridden */
+
+  d-appendix {
+    contain: layout style;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-top: 60px;
+    margin-bottom: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0,0,0,0.5);
+    padding-top: 60px;
+    padding-bottom: 48px;
+  }
+
+  d-appendix h3 {
+    grid-column: page-start / text-start;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 1em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.65);
+  }
+
+  d-appendix h3 + * {
+    margin-top: 1em;
+  }
+
+  d-appendix ol {
+    padding: 0 0 0 15px;
+  }
+
+  @media (min-width: 768px) {
+    d-appendix ol {
+      padding: 0 0 0 30px;
+      margin-left: -30px;
+    }
+  }
+
+  d-appendix li {
+    margin-bottom: 1em;
+  }
+
+  d-appendix a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  d-appendix > * {
+    grid-column: text;
+  }
+
+  d-appendix > d-footnote-list,
+  d-appendix > d-citation-list,
+  d-appendix > distill-appendix {
+    grid-column: screen;
+  }
+
+  /* Include footnote styles here so they can be overridden */
+
+  d-footnote-list {
+    contain: layout style;
+  }
+
+  d-footnote-list > * {
+    grid-column: text;
+  }
+
+  d-footnote-list a.footnote-backlink {
+    color: rgba(0,0,0,0.3);
+    padding-left: 0.5em;
+  }
+
+
+
+  /* Anchor.js */
+
+  .anchorjs-link {
+    /*transition: all .25s linear; */
+    text-decoration: none;
+    border-bottom: none;
+  }
+  *:hover > .anchorjs-link {
+    margin-left: -1.125em !important;
+    text-decoration: none;
+    border-bottom: none;
+  }
+
+  /* Social footer */
+
+  .social_footer {
+    margin-top: 30px;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.67);
+  }
+
+  .disqus-comments {
+    margin-right: 30px;
+  }
+
+  .disqus-comment-count {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+
+  #disqus_thread {
+    margin-top: 30px;
+  }
+
+  .article-sharing a {
+    border-bottom: none;
+    margin-right: 8px;
+  }
+
+  .article-sharing a:hover {
+    border-bottom: none;
+  }
+
+  .sidebar-section.subscribe {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+
+  .subscribe p {
+    margin-bottom: 0.5em;
+  }
+
+
+  .article-footer .subscribe {
+    font-size: 15px;
+    margin-top: 45px;
+  }
+
+
+  .sidebar-section.custom {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+
+  .custom p {
+    margin-bottom: 0.5em;
+  }
+
+  /* Styles for listing layout (hide title) */
+  .layout-listing d-title, .layout-listing .d-title {
+    display: none;
+  }
+
+  /* Styles for posts lists (not auto-injected) */
+
+
+  .posts-with-sidebar {
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+
+  .posts-list .description h2,
+  .posts-list .description p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .posts-list .description h2 {
+    font-weight: 700;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .posts-list h2.post-tag {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    padding-bottom: 12px;
+  }
+  .posts-list {
+    margin-top: 60px;
+    margin-bottom: 24px;
+  }
+
+  .posts-list .post-preview {
+    text-decoration: none;
+    overflow: hidden;
+    display: block;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 24px 0;
+  }
+
+  .post-preview-last {
+    border-bottom: none !important;
+  }
+
+  .posts-list .posts-list-caption {
+    grid-column: screen;
+    font-weight: 400;
+  }
+
+  .posts-list .post-preview h2 {
+    margin: 0 0 6px 0;
+    line-height: 1.2em;
+    font-style: normal;
+    font-size: 24px;
+  }
+
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.4em;
+    font-size: 16px;
+  }
+
+  .posts-list .post-preview .thumbnail {
+    box-sizing: border-box;
+    margin-bottom: 24px;
+    position: relative;
+    max-width: 500px;
+  }
+  .posts-list .post-preview img {
+    width: 100%;
+    display: block;
+  }
+
+  .posts-list .metadata {
+    font-size: 12px;
+    line-height: 1.4em;
+    margin-bottom: 18px;
+  }
+
+  .posts-list .metadata > * {
+    display: inline-block;
+  }
+
+  .posts-list .metadata .publishedDate {
+    margin-right: 2em;
+  }
+
+  .posts-list .metadata .dt-authors {
+    display: block;
+    margin-top: 0.3em;
+    margin-right: 2em;
+  }
+
+  .posts-list .dt-tags {
+    display: block;
+    line-height: 1em;
+  }
+
+  .posts-list .dt-tags .dt-tag {
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0.3em 0.4em;
+    margin-right: 0.2em;
+    margin-bottom: 0.4em;
+    font-size: 60%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .posts-list img {
+    opacity: 1;
+  }
+
+  .posts-list img[data-src] {
+    opacity: 0;
+  }
+
+  .posts-more {
+    clear: both;
+  }
+
+
+  .posts-sidebar {
+    font-size: 16px;
+  }
+
+  .posts-sidebar h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .sidebar-section {
+    margin-bottom: 30px;
+  }
+
+  .categories ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .categories li {
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 0;
+  }
+
+  .categories li>a {
+    border-bottom: none;
+  }
+
+  .categories li>a:hover {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  }
+
+  .categories .active {
+    font-weight: 600;
+  }
+
+  .categories .category-count {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+
+  @media(min-width: 768px) {
+    .posts-list .post-preview h2 {
+      font-size: 26px;
+    }
+    .posts-list .post-preview .thumbnail {
+      float: right;
+      width: 30%;
+      margin-bottom: 0;
+    }
+    .posts-list .post-preview .description {
+      float: left;
+      width: 45%;
+    }
+    .posts-list .post-preview .metadata {
+      float: left;
+      width: 20%;
+      margin-top: 8px;
+    }
+    .posts-list .post-preview p {
+      margin: 0 0 12px 0;
+      line-height: 1.5em;
+      font-size: 16px;
+    }
+    .posts-with-sidebar .posts-list {
+      float: left;
+      width: 75%;
+    }
+    .posts-with-sidebar .posts-sidebar {
+      float: right;
+      width: 20%;
+      margin-top: 60px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+  }
+
+
+  /* Improve display for browsers without grid (IE/Edge <= 15) */
+
+  .downlevel {
+    line-height: 1.6em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+  }
+
+  .downlevel .d-title {
+    padding-top: 6rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .downlevel .d-title h1 {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.1em;
+    margin: 0 0 0.5rem;
+  }
+
+  .downlevel .d-title p {
+    font-weight: 300;
+    font-size: 1.2rem;
+    line-height: 1.55em;
+    margin-top: 0;
+  }
+
+  .downlevel .d-byline {
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+    font-size: 0.8rem;
+    line-height: 1.8em;
+  }
+
+  .downlevel .section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .downlevel .d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+
+  .downlevel .d-appendix {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: none;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.5);
+    padding-top: 40px;
+    padding-bottom: 48px;
+  }
+
+  .downlevel .footnotes ol {
+    padding-left: 13px;
+  }
+
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  @media(min-width: 768px) {
+    .downlevel .base-grid,
+    .downlevel .distill-header,
+    .downlevel .d-title,
+    .downlevel .d-abstract,
+    .downlevel .d-article,
+    .downlevel .d-appendix,
+    .downlevel .distill-appendix,
+    .downlevel .d-byline,
+    .downlevel .d-footnote-list,
+    .downlevel .d-citation-list,
+    .downlevel .distill-footer,
+    .downlevel .appendix-bottom,
+    .downlevel .posts-container {
+    padding-left: 150px;
+    padding-right: 150px;
+    max-width: 900px;
+  }
+  }
+
+  .downlevel pre code {
+    display: block;
+    border-left: 2px solid rgba(0, 0, 0, .1);
+    padding: 0 0 0 20px;
+    font-size: 14px;
+  }
+
+  .downlevel code, .downlevel pre {
+    color: black;
+    background: none;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  .downlevel .posts-list .post-preview {
+    color: inherit;
+  }
+
+
+
+  </style>
+
+  <script type="application/javascript">
+
+  function is_downlevel_browser() {
+    if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                   window.navigator.userAgent)) {
+      return true;
+    } else {
+      return window.load_distill_framework === undefined;
+    }
+  }
+
+  // show body when load is complete
+  function on_load_complete() {
+
+    // add anchors
+    if (window.anchors) {
+      window.anchors.options.placement = 'left';
+      window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+    }
+
+
+    // set body to visible
+    document.body.style.visibility = 'visible';
+
+    // force redraw for leaflet widgets
+    if (window.HTMLWidgets) {
+      var maps = window.HTMLWidgets.findAll(".leaflet");
+      $.each(maps, function(i, el) {
+        var map = this.getMap();
+        map.invalidateSize();
+        map.eachLayer(function(layer) {
+          if (layer instanceof L.TileLayer)
+            layer.redraw();
+        });
+      });
+    }
+
+    // trigger 'shown' so htmlwidgets resize
+    $('d-article').trigger('shown');
+  }
+
+  function init_distill() {
+
+    init_common();
+
+    // create front matter
+    var front_matter = $('<d-front-matter></d-front-matter>');
+    $('#distill-front-matter').wrap(front_matter);
+
+    // create d-title
+    $('.d-title').changeElementType('d-title');
+
+    // create d-byline
+    var byline = $('<d-byline></d-byline>');
+    $('.d-byline').replaceWith(byline);
+
+    // create d-article
+    var article = $('<d-article></d-article>');
+    $('.d-article').wrap(article).children().unwrap();
+
+    // move posts container into article
+    $('.posts-container').appendTo($('d-article'));
+
+    // create d-appendix
+    $('.d-appendix').changeElementType('d-appendix');
+
+    // flag indicating that we have appendix items
+    var appendix = $('.appendix-bottom').children('h3').length > 0;
+
+    // replace footnotes with <d-footnote>
+    $('.footnote-ref').each(function(i, val) {
+      appendix = true;
+      var href = $(this).attr('href');
+      var id = href.replace('#', '');
+      var fn = $('#' + id);
+      var fn_p = $('#' + id + '>p');
+      fn_p.find('.footnote-back').remove();
+      var text = fn_p.html();
+      var dtfn = $('<d-footnote></d-footnote>');
+      dtfn.html(text);
+      $(this).replaceWith(dtfn);
+    });
+    // remove footnotes
+    $('.footnotes').remove();
+
+    // move refs into #references-listing
+    $('#references-listing').replaceWith($('#refs'));
+
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      var id = $(this).attr('id');
+      $('.d-contents a[href="#' + id + '"]').parent().remove();
+      appendix = true;
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+    });
+
+    // show d-appendix if we have appendix content
+    $("d-appendix").css('display', appendix ? 'grid' : 'none');
+
+    // localize layout chunks to just output
+    $('.layout-chunk').each(function(i, val) {
+
+      // capture layout
+      var layout = $(this).attr('data-layout');
+
+      // apply layout to markdown level block elements
+      var elements = $(this).children().not('details, div.sourceCode, pre, script');
+      elements.each(function(i, el) {
+        var layout_div = $('<div class="' + layout + '"></div>');
+        if (layout_div.hasClass('shaded')) {
+          var shaded_content = $('<div class="shaded-content"></div>');
+          $(this).wrap(shaded_content);
+          $(this).parent().wrap(layout_div);
+        } else {
+          $(this).wrap(layout_div);
+        }
+      });
+
+
+      // unwrap the layout-chunk div
+      $(this).children().unwrap();
+    });
+
+    // remove code block used to force  highlighting css
+    $('.distill-force-highlighting-css').parent().remove();
+
+    // remove empty line numbers inserted by pandoc when using a
+    // custom syntax highlighting theme
+    $('code.sourceCode a:empty').remove();
+
+    // load distill framework
+    load_distill_framework();
+
+    // wait for window.distillRunlevel == 4 to do post processing
+    function distill_post_process() {
+
+      if (!window.distillRunlevel || window.distillRunlevel < 4)
+        return;
+
+      // hide author/affiliations entirely if we have no authors
+      var front_matter = JSON.parse($("#distill-front-matter").html());
+      var have_authors = front_matter.authors && front_matter.authors.length > 0;
+      if (!have_authors)
+        $('d-byline').addClass('hidden');
+
+      // article with toc class
+      $('.d-contents').parent().addClass('d-article-with-toc');
+
+      // strip links that point to #
+      $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+
+      // add orcid ids
+      $('.authors-affiliations').find('.author').each(function(i, el) {
+        var orcid_id = front_matter.authors[i].orcidID;
+        if (orcid_id) {
+          var a = $('<a></a>');
+          a.attr('href', 'https://orcid.org/' + orcid_id);
+          var img = $('<img></img>');
+          img.addClass('orcid-id');
+          img.attr('alt', 'ORCID ID');
+          img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+          a.append(img);
+          $(this).append(a);
+        }
+      });
+
+      // hide elements of author/affiliations grid that have no value
+      function hide_byline_column(caption) {
+        $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+      }
+
+      // affiliations
+      var have_affiliations = false;
+      for (var i = 0; i<front_matter.authors.length; ++i) {
+        var author = front_matter.authors[i];
+        if (author.affiliation !== "&nbsp;") {
+          have_affiliations = true;
+          break;
+        }
+      }
+      if (!have_affiliations)
+        $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+
+      // published date
+      if (!front_matter.publishedDate)
+        hide_byline_column("Published");
+
+      // document object identifier
+      var doi = $('d-byline').find('h3:contains("DOI")');
+      var doi_p = doi.next().empty();
+      if (!front_matter.doi) {
+        // if we have a citation and valid citationText then link to that
+        if ($('#citation').length > 0 && front_matter.citationText) {
+          doi.html('Citation');
+          $('<a href="#citation"></a>')
+            .text(front_matter.citationText)
+            .appendTo(doi_p);
+        } else {
+          hide_byline_column("DOI");
+        }
+      } else {
+        $('<a></a>')
+           .attr('href', "https://doi.org/" + front_matter.doi)
+           .html(front_matter.doi)
+           .appendTo(doi_p);
+      }
+
+       // change plural form of authors/affiliations
+      if (front_matter.authors.length === 1) {
+        var grid = $('.authors-affiliations');
+        grid.children('h3:contains("Authors")').text('Author');
+        grid.children('h3:contains("Affiliations")').text('Affiliation');
+      }
+
+      // remove d-appendix and d-footnote-list local styles
+      $('d-appendix > style:first-child').remove();
+      $('d-footnote-list > style:first-child').remove();
+
+      // move appendix-bottom entries to the bottom
+      $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+      $('.appendix-bottom').remove();
+
+      // hoverable references
+      $('span.citation[data-cites]').each(function() {
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
+        window.tippy(this, {
+          allowHTML: true,
+          content: refHtml,
+          maxWidth: 500,
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start'
+        });
+      });
+
+      // clear polling timer
+      clearInterval(tid);
+
+      // show body now that everything is ready
+      on_load_complete();
+    }
+
+    var tid = setInterval(distill_post_process, 50);
+    distill_post_process();
+
+  }
+
+  function init_downlevel() {
+
+    init_common();
+
+     // insert hr after d-title
+    $('.d-title').after($('<hr class="section-separator"/>'));
+
+    // check if we have authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+
+    // manage byline/border
+    if (!have_authors)
+      $('.d-byline').remove();
+    $('.d-byline').after($('<hr class="section-separator"/>'));
+    $('.d-byline a').remove();
+
+    // remove toc
+    $('.d-contents').remove();
+
+    // move appendix elements
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+    });
+
+
+    // inject headers into references and footnotes
+    var refs_header = $('<h3></h3>');
+    refs_header.text('References');
+    $('#refs').prepend(refs_header);
+
+    var footnotes_header = $('<h3></h3');
+    footnotes_header.text('Footnotes');
+    $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+
+    // remove appendix if it's empty
+    if ($('.d-appendix').children().length === 0)
+      $('.d-appendix').remove();
+
+    // prepend separator above appendix
+    $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+
+    // trim code
+    $('pre>code').each(function(i, val) {
+      $(this).html($.trim($(this).html()));
+    });
+
+    // move posts-container right before article
+    $('.posts-container').insertBefore($('.d-article'));
+
+    $('body').addClass('downlevel');
+
+    on_load_complete();
+  }
+
+
+  function init_common() {
+
+    // jquery plugin to change element types
+    (function($) {
+      $.fn.changeElementType = function(newType) {
+        var attrs = {};
+
+        $.each(this[0].attributes, function(idx, attr) {
+          attrs[attr.nodeName] = attr.nodeValue;
+        });
+
+        this.replaceWith(function() {
+          return $("<" + newType + "/>", attrs).append($(this).contents());
+        });
+      };
+    })(jQuery);
+
+    // prevent underline for linked images
+    $('a > img').parent().css({'border-bottom' : 'none'});
+
+    // mark non-body figures created by knitr chunks as 100% width
+    $('.layout-chunk').each(function(i, val) {
+      var figures = $(this).find('img, .html-widget');
+      if ($(this).attr('data-layout') !== "l-body") {
+        figures.css('width', '100%');
+      } else {
+        figures.css('max-width', '100%');
+        figures.filter("[width]").each(function(i, val) {
+          var fig = $(this);
+          fig.css('width', fig.attr('width') + 'px');
+        });
+
+      }
+    });
+
+    // auto-append index.html to post-preview links in file: protocol
+    // and in rstudio ide preview
+    $('.post-preview').each(function(i, val) {
+      if (window.location.protocol === "file:")
+        $(this).attr('href', $(this).attr('href') + "index.html");
+    });
+
+    // get rid of index.html references in header
+    if (window.location.protocol !== "file:") {
+      $('.distill-site-header a[href]').each(function(i,val) {
+        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+      });
+    }
+
+    // add class to pandoc style tables
+    $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+    $('.kable-table').children('table').addClass('pandoc-table');
+
+    // add figcaption style to table captions
+    $('caption').parent('table').addClass("figcaption");
+
+    // initialize posts list
+    if (window.init_posts_list)
+      window.init_posts_list();
+
+    // implmement disqus comment link
+    $('.disqus-comment-count').click(function() {
+      window.headroom_prevent_pin = true;
+      $('#disqus_thread').toggleClass('hidden');
+      if (!$('#disqus_thread').hasClass('hidden')) {
+        var offset = $(this).offset();
+        $(window).resize();
+        $('html, body').animate({
+          scrollTop: offset.top - 35
+        });
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (is_downlevel_browser())
+      init_downlevel();
+    else
+      window.addEventListener('WebComponentsReady', init_distill);
+  });
+
+  </script>
+
+  <!--/radix_placeholder_distill-->
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/header-attrs-2.11/header-attrs.js"></script>
+  <link href="canada-covid-19-data-in-r-exploring-the-api_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/pagedtable-1.1/js/pagedtable.js"></script>
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/popper-2.6.0/popper.min.js"></script>
+  <link href="canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/anchor-4.2.2/anchor.min.js"></script>
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/bowser-1.9.3/bowser.min.js"></script>
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="canada-covid-19-data-in-r-exploring-the-api_files/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+  <!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Canada COVID-19 data in R: exploring the API","description":"An exploration of the Canadian COVID-19 tracker API.","authors":[{"author":"Taylor Dunn","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-12-28T00:00:00.000-04:00","citationText":"Dunn, 2021"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Canada COVID-19 data in R: exploring the API</h1>
+<!--radix_placeholder_categories-->
+<div class="dt-tags">
+<div class="dt=tag">R</div>
+<div class="dt=tag">COVID-19</div>
+<div class="dt=tag">API</div>
+</div>
+<!--/radix_placeholder_categories-->
+<p><p>An exploration of the Canadian COVID-19 tracker API.</p></p>
+</div>
+
+<div class="d-byline">
+  Taylor Dunn  
+  
+<br/>2021-12-28
+</div>
+
+<div class="d-article">
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#summary">Summary</a>
+<ul>
+<li><a href="#overall">Overall</a></li>
+<li><a href="#province">Province</a></li>
+<li><a href="#health-region">Health region</a></li>
+</ul></li>
+<li><a href="#reports">Reports</a>
+<ul>
+<li><a href="#overall-1">Overall</a></li>
+<li><a href="#province-1">Province</a></li>
+<li><a href="#health-region-1">Health region</a></li>
+<li><a href="#parameters">Parameters</a></li>
+</ul></li>
+<li><a href="#vaccination-data">Vaccination data</a>
+<ul>
+<li><a href="#subregions">Subregions</a></li>
+</ul></li>
+<li><a href="#vaccine-age-groups">Vaccine age groups</a>
+<ul>
+<li><a href="#overall-2">Overall</a></li>
+<li><a href="#province-2">Province</a></li>
+<li><a href="#parameters-1">Parameters</a></li>
+</ul></li>
+<li><a href="#provinces">Provinces</a></li>
+<li><a href="#reproducibility">Reproducibility</a></li>
+</ul>
+</nav>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+Setup
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>knitr</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/knitr/man/opts_chunk.html'>opts_chunk</a></span><span class='op'>$</span><span class='fu'>set</span><span class='op'>(</span>echo <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://patchwork.data-imaginist.com'>patchwork</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://httr.r-lib.org/'>httr</a></span><span class='op'>)</span>
+
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/taylordunn/dunnr'>dunnr</a></span><span class='op'>)</span>
+<span class='fu'>extrafont</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/extrafont/man/loadfonts.html'>loadfonts</a></span><span class='op'>(</span>device <span class='op'>=</span> <span class='st'>"win"</span>, quiet <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/dunnr/man/theme_td.html'>theme_td</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/dunnr/man/set_geom_fonts.html'>set_geom_fonts</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/pkg/dunnr/man/set_palette.html'>set_palette</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>With this post, I will explore the <a href="https://api.covid19tracker.ca/">Canadian COVID-19 tracker API</a> and, depending on how it goes, turn some of the code into an R package. For an introduction to working with APIs, see <a href="https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html">this vignette</a> from the <code>httr</code> package.</p>
+<h2 id="summary">Summary</h2>
+<p>The first data I will retrieve is the data summaries overall, by province, and by health region. To save typing it every time, the following <code>base_url</code> is required for all <code>GET</code> requests:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/"</span>
+</code></pre>
+</div>
+</div>
+<h3 id="overall">Overall</h3>
+<p>Modify the URL with <code>summary</code> to get the latest data across all provinces:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"summary"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>Send the <code>GET</code> request with <code>httr</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>resp</span>
+</code></pre>
+</div>
+<pre><code>Response [https://api.covid19tracker.ca/summary]
+  Date: 2021-12-30 19:51
+  Status: 200
+  Content-Type: application/json
+  Size: 645 B</code></pre>
+</div>
+<p>This returned a <code>response</code> object with the following structure:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>resp</span>, max.level <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 10
+ $ url        : chr &quot;https://api.covid19tracker.ca/summary&quot;
+ $ status_code: int 200
+ $ headers    :List of 12
+  ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;insensitive&quot; &quot;list&quot;
+ $ all_headers:List of 1
+ $ cookies    :&#39;data.frame&#39;:    0 obs. of  7 variables:
+ $ content    : raw [1:645] 7b 22 64 61 ...
+ $ date       : POSIXct[1:1], format: &quot;2021-12-30 19:51:15&quot;
+ $ times      : Named num [1:6] 0 0.00345 0.04323 0.13599 0.18437 ...
+  ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;redirect&quot; &quot;namelookup&quot; &quot;connect&quot; &quot;pretransfer&quot; ...
+ $ request    :List of 7
+  ..- attr(*, &quot;class&quot;)= chr &quot;request&quot;
+ $ handle     :Class &#39;curl_handle&#39; &lt;externalptr&gt; 
+ - attr(*, &quot;class&quot;)= chr &quot;response&quot;</code></pre>
+</div>
+<p>The <code>status_code</code> is the first thing to check:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resp</span><span class='op'>$</span><span class='va'>status_code</span>
+</code></pre>
+</div>
+<pre><code>[1] 200</code></pre>
+</div>
+<p>An <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP status code</a> of 200 is the standard indicator of a successful request.</p>
+<p>Once confirmed successful, the <code>content</code> returned from the request is:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>$</span><span class='va'>content</span>, <span class='fl'>25</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code> [1] 7b 22 64 61 74 61 22 3a 5b 7b 22 6c 61 74 65 73 74 5f 64 61 74 65
+[23] 22 3a 22</code></pre>
+</div>
+<p>Looks like the raw data is represented in hexadecimal. The <code>httr::content</code> function can parse this data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 2
+ $ data        :List of 1
+  ..$ :List of 21
+  .. ..$ latest_date                : chr &quot;2021-12-30&quot;
+  .. ..$ change_cases               : chr &quot;30218&quot;
+  .. ..$ change_fatalities          : chr &quot;24&quot;
+  .. ..$ change_tests               : chr &quot;384379&quot;
+  .. ..$ change_hospitalizations    : chr &quot;378&quot;
+  .. ..$ change_criticals           : chr &quot;25&quot;
+  .. ..$ change_recoveries          : chr &quot;14457&quot;
+  .. ..$ change_vaccinations        : chr &quot;304006&quot;
+  .. ..$ change_vaccinated          : chr &quot;8977&quot;
+  .. ..$ change_boosters_1          : chr &quot;277804&quot;
+  .. ..$ change_vaccines_distributed: chr &quot;0&quot;
+  .. ..$ total_cases                : chr &quot;2132047&quot;
+  .. ..$ total_fatalities           : chr &quot;30277&quot;
+  .. ..$ total_tests                : chr &quot;53028929&quot;
+  .. ..$ total_hospitalizations     : chr &quot;2796&quot;
+  .. ..$ total_criticals            : chr &quot;524&quot;
+  .. ..$ total_recoveries           : chr &quot;1871668&quot;
+  .. ..$ total_vaccinations         : chr &quot;68388999&quot;
+  .. ..$ total_vaccinated           : chr &quot;29400542&quot;
+  .. ..$ total_boosters_1           : chr &quot;7268901&quot;
+  .. ..$ total_vaccines_distributed : chr &quot;73907682&quot;
+ $ last_updated: chr &quot;2021-12-30 13:33:02&quot;</code></pre>
+</div>
+<aside>
+<p>Per the documentation of <code>httr</code>, it is good practice to check the mime type of the response before parsing it.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/http_type.html'>http_type</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;application/json&quot;</code></pre>
+</div>
+<p>Here, the data is JSON, which is a type that can be parsed with <code>httr::content</code> (via the <code>jsonlite</code> package). We can also parse this data manually as follows (not run):</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, <span class='st'>"text"</span><span class='op'>)</span>,
+                   simplifyVector <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+</aside>
+<p>The returned data structure is a list of lists. <code>data</code> is a list with all of the summary statistics, while <code>last_updated</code> gives a timestamp of when the data was last updated. Put the data into a data frame:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_overall</span> <span class='op'>&lt;-</span> <span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>summary_overall</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 1
+Columns: 21
+$ latest_date                 &lt;chr&gt; &quot;2021-12-30&quot;
+$ change_cases                &lt;chr&gt; &quot;30218&quot;
+$ change_fatalities           &lt;chr&gt; &quot;24&quot;
+$ change_tests                &lt;chr&gt; &quot;384379&quot;
+$ change_hospitalizations     &lt;chr&gt; &quot;378&quot;
+$ change_criticals            &lt;chr&gt; &quot;25&quot;
+$ change_recoveries           &lt;chr&gt; &quot;14457&quot;
+$ change_vaccinations         &lt;chr&gt; &quot;304006&quot;
+$ change_vaccinated           &lt;chr&gt; &quot;8977&quot;
+$ change_boosters_1           &lt;chr&gt; &quot;277804&quot;
+$ change_vaccines_distributed &lt;chr&gt; &quot;0&quot;
+$ total_cases                 &lt;chr&gt; &quot;2132047&quot;
+$ total_fatalities            &lt;chr&gt; &quot;30277&quot;
+$ total_tests                 &lt;chr&gt; &quot;53028929&quot;
+$ total_hospitalizations      &lt;chr&gt; &quot;2796&quot;
+$ total_criticals             &lt;chr&gt; &quot;524&quot;
+$ total_recoveries            &lt;chr&gt; &quot;1871668&quot;
+$ total_vaccinations          &lt;chr&gt; &quot;68388999&quot;
+$ total_vaccinated            &lt;chr&gt; &quot;29400542&quot;
+$ total_boosters_1            &lt;chr&gt; &quot;7268901&quot;
+$ total_vaccines_distributed  &lt;chr&gt; &quot;73907682&quot;</code></pre>
+</div>
+<p>All of these variables are <code>character</code> type, and should be converted into <code>integer</code> and <code>Date</code> types:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_overall</span> <span class='op'>&lt;-</span> <span class='va'>summary_overall</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"^change|^total"</span><span class='op'>)</span>, <span class='va'>as.integer</span><span class='op'>)</span>,
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"date"</span><span class='op'>)</span>, <span class='va'>as.Date</span><span class='op'>)</span>
+  <span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>summary_overall</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 1
+Columns: 21
+$ latest_date                 &lt;date&gt; 2021-12-30
+$ change_cases                &lt;int&gt; 30218
+$ change_fatalities           &lt;int&gt; 24
+$ change_tests                &lt;int&gt; 384379
+$ change_hospitalizations     &lt;int&gt; 378
+$ change_criticals            &lt;int&gt; 25
+$ change_recoveries           &lt;int&gt; 14457
+$ change_vaccinations         &lt;int&gt; 304006
+$ change_vaccinated           &lt;int&gt; 8977
+$ change_boosters_1           &lt;int&gt; 277804
+$ change_vaccines_distributed &lt;int&gt; 0
+$ total_cases                 &lt;int&gt; 2132047
+$ total_fatalities            &lt;int&gt; 30277
+$ total_tests                 &lt;int&gt; 53028929
+$ total_hospitalizations      &lt;int&gt; 2796
+$ total_criticals             &lt;int&gt; 524
+$ total_recoveries            &lt;int&gt; 1871668
+$ total_vaccinations          &lt;int&gt; 68388999
+$ total_vaccinated            &lt;int&gt; 29400542
+$ total_boosters_1            &lt;int&gt; 7268901
+$ total_vaccines_distributed  &lt;int&gt; 73907682</code></pre>
+</div>
+<h3 id="province">Province</h3>
+<p>Instead of aggregating over all provinces, I can use <code>/summary/split</code> to get province-level summaries:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"summary/split"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span>, max.level <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 2
+ $ data        :List of 13
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+  ..$ :List of 22
+ $ last_updated: chr &quot;2021-12-30 13:33:02&quot;</code></pre>
+</div>
+<p>The <code>data</code> list now has 13 lists corresponding to the 13 provinces and territories. Look at the structure of one of them:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 22
+ $ province                   : chr &quot;ON&quot;
+ $ date                       : chr &quot;2021-12-30&quot;
+ $ change_cases               : int 13807
+ $ change_fatalities          : int 8
+ $ change_tests               : int 67301
+ $ change_hospitalizations    : int 239
+ $ change_criticals           : int 10
+ $ change_recoveries          : int 4037
+ $ change_vaccinations        : int 197280
+ $ change_vaccinated          : int 4884
+ $ change_boosters_1          : int 181344
+ $ change_vaccines_distributed: int 0
+ $ total_cases                : int 739648
+ $ total_fatalities           : int 10179
+ $ total_tests                : int 21178944
+ $ total_hospitalizations     : int 965
+ $ total_criticals            : int 200
+ $ total_recoveries           : int 642715
+ $ total_vaccinations         : int 27012866
+ $ total_vaccinated           : int 11404979
+ $ total_boosters_1           : int 3392882
+ $ total_vaccines_distributed : int 28411391</code></pre>
+</div>
+<p>This is the same structure as the overall summary, but with the extra variable <code>province</code> indicating that these numbers are specific to Ontario.</p>
+<p>A shortcut to compiling all of these lists into a single data frame with a row per province/territory is to use <code>dplyr::bind_rows</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_province</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>summary_province</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 13
+Columns: 22
+$ province                    &lt;chr&gt; &quot;ON&quot;, &quot;QC&quot;, &quot;NS&quot;, &quot;NB&quot;, &quot;MB&quot;, &quot;B~
+$ date                        &lt;chr&gt; &quot;2021-12-30&quot;, &quot;2021-12-30&quot;, &quot;202~
+$ change_cases                &lt;int&gt; 13807, 14188, 511, 0, 1121, 0, 0~
+$ change_fatalities           &lt;int&gt; 8, 9, 0, 0, 3, 0, 0, 4, 0, 0, 0,~
+$ change_tests                &lt;int&gt; 67301, 311161, 0, 0, 3409, 0, 0,~
+$ change_hospitalizations     &lt;int&gt; 239, 135, 1, 0, 7, 0, 0, -4, 0, ~
+$ change_criticals            &lt;int&gt; 10, 16, 0, 0, 0, 0, 0, -1, 0, 0,~
+$ change_recoveries           &lt;int&gt; 4037, 10176, 0, 0, 188, 0, 0, 56~
+$ change_vaccinations         &lt;int&gt; 197280, 96271, 8704, 0, 0, 0, 0,~
+$ change_vaccinated           &lt;int&gt; 4884, 2678, 317, 0, 0, 0, 0, 109~
+$ change_boosters_1           &lt;int&gt; 181344, 88990, 7470, 0, 0, 0, 0,~
+$ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_cases                 &lt;int&gt; 739648, 586607, 17063, 13018, 78~
+$ total_fatalities            &lt;int&gt; 10179, 11711, 111, 157, 1387, 24~
+$ total_tests                 &lt;int&gt; 21178944, 14813533, 1568215, 611~
+$ total_hospitalizations      &lt;int&gt; 965, 939, 25, 43, 190, 206, 0, 7~
+$ total_criticals             &lt;int&gt; 200, 138, 3, 17, 29, 66, 0, 14, ~
+$ total_recoveries            &lt;int&gt; 642715, 488030, 8643, 10478, 688~
+$ total_vaccinations          &lt;int&gt; 27012866, 15245140, 1785034, 143~
+$ total_vaccinated            &lt;int&gt; 11404979, 6685158, 794509, 62177~
+$ total_boosters_1            &lt;int&gt; 3392882, 1260684, 128183, 140212~
+$ total_vaccines_distributed  &lt;int&gt; 28411391, 16179459, 1950040, 160~</code></pre>
+</div>
+<p><code>bind_rows</code> also automatically converts the numeric columns to <code>integer</code>, but the <code>date</code> column is still <code>character</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_province</span> <span class='op'>&lt;-</span> <span class='va'>summary_province</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h3 id="health-region">Health region</h3>
+<p>Data my be split even further by health region with <code>summary/split/hr</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"summary/split/hr"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span>, max.level <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 2
+ $ data        :List of 92
+ $ last_updated: chr &quot;2021-12-30 13:33:02&quot;</code></pre>
+</div>
+<p>This <code>data</code> consists of 92 entries with mostly the same variables as previous summaries:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 20
+ $ hr_uid                 : int 6101
+ $ date                   : chr &quot;2021-12-23&quot;
+ $ change_cases           : int 0
+ $ change_fatalities      : int 0
+ $ change_tests           : NULL
+ $ change_hospitalizations: NULL
+ $ change_criticals       : NULL
+ $ change_recoveries      : int 0
+ $ change_vaccinations    : NULL
+ $ change_vaccinated      : NULL
+ $ change_boosters_1      : NULL
+ $ total_cases            : int 2090
+ $ total_fatalities       : int 12
+ $ total_tests            : int 36435
+ $ total_hospitalizations : int 0
+ $ total_criticals        : int 0
+ $ total_recoveries       : int 2059
+ $ total_vaccinations     : int 91434
+ $ total_vaccinated       : int 36803
+ $ total_boosters_1       : int 14692</code></pre>
+</div>
+<p>The differences are the <code>hr_uid</code> column in place of <code>province</code>, and the lack of <code>change_vaccines_distributed</code> and <code>total_vaccines_distributed</code>, presumably because these numbers aren’t available at this granularity.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_region</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>summary_region</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 92
+Columns: 18
+$ hr_uid                 &lt;int&gt; 6101, 6001, 1100, 6201, 1301, 1302, 1~
+$ date                   &lt;date&gt; 2021-12-23, 2021-12-23, 2021-12-23, ~
+$ change_cases           &lt;int&gt; 0, 9, NA, 31, 552, 681, 197, 102, 31,~
+$ change_fatalities      &lt;int&gt; 0, 0, NA, 0, 1, 1, 1, 2, 0, 0, 1, NA,~
+$ change_recoveries      &lt;int&gt; 0, 7, NA, 0, 162, 238, 276, 67, 15, 2~
+$ total_cases            &lt;int&gt; 2090, 1661, 529, 710, 3642, 2637, 284~
+$ total_fatalities       &lt;int&gt; 12, 14, 0, 4, 40, 18, 24, 40, 21, 5, ~
+$ total_tests            &lt;int&gt; 36435, 25087, 242814, 137805, 214471,~
+$ total_hospitalizations &lt;int&gt; 0, NA, 0, 263, NA, NA, NA, NA, NA, NA~
+$ total_criticals        &lt;int&gt; 0, 0, 0, NA, NA, NA, NA, NA, NA, NA, ~
+$ total_recoveries       &lt;int&gt; 2059, 1602, 417, 672, 2907, 1604, 249~
+$ total_vaccinations     &lt;int&gt; 91434, 80825, 292619, 55230, NA, NA, ~
+$ total_vaccinated       &lt;int&gt; 36803, 34029, 133999, 24746, NA, NA, ~
+$ total_boosters_1       &lt;int&gt; 14692, 10341, 15181, NA, NA, NA, NA, ~
+$ change_tests           &lt;int&gt; NA, 70, NA, 114419, 3918, 2577, 1475,~
+$ change_vaccinations    &lt;int&gt; NA, 0, 3486, 439, NA, NA, NA, NA, NA,~
+$ change_vaccinated      &lt;int&gt; NA, 0, 128, 81, NA, NA, NA, NA, NA, N~
+$ change_boosters_1      &lt;int&gt; NA, 0, 2336, NA, NA, NA, NA, NA, NA, ~</code></pre>
+</div>
+<p><code>hr_uid</code> is a unique identifier for each health region. A lookup table is available through the API with <code>regions</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"regions"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span>, max.level <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 1
+ $ data:List of 92</code></pre>
+</div>
+<p>There are 92 elements, matching the 92 health regions in the summary data, with the following structure:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>regions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>regions</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 92
+Columns: 4
+$ hr_uid   &lt;int&gt; 471, 472, 473, 474, 475, 476, 591, 592, 593, 594, 5~
+$ province &lt;chr&gt; &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;BC&quot;, &quot;BC&quot;, &quot;BC~
+$ engname  &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Saskatoon&quot;, &quot;Regi~
+$ frename  &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Saskatoon&quot;, &quot;Regi~</code></pre>
+</div>
+<p>Add the health region to the <code>summary_region</code> data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_region</span> <span class='op'>&lt;-</span> <span class='va'>regions</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate-joins.html'>left_join</a></span><span class='op'>(</span><span class='va'>summary_region</span>, by <span class='op'>=</span> <span class='st'>"hr_uid"</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>summary_region</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 92
+Columns: 21
+$ hr_uid                 &lt;int&gt; 471, 472, 473, 474, 475, 476, 591, 59~
+$ province               &lt;chr&gt; &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;~
+$ engname                &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Sas~
+$ frename                &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Sas~
+$ date                   &lt;date&gt; 2021-12-30, 2021-12-30, 2021-12-30, ~
+$ change_cases           &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
+$ change_fatalities      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
+$ change_recoveries      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
+$ total_cases            &lt;int&gt; 9424, 20119, 6380, 20136, 16571, 1058~
+$ total_fatalities       &lt;int&gt; 84, 249, 79, 179, 211, 148, 1125, 295~
+$ total_tests            &lt;int&gt; 63451, 193204, 105240, 346968, 266657~
+$ total_hospitalizations &lt;int&gt; 0, 12, 5, 35, 25, 6, 59, 43, 40, 10, ~
+$ total_criticals        &lt;int&gt; 0, 0, 0, 9, 6, 0, 20, 26, 15, 5, 10, ~
+$ total_recoveries       &lt;int&gt; 9314, 19738, 6130, 19458, 15863, 1021~
+$ total_vaccinations     &lt;int&gt; 67313, 308709, 195700, 492298, 413270~
+$ total_vaccinated       &lt;int&gt; 31372, 145557, 94074, 235700, 197459,~
+$ total_boosters_1       &lt;int&gt; NA, NA, NA, NA, NA, NA, 264515, 16245~
+$ change_tests           &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
+$ change_vaccinations    &lt;int&gt; NA, NA, NA, NA, NA, NA, 35806, 11236,~
+$ change_vaccinated      &lt;int&gt; NA, NA, NA, NA, NA, NA, 1933, 534, 87~
+$ change_boosters_1      &lt;int&gt; NA, NA, NA, NA, NA, NA, 27854, 9347, ~</code></pre>
+</div>
+<h2 id="reports">Reports</h2>
+<h3 id="overall-1">Overall</h3>
+<p>Reports are much like summaries, but for every day instead of just the most recent.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span>, max.level <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 3
+ $ province    : chr &quot;All&quot;
+ $ last_updated: chr &quot;2021-12-30 13:33:02&quot;
+ $ data        :List of 706</code></pre>
+</div>
+<p>An additional top-level variable <code>province</code> defines the scope of the report. The <code>data</code> list here consists of 705 elements with the following structure:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 21
+ $ date                       : chr &quot;2020-01-25&quot;
+ $ change_cases               : int 1
+ $ change_fatalities          : int 0
+ $ change_tests               : int 2
+ $ change_hospitalizations    : int 0
+ $ change_criticals           : int 0
+ $ change_recoveries          : int 0
+ $ change_vaccinations        : int 0
+ $ change_vaccinated          : int 0
+ $ change_boosters_1          : int 0
+ $ change_vaccines_distributed: int 0
+ $ total_cases                : int 1
+ $ total_fatalities           : int 0
+ $ total_tests                : int 2
+ $ total_hospitalizations     : int 0
+ $ total_criticals            : int 0
+ $ total_recoveries           : int 0
+ $ total_vaccinations         : int 0
+ $ total_vaccinated           : int 0
+ $ total_boosters_1           : int 0
+ $ total_vaccines_distributed : int 0</code></pre>
+</div>
+<p>This first element has many zeroes, which makes sense as the <code>date</code> (January 25th, 2020) corresponds to the <a href="https://www.ourwindsor.ca/news-story/10124148-how-a-toronto-hospital-handled-canada-s-first-covid-19-case-we-didn-t-know-this-was-a-moment-in-history-/">first confirmed case of COVID in Canada</a>. The last element of this list should have today’s data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 21
+ $ date                       : chr &quot;2021-12-30&quot;
+ $ change_cases               : int 30218
+ $ change_fatalities          : int 24
+ $ change_tests               : int 384379
+ $ change_hospitalizations    : int 378
+ $ change_criticals           : int 25
+ $ change_recoveries          : int 14457
+ $ change_vaccinations        : int 304006
+ $ change_vaccinated          : int 8977
+ $ change_boosters_1          : int 277804
+ $ change_vaccines_distributed: int 0
+ $ total_cases                : int 2132047
+ $ total_fatalities           : int 30277
+ $ total_tests                : int 53028929
+ $ total_hospitalizations     : int 2796
+ $ total_criticals            : int 524
+ $ total_recoveries           : int 1871668
+ $ total_vaccinations         : int 68388999
+ $ total_vaccinated           : int 29400542
+ $ total_boosters_1           : int 7268901
+ $ total_vaccines_distributed : int 73907682</code></pre>
+</div>
+<p>The data may be bound together in the same way:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>report_overall</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h3 id="province-1">Province</h3>
+<p>To split data by province, the two-letter code is provided as <code>reports/province/{code}</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/province/ns"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='va'>report_ns</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>report_ns</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 706
+Columns: 21
+$ date                        &lt;date&gt; 2020-01-25, 2020-01-26, 2020-01~
+$ change_cases                &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_fatalities           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_tests                &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_hospitalizations     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_criticals            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_recoveries           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_vaccinations         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_vaccinated           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_boosters_1           &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_cases                 &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_fatalities            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_tests                 &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_hospitalizations      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_criticals             &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_recoveries            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_vaccinations          &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_vaccinated            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_boosters_1            &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_vaccines_distributed  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~</code></pre>
+</div>
+<h3 id="health-region-1">Health region</h3>
+<p>Similarly, provide the <code>hr_uid</code> in <code>reports/regions/{hr_uid}</code> to get health region reports:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/regions/1204"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='va'>report_ns_central</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>report_ns_central</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 691
+Columns: 7
+$ date              &lt;date&gt; 2020-01-17, 2020-01-18, 2020-01-19, 2020-~
+$ change_cases      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ change_fatalities &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ total_cases       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ total_fatalities  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ change_recoveries &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~
+$ total_recoveries  &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~</code></pre>
+</div>
+<p>I chose Nova Scotia central because it is where I live and, looking at this data, it clearly isn’t being updated day-to-day:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>report_ns_central</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 6
+Columns: 7
+$ date              &lt;date&gt; 2021-12-25, 2021-12-26, 2021-12-27, 2021-~
+$ change_cases      &lt;int&gt; NA, NA, NA, NA, NA, NA
+$ change_fatalities &lt;int&gt; NA, NA, NA, NA, NA, NA
+$ total_cases       &lt;int&gt; 6781, 6781, 6781, 6781, 6781, 6781
+$ total_fatalities  &lt;int&gt; 87, 87, 87, 87, 87, 87
+$ change_recoveries &lt;int&gt; NA, NA, NA, NA, NA, NA
+$ total_recoveries  &lt;int&gt; 6344, 6344, 6344, 6344, 6344, 6344</code></pre>
+</div>
+<p>There has, unfortunately, been hundreds of cases per day here recently. These numbers are reflected in the province report however:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>report_ns</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 6
+Columns: 21
+$ date                        &lt;date&gt; 2021-12-25, 2021-12-26, 2021-12~
+$ change_cases                &lt;int&gt; 569, 578, 581, 561, 586, 511
+$ change_fatalities           &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ change_tests                &lt;int&gt; 0, 0, 0, 0, 51743, 0
+$ change_hospitalizations     &lt;int&gt; 0, 0, 0, 0, 10, 1
+$ change_criticals            &lt;int&gt; 0, 0, 0, 0, -1, 0
+$ change_recoveries           &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ change_vaccinations         &lt;int&gt; 0, 0, 0, 0, 18044, 8704
+$ change_vaccinated           &lt;int&gt; 0, 0, 0, 0, 703, 317
+$ change_boosters_1           &lt;int&gt; 0, 0, 0, 0, 15694, 7470
+$ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ total_cases                 &lt;int&gt; 14246, 14824, 15405, 15966, 1655~
+$ total_fatalities            &lt;int&gt; 111, 111, 111, 111, 111, 111
+$ total_tests                 &lt;int&gt; 1516472, 1516472, 1516472, 15164~
+$ total_hospitalizations      &lt;int&gt; 14, 14, 14, 14, 24, 25
+$ total_criticals             &lt;int&gt; 4, 4, 4, 4, 3, 3
+$ total_recoveries            &lt;int&gt; 8643, 8643, 8643, 8643, 8643, 86~
+$ total_vaccinations          &lt;int&gt; 1758286, 1758286, 1758286, 17582~
+$ total_vaccinated            &lt;int&gt; 793489, 793489, 793489, 793489, ~
+$ total_boosters_1            &lt;int&gt; 105019, 105019, 105019, 105019, ~
+$ total_vaccines_distributed  &lt;int&gt; 1950040, 1950040, 1950040, 19500~</code></pre>
+</div>
+<h3 id="parameters">Parameters</h3>
+<p>The reports have a number of optional <a href="https://api.covid19tracker.ca/docs/1.0/reports#parameters">parameters available</a> to alter the API request.</p>
+<p>The <code>fill_dates</code> option fills dates with missing entries:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/regions/1204?fill_dates=false"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 714
+Columns: 8
+$ date              &lt;chr&gt; &quot;2020-01-17&quot;, &quot;2020-01-18&quot;, &quot;2020-01-19&quot;, ~
+$ change_cases      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ change_fatalities &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ total_cases       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ total_fatalities  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ change_recoveries &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~
+$ total_recoveries  &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~
+$ fill              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~</code></pre>
+</div>
+<p>There aren’t any missing <code>date</code>s in this report, so the <code>fill_dates</code> parameter makes no difference here.</p>
+<p>The <code>stat</code> argument allows one to specify a single statistic to return:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/province/ns?stat=cases"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 706
+Columns: 3
+$ date         &lt;chr&gt; &quot;2020-01-25&quot;, &quot;2020-01-26&quot;, &quot;2020-01-27&quot;, &quot;2020~
+$ change_cases &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ total_cases  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~</code></pre>
+</div>
+<p>The <code>date</code> parameter returns a report from a single date:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/province/ab?date=2021-12-25"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 1
+Columns: 21
+$ date                        &lt;chr&gt; &quot;2021-12-25&quot;
+$ change_cases                &lt;int&gt; 2484
+$ change_fatalities           &lt;int&gt; 0
+$ change_tests                &lt;int&gt; 11479
+$ change_hospitalizations     &lt;int&gt; 0
+$ change_criticals            &lt;int&gt; 0
+$ change_recoveries           &lt;int&gt; 0
+$ change_vaccinations         &lt;int&gt; 0
+$ change_vaccinated           &lt;int&gt; 0
+$ change_boosters_1           &lt;int&gt; 0
+$ change_vaccines_distributed &lt;int&gt; 0
+$ total_cases                 &lt;int&gt; 351199
+$ total_fatalities            &lt;int&gt; 3299
+$ total_tests                 &lt;int&gt; 6347374
+$ total_hospitalizations      &lt;int&gt; 318
+$ total_criticals             &lt;int&gt; 64
+$ total_recoveries            &lt;int&gt; 335047
+$ total_vaccinations          &lt;int&gt; 7452649
+$ total_vaccinated            &lt;int&gt; 3211241
+$ total_boosters_1            &lt;int&gt; 761153
+$ total_vaccines_distributed  &lt;int&gt; 8799859</code></pre>
+</div>
+<p>Lastly, the <code>after</code> and <code>before</code> parameters return on/after and on/before specific dates:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/province/qc?after=2021-12-24&amp;before=2021-12-26"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 3
+Columns: 21
+$ date                        &lt;chr&gt; &quot;2021-12-24&quot;, &quot;2021-12-25&quot;, &quot;202~
+$ change_cases                &lt;int&gt; 10031, 9206, 8231
+$ change_fatalities           &lt;int&gt; 2, 4, 10
+$ change_tests                &lt;int&gt; 0, 0, 0
+$ change_hospitalizations     &lt;int&gt; 0, 0, 0
+$ change_criticals            &lt;int&gt; 0, 0, 0
+$ change_recoveries           &lt;int&gt; 3017, 3559, 0
+$ change_vaccinations         &lt;int&gt; 97263, 0, 0
+$ change_vaccinated           &lt;int&gt; 3523, 0, 0
+$ change_boosters_1           &lt;int&gt; 87581, 0, 0
+$ change_vaccines_distributed &lt;int&gt; 0, 0, 0
+$ total_cases                 &lt;int&gt; 521126, 530332, 538563
+$ total_fatalities            &lt;int&gt; 11660, 11664, 11674
+$ total_tests                 &lt;int&gt; 14502372, 14502372, 14502372
+$ total_hospitalizations      &lt;int&gt; 473, 473, 473
+$ total_criticals             &lt;int&gt; 91, 91, 91
+$ total_recoveries            &lt;int&gt; 460647, 464206, 464206
+$ total_vaccinations          &lt;int&gt; 14963214, 14963214, 14963214
+$ total_vaccinated            &lt;int&gt; 6678444, 6678444, 6678444
+$ total_boosters_1            &lt;int&gt; 997853, 997853, 997853
+$ total_vaccines_distributed  &lt;int&gt; 16179459, 16179459, 16179459</code></pre>
+</div>
+<p>Note how parameters can be combined as above, by separating the arguments with <code>&amp;</code>.</p>
+<h2 id="vaccination-data">Vaccination data</h2>
+<p>We have already seen the vaccination data returned by <code>summary</code> and <code>report</code> requests. The variables include:</p>
+<ul>
+<li><code>vaccinations</code>: total doses administered</li>
+<li><code>vaccinated</code>: total number of people with two doses</li>
+<li><code>boosters_1</code>: total number of boosters (3rd dose) administered</li>
+<li><code>vaccines_administered</code>: total number of doses delivered to province</li>
+</ul>
+<p>At the summary level:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_province</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>province</span> <span class='op'>==</span> <span class='st'>"NS"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"vacc|boost"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 1
+Columns: 9
+$ date                        &lt;date&gt; 2021-12-30
+$ change_vaccinations         &lt;int&gt; 8704
+$ change_vaccinated           &lt;int&gt; 317
+$ change_boosters_1           &lt;int&gt; 7470
+$ change_vaccines_distributed &lt;int&gt; 0
+$ total_vaccinations          &lt;int&gt; 1785034
+$ total_vaccinated            &lt;int&gt; 794509
+$ total_boosters_1            &lt;int&gt; 128183
+$ total_vaccines_distributed  &lt;int&gt; 1950040</code></pre>
+</div>
+<p>At the report level:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>report_ns</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"vacc|boost"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 6
+Columns: 9
+$ date                        &lt;date&gt; 2021-12-25, 2021-12-26, 2021-12~
+$ change_vaccinations         &lt;int&gt; 0, 0, 0, 0, 18044, 8704
+$ change_vaccinated           &lt;int&gt; 0, 0, 0, 0, 703, 317
+$ change_boosters_1           &lt;int&gt; 0, 0, 0, 0, 15694, 7470
+$ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ total_vaccinations          &lt;int&gt; 1758286, 1758286, 1758286, 17582~
+$ total_vaccinated            &lt;int&gt; 793489, 793489, 793489, 793489, ~
+$ total_boosters_1            &lt;int&gt; 105019, 105019, 105019, 105019, ~
+$ total_vaccines_distributed  &lt;int&gt; 1950040, 1950040, 1950040, 19500~</code></pre>
+</div>
+<h3 id="subregions">Subregions</h3>
+<p>Vaccination date is also available at the subregion level for certain provinces and territories. The <a href="https://api.covid19tracker.ca/docs/1.0/vaccinations">API documentation</a> doesn’t actually specify which provinces and territories, but I can find out by requesting the data as follows:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"reports/sub-regions/summary"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+
+<span class='va'>subregion_vacc_summary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>subregion_vacc_summary</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 806
+Columns: 11
+$ code           &lt;chr&gt; &quot;ON001&quot;, &quot;ON002&quot;, &quot;ON003&quot;, &quot;ON004&quot;, &quot;ON005&quot;, ~
+$ date           &lt;date&gt; 2021-12-10, 2021-12-10, 2021-12-10, 2021-12-~
+$ total_dose_1   &lt;int&gt; 94206, 16667, 42626, 32777, 33222, 38548, 264~
+$ percent_dose_1 &lt;chr&gt; &quot;0.80220&quot;, &quot;0.74250&quot;, &quot;0.76330&quot;, &quot;0.78180&quot;, &quot;~
+$ source_dose_1  &lt;chr&gt; &quot;percent&quot;, &quot;percent&quot;, &quot;percent&quot;, &quot;percent&quot;, &quot;~
+$ total_dose_2   &lt;int&gt; 90037, 16086, 41001, 31590, 32136, 36948, 254~
+$ percent_dose_2 &lt;chr&gt; &quot;0.76670&quot;, &quot;0.71660&quot;, &quot;0.73420&quot;, &quot;0.75350&quot;, &quot;~
+$ source_dose_2  &lt;chr&gt; &quot;percent&quot;, &quot;percent&quot;, &quot;percent&quot;, &quot;percent&quot;, &quot;~
+$ total_dose_3   &lt;int&gt; 5249, 644, 2167, 1711, 2193, 3099, 1278, 6384~
+$ percent_dose_3 &lt;chr&gt; &quot;0.04470&quot;, &quot;0.02870&quot;, &quot;0.03880&quot;, &quot;0.04080&quot;, &quot;~
+$ source_dose_3  &lt;chr&gt; &quot;percent&quot;, &quot;percent&quot;, &quot;percent&quot;, &quot;percent&quot;, &quot;~</code></pre>
+</div>
+<p>The <code>code</code> labels can be retrieved via <code>sub-regions</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"sub-regions"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='va'>subregions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>subregions</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 806
+Columns: 5
+$ code       &lt;chr&gt; &quot;AB001&quot;, &quot;AB002&quot;, &quot;AB003&quot;, &quot;AB004&quot;, &quot;AB005&quot;, &quot;AB0~
+$ province   &lt;chr&gt; &quot;AB&quot;, &quot;AB&quot;, &quot;AB&quot;, &quot;AB&quot;, &quot;AB&quot;, &quot;AB&quot;, &quot;AB&quot;, &quot;AB&quot;, &quot;~
+$ zone       &lt;chr&gt; &quot;SOUTH&quot;, &quot;SOUTH&quot;, &quot;SOUTH&quot;, &quot;SOUTH&quot;, &quot;SOUTH&quot;, &quot;SOU~
+$ region     &lt;chr&gt; &quot;CROWSNEST PASS&quot;, &quot;PINCHER CREEK&quot;, &quot;FORT MACLEOD&quot;~
+$ population &lt;int&gt; 6280, 8344, 6753, 16595, 25820, 19028, 11104, 640~</code></pre>
+</div>
+<p>806 subregions, which matches the count from the summary, with the following distribution by <code>province</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>subregions</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 6 x 2
+  province     n
+  &lt;chr&gt;    &lt;int&gt;
+1 AB         132
+2 MB          79
+3 NL          38
+4 NT          30
+5 ON         514
+6 SK          13</code></pre>
+</div>
+<h2 id="vaccine-age-groups">Vaccine age groups</h2>
+<h3 id="overall-2">Overall</h3>
+<p>Vaccine data by age groups is reported week-by-week, and accessed with <code>vaccines/age-groups</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"vaccines/age-groups"</span><span class='op'>)</span>
+<span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='va'>vaccine_age_groups</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 50
+Columns: 2
+$ date &lt;date&gt; 2020-12-19, 2020-12-26, 2021-01-02, 2021-01-09, 2021-0~
+$ data &lt;chr&gt; &quot;{\&quot;80+\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;80+\&quot;, \&quot;partial\~</code></pre>
+</div>
+<p>The <code>data</code> here is returned as an un-parsed JSON string. Per the API documentation, it has to do with shifting reporting standards across weeks:</p>
+<blockquote>
+<p>due to reporting standard shifts overtime, the JSON string data may not be consistent across weeks. Minimal effort is taken to normalize some of this data.</p>
+</blockquote>
+<p>Look at the first element of <code>data</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_trunc.html'>str_trunc</a></span><span class='op'>(</span><span class='fl'>90</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>[1] &quot;{\&quot;80+\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;80+\&quot;, \&quot;partial\&quot;: 335, \&quot;atleast1\&quot;: 335}, \&quot;0-15\&quot;: {\&quot;full\&quot;: ...&quot;</code></pre>
+</div>
+<p>Parse the JSON:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 8
+ $ 80+         :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;80+&quot;
+  ..$ partial : int 335
+  ..$ atleast1: int 335
+ $ 0-15        :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;0-15&quot;
+  ..$ partial : int 0
+  ..$ atleast1: int 0
+ $ 16-69       :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;16-69&quot;
+  ..$ partial : int 11768
+  ..$ atleast1: int 11768
+ $ 70-74       :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;70-74&quot;
+  ..$ partial : int 174
+  ..$ atleast1: int 174
+ $ 75-79       :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;75-79&quot;
+  ..$ partial : int 85
+  ..$ atleast1: int 85
+ $ unknown     :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;Unknown&quot;
+  ..$ partial : int 0
+  ..$ atleast1: int 0
+ $ all_ages    :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;All ages&quot;
+  ..$ partial : int 12362
+  ..$ atleast1: int 12362
+ $ not_reported:List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;Not reported&quot;
+  ..$ partial : int 0
+  ..$ atleast1: int 0</code></pre>
+</div>
+<p>To see how the reporting has changed over time, here is the most recent age group vaccination data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span>
+  <span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span><span class='op'>]</span><span class='op'>]</span>
+<span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>List of 13
+ $ 0-4         :List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;0-4&quot;
+  ..$ partial : int 168
+  ..$ atleast1: int 168
+ $ 80+         :List of 4
+  ..$ full    : int 1592112
+  ..$ group   : chr &quot;80+&quot;
+  ..$ partial : int 37087
+  ..$ atleast1: int 1629199
+ $ 05-11       :List of 4
+  ..$ full    : int 38529
+  ..$ group   : chr &quot;05-11&quot;
+  ..$ partial : int 128566
+  ..$ atleast1: int 167095
+ $ 12-17       :List of 4
+  ..$ full    : int 2056217
+  ..$ group   : chr &quot;12-17&quot;
+  ..$ partial : int 115141
+  ..$ atleast1: int 2171358
+ $ 18-29       :List of 4
+  ..$ full    : int 4837894
+  ..$ group   : chr &quot;18-29&quot;
+  ..$ partial : int 297285
+  ..$ atleast1: int 5135179
+ $ 30-39       :List of 4
+  ..$ full    : int 4397112
+  ..$ group   : chr &quot;30-39&quot;
+  ..$ partial : int 208113
+  ..$ atleast1: int 4605225
+ $ 40-49       :List of 4
+  ..$ full    : int 4206956
+  ..$ group   : chr &quot;40-49&quot;
+  ..$ partial : int 139350
+  ..$ atleast1: int 4346306
+ $ 50-59       :List of 4
+  ..$ full    : int 4522071
+  ..$ group   : chr &quot;50-59&quot;
+  ..$ partial : int 113300
+  ..$ atleast1: int 4635371
+ $ 60-69       :List of 4
+  ..$ full    : int 4406118
+  ..$ group   : chr &quot;60-69&quot;
+  ..$ partial : int 78844
+  ..$ atleast1: int 4484962
+ $ 70-79       :List of 4
+  ..$ full    : int 2915738
+  ..$ group   : chr &quot;70-79&quot;
+  ..$ partial : int 41632
+  ..$ atleast1: int 2957370
+ $ unknown     :List of 4
+  ..$ full    : int 40570
+  ..$ group   : chr &quot;Unknown&quot;
+  ..$ partial : int 46905
+  ..$ atleast1: int 87475
+ $ all_ages    :List of 4
+  ..$ full    : int 29013317
+  ..$ group   : chr &quot;All ages&quot;
+  ..$ partial : int 1206391
+  ..$ atleast1: int 30219708
+ $ not_reported:List of 4
+  ..$ full    : int 0
+  ..$ group   : chr &quot;Not reported&quot;
+  ..$ partial : int 0
+  ..$ atleast1: int 0</code></pre>
+</div>
+<p>Each JSON data point can be converted to a data frame as follows:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>.id <span class='op'>=</span> <span class='st'>"group_code"</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 8 x 5
+  group_code    full group        partial atleast1
+  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;          &lt;int&gt;    &lt;int&gt;
+1 80+              0 80+              335      335
+2 0-15             0 0-15               0        0
+3 16-69            0 16-69          11768    11768
+4 70-74            0 70-74            174      174
+5 75-79            0 75-79             85       85
+6 unknown          0 Unknown            0        0
+7 all_ages         0 All ages       12362    12362
+8 not_reported     0 Not reported       0        0</code></pre>
+</div>
+<p>Use <code>map</code> and <code>unnest</code> to apply this to each row of the data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups</span> <span class='op'>&lt;-</span> <span class='va'>vaccine_age_groups</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span>
+      <span class='va'>data</span>,
+      <span class='op'>~</span><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>.id <span class='op'>=</span> <span class='st'>"group_code"</span><span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 551
+Columns: 6
+$ date       &lt;date&gt; 2020-12-19, 2020-12-19, 2020-12-19, 2020-12-19, ~
+$ group_code &lt;chr&gt; &quot;80+&quot;, &quot;0-15&quot;, &quot;16-69&quot;, &quot;70-74&quot;, &quot;75-79&quot;, &quot;unknow~
+$ full       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ group      &lt;chr&gt; &quot;80+&quot;, &quot;0-15&quot;, &quot;16-69&quot;, &quot;70-74&quot;, &quot;75-79&quot;, &quot;Unknow~
+$ partial    &lt;int&gt; 335, 0, 11768, 174, 85, 0, 12362, 0, 2229, 5, 401~
+$ atleast1   &lt;int&gt; 335, 0, 11768, 174, 85, 0, 12362, 0, 2229, 5, 401~</code></pre>
+</div>
+<p>The unique <code>group</code>s:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='op'>(</span><span class='va'>group_code</span>, <span class='va'>group</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'>rmarkdown</span><span class='fu'>::</span><span class='fu'><a href='https://pkgs.rstudio.com/rmarkdown/reference/paged_table.html'>paged_table</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["group_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["group"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"0-15","2":"0-15","3":"3"},{"1":"0-17","2":"0-17","3":"21"},{"1":"0-4","2":"0-4","3":"26"},{"1":"05-11","2":"05-11","3":"26"},{"1":"12-17","2":"12-17","3":"26"},{"1":"16-69","2":"16-69","3":"3"},{"1":"18-29","2":"18-29","3":"33"},{"1":"18-69","2":"18-69","3":"14"},{"1":"30-39","2":"30-39","3":"33"},{"1":"40-49","2":"40-49","3":"33"},{"1":"50-59","2":"50-59","3":"33"},{"1":"60-69","2":"60-69","3":"33"},{"1":"70-74","2":"70-74","3":"17"},{"1":"70-79","2":"70-79","3":"33"},{"1":"75-79","2":"75-79","3":"17"},{"1":"80+","2":"80+","3":"50"},{"1":"all_ages","2":"All ages","3":"50"},{"1":"not_reported","2":"Not reported","3":"50"},{"1":"unknown","2":"Unknown","3":"50"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<p>Visualize how the age ranges evolve over time:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Make it a function that will allow splits later</span>
+<span class='va'>plot_age_ranges</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>vaccine_age_groups</span>, <span class='va'>split</span> <span class='op'>=</span> <span class='st'>"overall"</span>, <span class='va'>ncol</span> <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>vaccine_age_groups</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='fu'><a href='https://stringr.tidyverse.org/reference/str_detect.html'>str_detect</a></span><span class='op'>(</span><span class='va'>group</span>, <span class='st'>"\\d"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+    <span class='fu'><a href='https://tidyr.tidyverse.org/reference/separate.html'>separate</a></span><span class='op'>(</span><span class='va'>group</span>, into <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"age_min"</span>, <span class='st'>"age_max"</span><span class='op'>)</span>,
+             sep <span class='op'>=</span> <span class='st'>"-"</span>, fill <span class='op'>=</span> <span class='st'>"right"</span>, remove <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+      age_min <span class='op'>=</span> <span class='fu'>readr</span><span class='fu'>::</span><span class='fu'><a href='https://readr.tidyverse.org/reference/parse_number.html'>parse_number</a></span><span class='op'>(</span><span class='va'>age_min</span><span class='op'>)</span>,
+      <span class='co'># Set the upper range of the age to 100 (arbitrarility)</span>
+      age_max <span class='op'>=</span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/replace_na.html'>replace_na</a></span><span class='op'>(</span><span class='va'>age_max</span>, replace <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='op'>)</span>,
+      age_mid <span class='op'>=</span> <span class='op'>(</span><span class='va'>age_max</span> <span class='op'>+</span> <span class='va'>age_min</span><span class='op'>)</span> <span class='op'>/</span> <span class='fl'>2</span>,
+      group <span class='op'>=</span> <span class='fu'><a href='https://forcats.tidyverse.org/reference/fct_reorder.html'>fct_reorder</a></span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>age_mid</span><span class='op'>)</span>
+    <span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>date</span>, color <span class='op'>=</span> <span class='va'>group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_linerange.html'>geom_errorbar</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>ymin <span class='op'>=</span> <span class='va'>age_min</span>, ymax <span class='op'>=</span> <span class='va'>age_max</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span>
+      data <span class='op'>=</span> <span class='va'>.</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+        <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice_min</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+        <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>age_mid <span class='op'>=</span> <span class='op'>(</span><span class='va'>age_max</span> <span class='op'>+</span> <span class='va'>age_min</span><span class='op'>)</span> <span class='op'>/</span> <span class='fl'>2</span><span class='op'>)</span>,
+      <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>group</span>, y <span class='op'>=</span> <span class='va'>age_mid</span><span class='op'>)</span>,
+      hjust <span class='op'>=</span> <span class='fl'>1</span>, nudge_x <span class='op'>=</span> <span class='op'>-</span><span class='fl'>3</span>, show.legend <span class='op'>=</span> <span class='cn'>FALSE</span>
+    <span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></span><span class='op'>(</span>
+      data <span class='op'>=</span> <span class='va'>.</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+        <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice_max</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+        <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>age_mid <span class='op'>=</span> <span class='op'>(</span><span class='va'>age_max</span> <span class='op'>+</span> <span class='va'>age_min</span><span class='op'>)</span> <span class='op'>/</span> <span class='fl'>2</span><span class='op'>)</span>,
+      <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>group</span>, y <span class='op'>=</span> <span class='va'>age_mid</span><span class='op'>)</span>,
+      hjust <span class='op'>=</span> <span class='fl'>0</span>, nudge_x <span class='op'>=</span> <span class='fl'>3</span>, show.legend <span class='op'>=</span> <span class='cn'>FALSE</span>
+    <span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/expand_limits.html'>expand_limits</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>10</span>,
+                        <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_color_viridis_d</a></span><span class='op'>(</span>end <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>legend.position <span class='op'>=</span> <span class='st'>"none"</span><span class='op'>)</span> <span class='op'>+</span>
+    <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Date"</span>, y <span class='op'>=</span> <span class='st'>"Age"</span>,
+         title <span class='op'>=</span> <span class='st'>"Age ranges for weekly vaccination reports, by date"</span><span class='op'>)</span>
+  
+  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>split</span> <span class='op'>==</span> <span class='st'>"province"</span><span class='op'>)</span> <span class='va'>p</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>province</span>, ncol <span class='op'>=</span> <span class='va'>ncol</span><span class='op'>)</span>
+  <span class='kw'>else</span> <span class='kw'>if</span> <span class='op'>(</span><span class='va'>split</span> <span class='op'>==</span> <span class='st'>"region"</span><span class='op'>)</span> <span class='va'>p</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>hr_uid</span>, ncol <span class='op'>=</span> <span class='va'>ncol</span><span class='op'>)</span>
+  <span class='kw'>else</span> <span class='op'>{</span><span class='va'>p</span><span class='op'>}</span>
+<span class='op'>}</span>
+
+<span class='fu'>plot_age_ranges</span><span class='op'>(</span><span class='va'>vaccine_age_groups</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-46-1.png" width="624" /></p>
+</div>
+<p>Unsurprisingly, the age ranges become more granular overtime, with the exception of 70-79 which was originally split into 70-74 and 75-79.</p>
+<h3 id="province-2">Province</h3>
+<p>As with the other data, adding <code>/split</code> to the query returns vaccination data by province:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"vaccines/age-groups/split"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='va'>vaccine_age_groups_province</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups_province</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 1,447
+Columns: 3
+$ date     &lt;date&gt; 2020-12-14, 2020-12-15, 2020-12-16, 2020-12-16, 20~
+$ data     &lt;chr&gt; &quot;{\&quot;0-4\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;0-4\&quot;, \&quot;part~
+$ province &lt;chr&gt; &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;ON&quot;, &quot;QC&quot;, &quot;ON&quot;, &quot;QC&quot;, &quot;ON&quot;, &quot;BC~</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups_province</span> <span class='op'>&lt;-</span> <span class='va'>vaccine_age_groups_province</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    data <span class='op'>=</span> <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span>
+      <span class='va'>data</span>,
+      <span class='op'>~</span><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>.id <span class='op'>=</span> <span class='st'>"group_code"</span><span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>vaccine_age_groups_province</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 14,425
+Columns: 7
+$ date       &lt;date&gt; 2020-12-14, 2020-12-14, 2020-12-14, 2020-12-14, ~
+$ group_code &lt;chr&gt; &quot;0-4&quot;, &quot;80+&quot;, &quot;05-11&quot;, &quot;12-17&quot;, &quot;18-29&quot;, &quot;30-39&quot;,~
+$ full       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ group      &lt;chr&gt; &quot;0-4&quot;, &quot;80+&quot;, &quot;05-11&quot;, &quot;12-17&quot;, &quot;18-29&quot;, &quot;30-39&quot;,~
+$ partial    &lt;int&gt; 1, 169, 0, 0, 9, 11, 23, 22, 26, 35, 1, 328, 0, 2~
+$ atleast1   &lt;int&gt; 1, 169, 0, 0, 9, 11, 23, 22, 26, 35, 1, 328, 0, 2~
+$ province   &lt;chr&gt; &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;QC&quot;, &quot;~</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups_province</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>province</span> <span class='op'>==</span> <span class='st'>"QC"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>plot_age_ranges</span><span class='op'>(</span>split <span class='op'>=</span> <span class='st'>"province"</span>, ncol <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-49-1.png" width="624" /></p>
+</div>
+<p>A single province can also be obtained by altering the query with <code>vaccines/age-groups/province/{code}</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"vaccines/age-groups/province/ns"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='va'>vaccine_age_groups_ns</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span>,
+    data <span class='op'>=</span> <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='op'>~</span><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>.id <span class='op'>=</span> <span class='st'>"group_code"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
+<span class='fu'>plot_age_ranges</span><span class='op'>(</span><span class='va'>vaccine_age_groups_ns</span><span class='op'>)</span>
+</code></pre>
+</div>
+<p><img src="canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-50-1.png" width="624" /></p>
+</div>
+<h3 id="parameters-1">Parameters</h3>
+<p>This query also has the <code>after</code> and <code>before</code> parameters available:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>,
+                         <span class='st'>"vaccines/age-groups/province/ns?after=2021-11-01"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 4
+Columns: 2
+$ date &lt;chr&gt; &quot;2021-11-06&quot;, &quot;2021-11-13&quot;, &quot;2021-11-20&quot;, &quot;2021-11-27&quot;
+$ data &lt;chr&gt; &quot;{\&quot;0-4\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;0-4\&quot;, \&quot;partial\~</code></pre>
+</div>
+<p>A specific age group can also be queries with the <code>group</code> parameter. The value must be passed in <a href="https://www.w3schools.com/tags/ref_urlencode.ASP">URL encoding</a>. For example, the 80+ range:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>,
+                         <span class='st'>"vaccines/age-groups?after=2021-11-01&amp;group=80%2B"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+    date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span>,
+    data <span class='op'>=</span> <span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='op'>~</span><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>.id <span class='op'>=</span> <span class='st'>"group_code"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 4
+Columns: 5
+$ date     &lt;date&gt; 2021-11-06, 2021-11-13, 2021-11-20, 2021-11-27
+$ full     &lt;int&gt; 1581895, 1585409, 1588815, 1592112
+$ group    &lt;chr&gt; &quot;80+&quot;, &quot;80+&quot;, &quot;80+&quot;, &quot;80+&quot;
+$ partial  &lt;int&gt; 39515, 38628, 37810, 37087
+$ atleast1 &lt;int&gt; 1621410, 1624037, 1626625, 1629199</code></pre>
+</div>
+<p>The <code>utils</code> package has a <code>URLencode</code> function for translating the age groups:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>vaccine_age_groups</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/distinct.html'>distinct</a></span><span class='op'>(</span><span class='va'>group_code</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>group_encoded <span class='op'>=</span> <span class='fu'>utils</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/utils/URLencode.html'>URLencode</a></span><span class='op'>(</span><span class='va'>group_code</span>, reserved <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 19 x 2
+   group_code   group_encoded
+   &lt;chr&gt;        &lt;chr&gt;        
+ 1 80+          80%2B        
+ 2 0-15         0-15         
+ 3 16-69        16-69        
+ 4 70-74        70-74        
+ 5 75-79        75-79        
+ 6 unknown      unknown      
+ 7 all_ages     all_ages     
+ 8 not_reported not_reported 
+ 9 0-17         0-17         
+10 18-69        18-69        
+11 18-29        18-29        
+12 30-39        30-39        
+13 40-49        40-49        
+14 50-59        50-59        
+15 60-69        60-69        
+16 70-79        70-79        
+17 0-4          0-4          
+18 05-11        05-11        
+19 12-17        12-17        </code></pre>
+</div>
+<h2 id="provinces">Provinces</h2>
+<p>The API also provides a list of provinces and some population/geographical data:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"provinces"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+<span class='va'>provinces</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>)</span>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>provinces</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 16
+Columns: 10
+$ id          &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1~
+$ code        &lt;chr&gt; &quot;ON&quot;, &quot;QC&quot;, &quot;NS&quot;, &quot;NB&quot;, &quot;MB&quot;, &quot;BC&quot;, &quot;PE&quot;, &quot;SK&quot;, ~
+$ name        &lt;chr&gt; &quot;Ontario&quot;, &quot;Quebec&quot;, &quot;Nova Scotia&quot;, &quot;New Brunswi~
+$ population  &lt;int&gt; 14826276, 8604495, 992055, 789225, 1383765, 5214~
+$ area        &lt;int&gt; 917741, 1356128, 53338, 71450, 553556, 925186, 5~
+$ gdp         &lt;int&gt; 857384, 439375, 44354, 36966, 72688, 295401, 699~
+$ geographic  &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0
+$ data_status &lt;chr&gt; &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, &quot;Waiting for~
+$ updated_at  &lt;chr&gt; &quot;2021-12-30T16:04:59.000000Z&quot;, &quot;2021-12-30T18:37~
+$ density     &lt;dbl&gt; 16.15518540, 6.34489886, 18.59940380, 11.0458362~</code></pre>
+</div>
+<p>The extra elements reported here are not related to any particular province/territory:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>provinces</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>population</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 3
+Columns: 10
+$ id          &lt;int&gt; 14, 15, 16
+$ code        &lt;chr&gt; &quot;_RC&quot;, &quot;FA&quot;, &quot;NFR&quot;
+$ name        &lt;chr&gt; &quot;Repatriated Canadians&quot;, &quot;Federal Allocation&quot;, &quot;~
+$ population  &lt;int&gt; NA, NA, NA
+$ area        &lt;int&gt; NA, NA, NA
+$ gdp         &lt;int&gt; NA, NA, NA
+$ geographic  &lt;int&gt; 0, 0, 0
+$ data_status &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;
+$ updated_at  &lt;chr&gt; NA, &quot;2021-10-21T16:21:19.000000Z&quot;, &quot;2021-10-21T1~
+$ density     &lt;dbl&gt; NA, NA, NA</code></pre>
+</div>
+<p>The <code>geo_only</code> parameter can be set to <code>true</code> to exclude these:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"provinces?geo_only=true"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span>as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Rows: 13
+Columns: 10
+$ id          &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+$ code        &lt;chr&gt; &quot;ON&quot;, &quot;QC&quot;, &quot;NS&quot;, &quot;NB&quot;, &quot;MB&quot;, &quot;BC&quot;, &quot;PE&quot;, &quot;SK&quot;, ~
+$ name        &lt;chr&gt; &quot;Ontario&quot;, &quot;Quebec&quot;, &quot;Nova Scotia&quot;, &quot;New Brunswi~
+$ population  &lt;int&gt; 14826276, 8604495, 992055, 789225, 1383765, 5214~
+$ area        &lt;int&gt; 917741, 1356128, 53338, 71450, 553556, 925186, 5~
+$ gdp         &lt;int&gt; 857384, 439375, 44354, 36966, 72688, 295401, 699~
+$ geographic  &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+$ data_status &lt;chr&gt; &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, &quot;Waiting for~
+$ updated_at  &lt;chr&gt; &quot;2021-12-30T16:04:59.000000Z&quot;, &quot;2021-12-30T18:37~
+$ density     &lt;dbl&gt; 16.15518540, 6.34489886, 18.59940380, 11.0458362~</code></pre>
+</div>
+<p>A helpful variable is the <code>data_status</code>, which indicates if the daily numbers have been reported:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>provinces</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>name</span>, <span class='va'>data_status</span>, <span class='va'>updated_at</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 16 x 3
+   name                      data_status          updated_at          
+   &lt;chr&gt;                     &lt;chr&gt;                &lt;chr&gt;               
+ 1 Ontario                   &quot;Reported&quot;           2021-12-30T16:04:59~
+ 2 Quebec                    &quot;Reported&quot;           2021-12-30T18:37:31~
+ 3 Nova Scotia               &quot;Reported&quot;           2021-12-30T18:42:26~
+ 4 New Brunswick             &quot;Waiting for report&quot; 2021-12-30T16:14:24~
+ 5 Manitoba                  &quot;Reported&quot;           2021-12-30T18:35:54~
+ 6 British Columbia          &quot;Waiting for report&quot; 2021-12-30T16:27:59~
+ 7 Prince Edward Island      &quot;Waiting for report&quot; 2021-12-30T15:45:25~
+ 8 Saskatchewan              &quot;Reported&quot;           2021-12-30T19:32:58~
+ 9 Alberta                   &quot;Waiting for report&quot; 2021-12-30T16:33:20~
+10 Newfoundland and Labrador &quot;Waiting for report&quot; 2021-12-30T15:45:25~
+11 Northwest Territories     &quot;Waiting for report&quot; 2021-12-30T15:45:25~
+12 Yukon                     &quot;Waiting for report&quot; 2021-12-30T15:45:25~
+13 Nunavut                   &quot;Waiting for report&quot; 2021-12-30T15:45:25~
+14 Repatriated Canadians     &quot;&quot;                   &lt;NA&gt;                
+15 Federal Allocation        &quot;&quot;                   2021-10-21T16:21:19~
+16 National Federal Reserve  &quot;&quot;                   2021-10-21T16:19:33~</code></pre>
+</div>
+<p><code>data_status</code> may take on the following values:</p>
+<table>
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 82%" />
+<col style="width: 1%" />
+<col style="width: 1%" />
+<col style="width: 1%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><code>data_status</code></th>
+<th>Meaning</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Waiting for report</td>
+<td>This status indicated that an update is expected to happen in the current day, but has not yet occurred.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>In progress</td>
+<td>This status indicates that an update is in-progress and will be completed soon. Note that when this status is indicated, some or all data may not be updated yet.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Reported</td>
+<td>When this status is indicated, the province has been updated with final data for the day, and the update is complete.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>No report expected today</td>
+<td>When this status is indicated, the province is not expected to provide an update on the current day, and one should not be expected.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Custom</td>
+<td>Custom statuses are used to communicate certain issues with a province’s update including delays or partial updates.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>density</code> variable is population density, which is computed by dividing <code>population</code> by <code>area</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>provinces</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>transmute</a></span><span class='op'>(</span><span class='va'>name</span>, <span class='va'>population</span>, <span class='va'>area</span>, <span class='va'>density</span>, density_manual <span class='op'>=</span> <span class='va'>population</span> <span class='op'>/</span> <span class='va'>area</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 16 x 5
+   name                      population    area density density_manual
+   &lt;chr&gt;                          &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+ 1 Ontario                     14826276  917741 16.2           16.2   
+ 2 Quebec                       8604495 1356128  6.34           6.34  
+ 3 Nova Scotia                   992055   53338 18.6           18.6   
+ 4 New Brunswick                 789225   71450 11.0           11.0   
+ 5 Manitoba                     1383765  553556  2.50           2.50  
+ 6 British Columbia             5214805  925186  5.64           5.64  
+ 7 Prince Edward Island          164318    5660 29.0           29.0   
+ 8 Saskatchewan                 1179844  591670  1.99           1.99  
+ 9 Alberta                      4442879  642317  6.92           6.92  
+10 Newfoundland and Labrador     520553  373872  1.39           1.39  
+11 Northwest Territories          45504 1183085  0.0385         0.0385
+12 Yukon                          42986  474391  0.0906         0.0906
+13 Nunavut                        39403 1936113  0.0204         0.0204
+14 Repatriated Canadians             NA      NA NA             NA     
+15 Federal Allocation                NA      NA NA             NA     
+16 National Federal Reserve          NA      NA NA             NA     </code></pre>
+</div>
+<h2 class="appendix" id="reproducibility">Reproducibility</h2>
+<details>
+<summary>
+Session info
+</summary>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code> setting  value                       
+ version  R version 4.1.2 (2021-11-01)
+ os       Windows 10 x64              
+ system   x86_64, mingw32             
+ ui       RTerm                       
+ language (EN)                        
+ collate  English_Canada.1252         
+ ctype    English_Canada.1252         
+ tz       America/Curacao             
+ date     2021-12-30                  </code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.10","3":"0.7.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-10-31","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"cli","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-12-20","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.3","3":"2.4.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"digest","2":"0.6.28","3":"0.6.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-09-23","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.4","3":"0.2.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2021-12-16","9":"Github (taylordunn/dunnr@c0598e2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"farver","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","5":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"farver"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2021-10-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"glue","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2021-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"highr","2":"0.9","3":"0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","6":"FALSE","7":"FALSE","8":"2021-04-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"highr"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"TRUE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"labeling","2":"0.4.2","3":"0.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","6":"FALSE","7":"FALSE","8":"2020-10-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labeling"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"patchwork","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","5":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"patchwork"},{"1":"pillar","2":"1.6.4","3":"1.6.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"remotes","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"0.4.12","3":"0.4.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.8","3":"1.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2020-01-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.7.5","3":"1.7.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-10-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.1.1","3":"3.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-12-03","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"tzdb","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tzdb"},{"1":"usethis","2":"2.1.5","3":"2.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-12-09","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"viridisLite","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","6":"FALSE","7":"FALSE","8":"2021-04-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"viridisLite"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.28","3":"0.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-11-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</details>
+<details>
+<summary>
+Git repository
+</summary>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
+Remote:   main @ origin (https://github.com/taylordunn/tdunn)
+Head:     [3227bcf] 2021-12-29: Slight edit</code></pre>
+</div>
+</details>
+<div class="layout-chunk" data-layout="l-body">
+<p><a href="https://github.com/taylordunn/tdunn/tree/main/_posts/2021-12-28-2021-12-28-canada-covid-19-data-in-r-exploring-the-api">Source code</a></p>
+</div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom"></div>
+<!--/radix_placeholder_appendices-->
+<!--radix_placeholder_navigation_after_body-->
+<!--/radix_placeholder_navigation_after_body-->
+
+</body>
+
+</html>

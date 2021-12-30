@@ -12,7 +12,19 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Tue, 21 Dec 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Dec 2021 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Canada COVID-19 data in R: exploring the API</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api</link>
+      <description>An exploration of the Canadian COVID-19 tracker API.</description>
+      <category>R</category>
+      <category>COVID-19</category>
+      <category>API</category>
+      <guid>https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api</guid>
+      <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-46-1.png" medium="image" type="image/png" width="1248" height="768"/>
+    </item>
     <item>
       <title>Advent of Code 2021: Days 21-25</title>
       <dc:creator>Taylor Dunn</dc:creator>
