@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 library(tidyverse)
 
 library(dunnr)
-extrafont::loadfonts(device = "win", quiet = TRUE)
+#extrafont::loadfonts(device = "win", quiet = TRUE)
 theme_set(theme_td())
 set_geom_fonts()
 set_palette()

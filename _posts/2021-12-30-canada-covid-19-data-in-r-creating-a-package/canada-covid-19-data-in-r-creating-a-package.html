@@ -1459,7 +1459,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Canada COVID-19 data in R: creating a package","description":"Creating an R package that wraps the Canadian COVID-19 tracker API.","authors":[{"author":"Taylor Dunn","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-12-30T00:00:00.000-04:00","citationText":"Dunn, 2021"}
+{"title":"Canada COVID-19 data in R: creating a package","description":"Creating an R package that wraps the Canadian COVID-19 tracker API.","authors":[{"author":"Taylor Dunn","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-12-30T00:00:00.000+00:00","citationText":"Dunn, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1513,7 +1513,7 @@ Setup
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span>
 
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/taylordunn/dunnr'>dunnr</a></span><span class='op'>)</span>
-<span class='fu'>extrafont</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/extrafont/man/loadfonts.html'>loadfonts</a></span><span class='op'>(</span>device <span class='op'>=</span> <span class='st'>"win"</span>, quiet <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='co'>#extrafont::loadfonts(device = "win", quiet = TRUE)</span>
 <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme_get.html'>theme_set</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/dunnr/man/theme_td.html'>theme_td</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/pkg/dunnr/man/set_geom_fonts.html'>set_geom_fonts</a></span><span class='op'>(</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/pkg/dunnr/man/set_palette.html'>set_palette</a></span><span class='op'>(</span><span class='op'>)</span>
@@ -1528,11 +1528,11 @@ Setup
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>available</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/available/man/available.html'>available</a></span><span class='op'>(</span><span class='st'>"canadacovid"</span>, browse <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>-- canadacovid -------------------------------------------------------
-Name valid: &lt;U+2714&gt;
-Available on CRAN: &lt;U+2714&gt; 
-Available on Bioconductor: &lt;U+2714&gt;
-Available on GitHub:  &lt;U+2714&gt; 
+<pre><code>── canadacovid ───────────────────────────────────────────────────────
+Name valid: ✔
+Available on CRAN: ✔ 
+Available on Bioconductor: ✔
+Available on GitHub:  ✔ 
 Abbreviations: http://www.abbreviations.com/canadacovid
 Wikipedia: https://en.wikipedia.org/wiki/canadacovid
 Wiktionary: https://en.wiktionary.org/wiki/canadacovid
@@ -1545,14 +1545,14 @@ Sentiment:???</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>knitr</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/asis_output.html'>asis_output</a></span><span class='op'>(</span><span class='fu'>emo</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/emo/man/ji.html'>ji</a></span><span class='op'>(</span><span class='st'>"face"</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p>🌚</p>
+<p>😵</p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>emo</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/emo/man/ji.html'>ji</a></span><span class='op'>(</span><span class='st'>"banana"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p>&lt;U+0001F34C&gt;</p>
+<p>🍌</p>
 </div>
 <h2 id="general-steps">General steps</h2>
 <p>With the <code>usethis</code> and <code>devtools</code> packages, getting an R package started with best practices is very easy.</p>
@@ -1744,7 +1744,7 @@ Sentiment:???</code></pre>
 <span class='op'>}</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>Test passed </code></pre>
+<pre><code>Test passed 😀</code></pre>
 </div>
 <p>Everything passed successfully. Here is what was tested, from top to bottom:</p>
 <ul>
