@@ -1,12 +1,12 @@
 name: "tdunn"
-title: "Taylor Dunn"
+title: "tdunn"
 description: |
-  My personal website
+  The personal website of Taylor Dunn
 base_url: https://tdunn.ca
 output_dir: "_site"
 navbar:
   right:
-    - text: "Home"
+    - text: "Posts"
       href: index.html
     - text: "About"
       href: about.html
