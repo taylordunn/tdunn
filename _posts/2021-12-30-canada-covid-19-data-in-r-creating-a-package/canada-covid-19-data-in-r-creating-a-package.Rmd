@@ -17,7 +17,7 @@ output:
   distill::distill_article:
     self_contained: false
     toc: true
-draft: true
+draft: false
 ---
 
 ```{r setup, include=TRUE, code_folding="Setup"}
@@ -36,18 +36,9 @@ set_palette()
 The first, and [some](https://devguide.ropensci.org/building.html#package-name-and-metadata) [would say](https://r-pkgs.org/workflows101.html#naming) [the hardest step](https://www.njtierney.com/post/2018/06/20/naming-things/) for writing a package (or any piece of code for that matter) is naming it.
 I considered a lot of options, and in the end decided on the admittedly boring `canadacovid`, which I verified was available:
 
-```{r eval=TRUE, results='markup'}
+```{r eval=TRUE}
 available::available("canadacovid", browse = FALSE)
 ```
-
-```{r eval=TRUE}
-knitr::asis_output(emo::ji("face"))
-```
-
-```{r eval=TRUE, results='asis'}
-emo::ji("banana")
-```
-
 
 ## General steps
 
