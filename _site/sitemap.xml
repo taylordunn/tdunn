@@ -2,58 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" version="1.0">
   <url>
     <loc>https://tdunn.ca/about.html</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-09-15T15:10:58-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-09-15T15:10:58-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/projects.html</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-11-18T16:17:41-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-30-canada-covid-19-data-in-r-creating-a-package/</loc>
-    <lastmod>2022-01-01T17:17:30+00:00</lastmod>
+    <lastmod>2022-01-01T13:22:07-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-30T15:54:57-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-21-advent-of-code-2021-days-21-25/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-27T21:22:03-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-16-advent-of-code-2021-days-16-20/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-27T20:54:19-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-11-advent-of-code-2021-days-11-15/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-27T20:57:05-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-06-advent-of-code-2021-days-6-10/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-27T20:51:31-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-12-01-advent-of-code-2021-days-1-5/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-27T20:55:40-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2021-05-18-tidytuesday-2021-week-21/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-11-16T22:23:45-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2020-11-08-tidytuesday-2020-week-45/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-11-16T21:34:51-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2020-07-12-tidytuesday-2020-week-28/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-11-17T20:28:23-04:00</lastmod>
   </url>
   <url>
     <loc>https://tdunn.ca/posts/2020-03-15-ordinal-regression-in-r-part-1/</loc>
-    <lastmod>2021-12-31T21:37:52+00:00</lastmod>
+    <lastmod>2021-12-17T00:01:37-04:00</lastmod>
   </url>
 </urlset>
