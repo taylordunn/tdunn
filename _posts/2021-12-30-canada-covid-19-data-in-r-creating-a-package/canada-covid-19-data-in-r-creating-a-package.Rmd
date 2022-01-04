@@ -58,7 +58,7 @@ First, I create the package, set it up on GitHub and do some minor documentation
     * `usethis::use_tidy_github()` adds some files to follow `tidyverse` package conventions, e.g. a template `contributing.md`.
     * `usethis::use_github_actions()` configures a basic `R CMD check` workflow on GitHub actions. ^[Using GitHub actions is new to me, and probably overkill for a small hobby project like this, but I was inspired by [Jim Hester's RStudio::Conf 2020 talk](https://www.rstudio.com/resources/rstudioconf-2020/azure-pipelines-and-github-actions/) to give it a try.]
     * `usethis::use_tidy_github_actions()` sets up additional workflows for GitHub actions.
-3. As ` tidyverse` enthusiast, I always setup my packages to use `magittr`'s pipe operator `%>%` with `usethis::use_pipe`.
+3. As a `tidyverse` enthusiast, I always setup my packages to use `magittr`'s pipe operator `%>%` with `usethis::use_pipe`.
 4. `usethis::use_testthat()` sets up the `testthat` package and directory structure.
     * This step actually isn't necessary, as it was already done by `create_tidy_package`.
 4. Update the `DESCRIPTION` file, particularly the `Title`, `Descrption` and `Authors` fields.
@@ -481,7 +481,6 @@ I might alter this function in the future to send these requests slower, either 
 
 `get_reports` is a more complex function than `get_summary`, and so I wrote more tests to try to capture that complexity:
 
-
 ```{r eval=TRUE}
 test_that("get_reports works", {
   reports_overall <- get_reports()
@@ -531,8 +530,11 @@ test_that("get_reports works", {
 })
 ```
 
+## Vaccination data
 
-### Regions
+
+
+## Regions
 
 ```{r}
 get_regions <- function() {
