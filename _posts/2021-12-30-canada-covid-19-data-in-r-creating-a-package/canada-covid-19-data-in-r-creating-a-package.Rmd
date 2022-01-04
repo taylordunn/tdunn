@@ -31,6 +31,11 @@ set_geom_fonts()
 set_palette()
 ```
 
+## Introduction
+
+In [my previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#summary), I explored the 
+[Canadian COVID-19 tracker API](https://api.covid19tracker.ca/) and decided to make an API wrapper package to facilitate using it in R.
+
 ## Naming
 
 The first, and [some](https://devguide.ropensci.org/building.html#package-name-and-metadata) [would say](https://r-pkgs.org/workflows101.html#naming) [the hardest step](https://www.njtierney.com/post/2018/06/20/naming-things/) for writing a package (or any piece of code for that matter) is naming it.
@@ -53,7 +58,7 @@ First, I create the package, set it up on GitHub and do some minor documentation
     * `usethis::use_tidy_github()` adds some files to follow `tidyverse` package conventions, e.g. a template `contributing.md`.
     * `usethis::use_github_actions()` configures a basic `R CMD check` workflow on GitHub actions. ^[Using GitHub actions is new to me, and probably overkill for a small hobby project like this, but I was inspired by [Jim Hester's RStudio::Conf 2020 talk](https://www.rstudio.com/resources/rstudioconf-2020/azure-pipelines-and-github-actions/) to give it a try.]
     * `usethis::use_tidy_github_actions()` sets up additional workflows for GitHub actions.
-3. `usethis::use_pipe`. As ` tidyverse` enthusiast, I always setup my packages to use `magittr`'s pipe operator `%>%`.
+3. As ` tidyverse` enthusiast, I always setup my packages to use `magittr`'s pipe operator `%>%` with `usethis::use_pipe`.
 4. `usethis::use_testthat()` sets up the `testthat` package and directory structure.
     * This step actually isn't necessary, as it was already done by `create_tidy_package`.
 4. Update the `DESCRIPTION` file, particularly the `Title`, `Descrption` and `Authors` fields.
@@ -78,7 +83,7 @@ Which brings me to the main package development process:
     * `devtools::load_all()` to load all package functions (Ctrl+Shift+L on Windows).
     * `devtools::check()` runs `R CMD check` on the package.
 6. Write tests with `testthat`.
-    * `use_test("file-name")` creates the `tests/testthat/file-name.R` file, paired to `R/file-name.R` file.
+    * `use_test("file-name")` creates the `tests/testthat/test-file-name.R` file, paired to `R/file-name.R` file.
     * `devtools::test()` or `usethis::test_package()` runs all tests.
     * `devtools::test_active_file()` tests just the active file.
 7. Optional: update the `README.Rmd` with new functionality.
@@ -137,7 +142,7 @@ Some notes:
 * See [my previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#summary) for a more thorough explanation of how this code is interacting with the API and processing the data.
 * For all of the imported functions, it is [good practice to explicitly state the package](https://r-pkgs.org/namespace.html#import-r), e.g. `httr::GET`.
     * The exception is the very last line where I use `rlang` to refer to the variable `.data$last_updated`. I find it clunky to include package names within pipe operations like that.
-* `match.arg` is a helpful base R function which matches the `split` parameter to just one of the given values. It returns an error is an unexpected value is provided.
+* `match.arg` is a helpful base R function which matches the `split` parameter to just one of the given values. It returns an error if an unexpected value is provided.
 * I followed the advice from [this `httr` vignette](https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html) and turned API errors into R errors.
     * The `httr::http_error` conditional returns an error message if the GET request failed, with the resulting HTTP status code.
     * The `httr::http_type` conditional returns an error message if the content is not in JSON format as expected.
@@ -341,56 +346,190 @@ usethis::use_r("reports")
 usethis::use_test("reports")
 ```
 
+The reports are a bit more complicated because the queries can [accept a few different parameters](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#parameters).
+Here is my first draft of `get_reports`, along with Roxygen documentation:
 
-```{r}
-get_reports <- function(fill_dates = FALSE, stat = NULL, date = NULL,
+
+```{r eval=TRUE}
+#' Get the day-to-day reports
+#'
+#' Runs a GET request of reports data from the COVID-19 tracker API, and
+#' returns parsed data.
+#' Via the `split` argument, data may be "overall" (all provinces/territories
+#' combined), or by "province".
+#' Alternatively, provide one or more two-letter codes (e.g. "AB") to `province`
+#' to return reports for specific provinces, or one or more numeric `region`
+#' codes (e.g. "1204") to return specific health regions.
+#'
+#' @param split One of "overall", or "province" to specify how the
+#'   data is split. An "overall" report gives cumulative numbers across Canada.
+#'   Splitting by "province" returns all reports for all provinces/territories.
+#' @param province One or more province/territory codes ("AB", "BC", "MB", "NB",
+#'   "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT") to get reports.
+#'   Upper, lower and mixed case strings are accepted.
+#' @param region One or more health region IDs to get reports. Numeric and
+#'   character values are accepted.
+#'
+#' @return A data frame containing the reports data, one row per day. Includes
+#'   a `province` variable if data is split by province, and a `hr_uid` variable
+#'   if data is split by health region.
+#' @export
+#'
+#' @examples
+#'
+#' get_reports()
+#' get_reports("province")
+#' get_reports(province = c("AB", "SK"))
+#' get_reports(region = 1204)
+#' get_reports(region = c("472", 1204))
+#' @importFrom dplyr bind_rows bind_cols mutate across
+#' @importFrom tidyselect matches
+#' @importFrom rlang .data
+#' @importFrom purrr imap_chr map_dfr
+#' @importFrom tibble lst
+get_reports <- function(split = c("overall", "province"),
+                        province = NULL, region = NULL,
+                        fill_dates = NULL, stat = NULL, date = NULL,
                         after = NULL, before = NULL) {
-  base_url <- "https://api.covid19tracker.ca/"
-  
-  api_url <- paste0("https://api.covid19tracker.ca/", "reports")
-  
-  if (fill_dates) {
-    fill_dates <- "fill_dates=true"
-  }
-  else {
-    fill_dates <- NULL
-  }
-  if (!is.null(stat)) stat <- paste0("stat=", stat)
-  if (!is.null(date)) date <- paste0("date=", date)
-  if (!is.null(after)) after <- paste0("after=", after)
-  if (!is.null(before)) before <- paste0("before=", before)
-  
-  api_params <- paste(c(fill_dates, stat, date, after, before),
-                      collapse = "&")
-  
-  if (nchar(api_params) > 0) {
-    api_url <- paste0(api_url, "?", api_params)
-  }
-  return(api_url)
-  
-  resp <- httr::GET(api_url)
+  base_url <- "https://api.covid19tracker.ca/reports/"
+  province_codes <- c(
+    "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON",
+    "PE", "QC", "SK", "YT"
+  )
 
-  if (resp$status_code != 200) {
-    stop(paste0("Unsuccessful HTTP response returned: ", resp$status_code))
+  split <- match.arg(split)
+  if (split == "province") province <- province_codes
+
+  parameters <- tibble::lst(fill_dates, stat, date, after, before)
+  # Remove NULL parameters
+  parameters <- parameters[lengths(parameters) == 1]
+  if (length(parameters) > 0) {
+    params_url <- purrr::imap_chr(parameters, ~ paste0(.y, "=", tolower(.x))) %>%
+      paste(collapse = "&")
+    params_url <- paste0("?", params_url)
+  } else {
+    params_url <- ""
   }
 
-  data <- httr::content(resp, as = "parsed")
+  if (!is.null(province)) {
+    province <- match.arg(
+      toupper(province),
+      choices = c(
+        "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE",
+        "QC", "SK", "YT"
+      ),
+      several.ok = TRUE
+    )
 
-  bind_rows(data$data) %>%
-    bind_cols(data["last_updated"]) %>%
-    mutate(
-      across(matches("^change|total"), as.integer),
-      across(matches("date"), as.Date),
-      last_updated = as.POSIXct(last_updated)
+    reports <- purrr::map_dfr(
+      province,
+      function(province) {
+        url <- paste0(base_url, "province/", province, params_url)
+        content_parsed <- get_content_parsed(url)
+
+        dplyr::bind_cols(
+          content_parsed[c("province", "last_updated")],
+          dplyr::bind_rows(content_parsed$data)
+        )
+      }
+    )
+  } else if (!is.null(region)) {
+    reports <- purrr::map_dfr(
+      region,
+      function(region) {
+        url <- paste0(base_url, "regions/", region, params_url)
+        content_parsed <- get_content_parsed(url)
+
+        dplyr::bind_cols(
+          content_parsed[c("hr_uid", "last_updated")],
+          dplyr::bind_rows(content_parsed$data)
+        )
+      }
+    )
+  } else {
+    content_parsed <- get_content_parsed(paste0(base_url, params_url))
+    reports <- dplyr::bind_cols(
+      content_parsed["last_updated"],
+      dplyr::bind_rows(content_parsed$data)
+    )
+  }
+
+  reports %>%
+    dplyr::mutate(
+      dplyr::across(tidyselect::matches("^change|total"), as.integer),
+      dplyr::across(tidyselect::matches("date"), as.Date),
+      last_updated = as.POSIXct(.data$last_updated)
     )
 }
-get_reports(before = "2021-10-10")
 ```
+
+<aside>
+
+And the new dependencies:
+
+```{r}
+usethis::use_package("tibble")
+usethis::use_package("purrr")
+```
+
+</aside>
 
 Note that I didn't allow `split = "region"` as an option because, if the function queries all regions, 92 separate `GET` requests are sent to the API in a short period.
 This eventually fails with HTTP code 429, indicating too many requests.
 This is called "rate limiting", and the error code is a polite way of asking someone to stop spamming requests.
-I might alter this function in the future to send these requests slower, either with a simple `Sys.sleep()` function or the [`polite` package](https://github.com/dmi3kno/polite).
+I might alter this function in the future to send these requests slower, either with a call to `Sys.sleep()` or with the [`polite` package](https://github.com/dmi3kno/polite).
+
+`get_reports` is a more complex function than `get_summary`, and so I wrote more tests to try to capture that complexity:
+
+
+```{r eval=TRUE}
+test_that("get_reports works", {
+  reports_overall <- get_reports()
+  expect_equal(ncol(reports_overall), 22)
+  expect_equal(
+    reports_overall$date,
+    seq.Date(min(reports_overall$date), max(reports_overall$date), by = "day")
+  )
+  expect_false(any(is.na(reports_overall)))
+
+  reports_province <- get_reports(split = "province")
+  expect_equal(dplyr::n_distinct(reports_province$province), 13)
+  expect_equal(min(reports_province$date), min(reports_overall$date))
+  expect_equal(max(reports_province$date), max(reports_overall$date))
+
+  reports_ns_nb_nv <- get_reports(province = c("NS", "nb", "nU", "test"))
+  expect_equal(
+    unique(reports_ns_nb_nv$province), c("NS", "NB", "NU")
+  )
+  expect_equal(
+    reports_province %>% dplyr::filter(province == "NS"),
+    reports_ns_nb_nv %>% dplyr::filter(province == "NS")
+  )
+
+  expect_error(get_reports(split = "region"), "arg")
+
+  reports_592_2407_3561 <- get_reports(region = c(592, "2407", 3561))
+  expect_equal(
+    unique(reports_592_2407_3561$hr_uid),
+    c(592, 2407, 3561)
+  )
+
+  reports_criticals <- get_reports(split = "province", stat = "criticals")
+  expect_equal(ncol(reports_criticals), 5)
+  expect_setequal(names(reports_criticals),
+                  c("province", "last_updated", "date",
+                    "change_criticals", "total_criticals"))
+
+  report_2021_07_20 <- get_reports(province = "MB", date = "2021-07-20")
+  expect_equal(report_2021_07_20$date, as.Date("2021-07-20"))
+  expect_equal(report_2021_07_20$province, "MB")
+
+  report_date_range <- get_reports(region = 3570,
+                                   after = "2021-10-28", before = "2021-11-02")
+  expect_equal(min(report_date_range$date), as.Date("2021-10-28"))
+  expect_equal(max(report_date_range$date), as.Date("2021-11-02"))
+})
+```
 
 
 ### Regions

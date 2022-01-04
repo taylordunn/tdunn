@@ -571,7 +571,7 @@ content_parsed <- paste0(base_url,
 glimpse(bind_rows(content_parsed$data))
 ```
 
-A specific age group can also be queries with the `group` parameter.
+A specific age group can also be queried with the `group` parameter.
 The value must be passed in [URL encoding](https://www.w3schools.com/tags/ref_urlencode.ASP).
 For example, the 80+ range:
 
@@ -625,7 +625,7 @@ paste0(base_url, "provinces?geo_only=true") %>%
 ```
 
 
-A helpful variable is the `data_status`, which indicates if the daily numbers have been reported:
+A helpful variable is `data_status`, which indicates if the daily numbers have been reported:
 
 ```{r}
 provinces %>% select(name, data_status, updated_at)
@@ -647,6 +647,11 @@ The `density` variable is population density, which is computed by dividing `pop
 provinces %>%
   transmute(name, population, area, density, density_manual = population / area)
 ```
+
+## Next steps
+
+I'm impressed by the organization and accessibility of this API, and decided to write a simple R package to wrap it.
+In my next post, I'll detail my steps and thought process.
 
 ## Reproducibility {.appendix}
 

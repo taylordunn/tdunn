@@ -1518,6 +1518,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <li><a href="#parameters-1">Parameters</a></li>
 </ul></li>
 <li><a href="#provinces">Provinces</a></li>
+<li><a href="#next-steps">Next steps</a></li>
 <li><a href="#reproducibility">Reproducibility</a></li>
 </ul>
 </nav>
@@ -1568,10 +1569,10 @@ Setup
 </code></pre>
 </div>
 <pre><code>Response [https://api.covid19tracker.ca/summary]
-  Date: 2021-12-30 19:54
+  Date: 2022-01-04 00:06
   Status: 200
   Content-Type: application/json
-  Size: 645 B</code></pre>
+  Size: 638 B</code></pre>
 </div>
 <p>This returned a <code>response</code> object with the following structure:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1586,9 +1587,9 @@ Setup
   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;insensitive&quot; &quot;list&quot;
  $ all_headers:List of 1
  $ cookies    :&#39;data.frame&#39;:    0 obs. of  7 variables:
- $ content    : raw [1:645] 7b 22 64 61 ...
- $ date       : POSIXct[1:1], format: &quot;2021-12-30 19:54:39&quot;
- $ times      : Named num [1:6] 0 0.00383 0.04411 0.13218 0.18173 ...
+ $ content    : raw [1:638] 7b 22 64 61 ...
+ $ date       : POSIXct[1:1], format: &quot;2022-01-04 00:06:15&quot;
+ $ times      : Named num [1:6] 0 0.00378 0.07103 0.22017 0.29675 ...
   ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;redirect&quot; &quot;namelookup&quot; &quot;connect&quot; &quot;pretransfer&quot; ...
  $ request    :List of 7
   ..- attr(*, &quot;class&quot;)= chr &quot;request&quot;
@@ -1623,28 +1624,28 @@ Setup
 <pre><code>List of 2
  $ data        :List of 1
   ..$ :List of 21
-  .. ..$ latest_date                : chr &quot;2021-12-30&quot;
-  .. ..$ change_cases               : chr &quot;30218&quot;
-  .. ..$ change_fatalities          : chr &quot;24&quot;
-  .. ..$ change_tests               : chr &quot;384379&quot;
-  .. ..$ change_hospitalizations    : chr &quot;378&quot;
-  .. ..$ change_criticals           : chr &quot;25&quot;
-  .. ..$ change_recoveries          : chr &quot;14457&quot;
-  .. ..$ change_vaccinations        : chr &quot;304006&quot;
-  .. ..$ change_vaccinated          : chr &quot;8977&quot;
-  .. ..$ change_boosters_1          : chr &quot;277804&quot;
+  .. ..$ latest_date                : chr &quot;2022-01-03&quot;
+  .. ..$ change_cases               : chr &quot;37850&quot;
+  .. ..$ change_fatalities          : chr &quot;29&quot;
+  .. ..$ change_tests               : chr &quot;20255&quot;
+  .. ..$ change_hospitalizations    : chr &quot;324&quot;
+  .. ..$ change_criticals           : chr &quot;41&quot;
+  .. ..$ change_recoveries          : chr &quot;6993&quot;
+  .. ..$ change_vaccinations        : chr &quot;7460&quot;
+  .. ..$ change_vaccinated          : chr &quot;257&quot;
+  .. ..$ change_boosters_1          : chr &quot;6483&quot;
   .. ..$ change_vaccines_distributed: chr &quot;0&quot;
-  .. ..$ total_cases                : chr &quot;2132047&quot;
-  .. ..$ total_fatalities           : chr &quot;30277&quot;
-  .. ..$ total_tests                : chr &quot;53028929&quot;
-  .. ..$ total_hospitalizations     : chr &quot;2796&quot;
-  .. ..$ total_criticals            : chr &quot;524&quot;
-  .. ..$ total_recoveries           : chr &quot;1871668&quot;
-  .. ..$ total_vaccinations         : chr &quot;68388999&quot;
-  .. ..$ total_vaccinated           : chr &quot;29400542&quot;
-  .. ..$ total_boosters_1           : chr &quot;7268901&quot;
-  .. ..$ total_vaccines_distributed : chr &quot;73907682&quot;
- $ last_updated: chr &quot;2021-12-30 13:33:02&quot;</code></pre>
+  .. ..$ total_cases                : chr &quot;2289372&quot;
+  .. ..$ total_fatalities           : chr &quot;30396&quot;
+  .. ..$ total_tests                : chr &quot;53097669&quot;
+  .. ..$ total_hospitalizations     : chr &quot;3613&quot;
+  .. ..$ total_criticals            : chr &quot;615&quot;
+  .. ..$ total_recoveries           : chr &quot;1897319&quot;
+  .. ..$ total_vaccinations         : chr &quot;68763671&quot;
+  .. ..$ total_vaccinated           : chr &quot;29414360&quot;
+  .. ..$ total_boosters_1           : chr &quot;7604022&quot;
+  .. ..$ total_vaccines_distributed : chr &quot;74272404&quot;
+ $ last_updated: chr &quot;2022-01-03 17:15:07&quot;</code></pre>
 </div>
 <aside>
 <p>Per the documentation of <code>httr</code>, it is good practice to check the mime type of the response before parsing it.</p>
@@ -1675,27 +1676,27 @@ Setup
 </div>
 <pre><code>Rows: 1
 Columns: 21
-$ latest_date                 &lt;chr&gt; &quot;2021-12-30&quot;
-$ change_cases                &lt;chr&gt; &quot;30218&quot;
-$ change_fatalities           &lt;chr&gt; &quot;24&quot;
-$ change_tests                &lt;chr&gt; &quot;384379&quot;
-$ change_hospitalizations     &lt;chr&gt; &quot;378&quot;
-$ change_criticals            &lt;chr&gt; &quot;25&quot;
-$ change_recoveries           &lt;chr&gt; &quot;14457&quot;
-$ change_vaccinations         &lt;chr&gt; &quot;304006&quot;
-$ change_vaccinated           &lt;chr&gt; &quot;8977&quot;
-$ change_boosters_1           &lt;chr&gt; &quot;277804&quot;
+$ latest_date                 &lt;chr&gt; &quot;2022-01-03&quot;
+$ change_cases                &lt;chr&gt; &quot;37850&quot;
+$ change_fatalities           &lt;chr&gt; &quot;29&quot;
+$ change_tests                &lt;chr&gt; &quot;20255&quot;
+$ change_hospitalizations     &lt;chr&gt; &quot;324&quot;
+$ change_criticals            &lt;chr&gt; &quot;41&quot;
+$ change_recoveries           &lt;chr&gt; &quot;6993&quot;
+$ change_vaccinations         &lt;chr&gt; &quot;7460&quot;
+$ change_vaccinated           &lt;chr&gt; &quot;257&quot;
+$ change_boosters_1           &lt;chr&gt; &quot;6483&quot;
 $ change_vaccines_distributed &lt;chr&gt; &quot;0&quot;
-$ total_cases                 &lt;chr&gt; &quot;2132047&quot;
-$ total_fatalities            &lt;chr&gt; &quot;30277&quot;
-$ total_tests                 &lt;chr&gt; &quot;53028929&quot;
-$ total_hospitalizations      &lt;chr&gt; &quot;2796&quot;
-$ total_criticals             &lt;chr&gt; &quot;524&quot;
-$ total_recoveries            &lt;chr&gt; &quot;1871668&quot;
-$ total_vaccinations          &lt;chr&gt; &quot;68388999&quot;
-$ total_vaccinated            &lt;chr&gt; &quot;29400542&quot;
-$ total_boosters_1            &lt;chr&gt; &quot;7268901&quot;
-$ total_vaccines_distributed  &lt;chr&gt; &quot;73907682&quot;</code></pre>
+$ total_cases                 &lt;chr&gt; &quot;2289372&quot;
+$ total_fatalities            &lt;chr&gt; &quot;30396&quot;
+$ total_tests                 &lt;chr&gt; &quot;53097669&quot;
+$ total_hospitalizations      &lt;chr&gt; &quot;3613&quot;
+$ total_criticals             &lt;chr&gt; &quot;615&quot;
+$ total_recoveries            &lt;chr&gt; &quot;1897319&quot;
+$ total_vaccinations          &lt;chr&gt; &quot;68763671&quot;
+$ total_vaccinated            &lt;chr&gt; &quot;29414360&quot;
+$ total_boosters_1            &lt;chr&gt; &quot;7604022&quot;
+$ total_vaccines_distributed  &lt;chr&gt; &quot;74272404&quot;</code></pre>
 </div>
 <p>All of these variables are <code>character</code> type, and should be converted into <code>integer</code> and <code>Date</code> types:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1710,27 +1711,27 @@ $ total_vaccines_distributed  &lt;chr&gt; &quot;73907682&quot;</code></pre>
 </div>
 <pre><code>Rows: 1
 Columns: 21
-$ latest_date                 &lt;date&gt; 2021-12-30
-$ change_cases                &lt;int&gt; 30218
-$ change_fatalities           &lt;int&gt; 24
-$ change_tests                &lt;int&gt; 384379
-$ change_hospitalizations     &lt;int&gt; 378
-$ change_criticals            &lt;int&gt; 25
-$ change_recoveries           &lt;int&gt; 14457
-$ change_vaccinations         &lt;int&gt; 304006
-$ change_vaccinated           &lt;int&gt; 8977
-$ change_boosters_1           &lt;int&gt; 277804
+$ latest_date                 &lt;date&gt; 2022-01-03
+$ change_cases                &lt;int&gt; 37850
+$ change_fatalities           &lt;int&gt; 29
+$ change_tests                &lt;int&gt; 20255
+$ change_hospitalizations     &lt;int&gt; 324
+$ change_criticals            &lt;int&gt; 41
+$ change_recoveries           &lt;int&gt; 6993
+$ change_vaccinations         &lt;int&gt; 7460
+$ change_vaccinated           &lt;int&gt; 257
+$ change_boosters_1           &lt;int&gt; 6483
 $ change_vaccines_distributed &lt;int&gt; 0
-$ total_cases                 &lt;int&gt; 2132047
-$ total_fatalities            &lt;int&gt; 30277
-$ total_tests                 &lt;int&gt; 53028929
-$ total_hospitalizations      &lt;int&gt; 2796
-$ total_criticals             &lt;int&gt; 524
-$ total_recoveries            &lt;int&gt; 1871668
-$ total_vaccinations          &lt;int&gt; 68388999
-$ total_vaccinated            &lt;int&gt; 29400542
-$ total_boosters_1            &lt;int&gt; 7268901
-$ total_vaccines_distributed  &lt;int&gt; 73907682</code></pre>
+$ total_cases                 &lt;int&gt; 2289372
+$ total_fatalities            &lt;int&gt; 30396
+$ total_tests                 &lt;int&gt; 53097669
+$ total_hospitalizations      &lt;int&gt; 3613
+$ total_criticals             &lt;int&gt; 615
+$ total_recoveries            &lt;int&gt; 1897319
+$ total_vaccinations          &lt;int&gt; 68763671
+$ total_vaccinated            &lt;int&gt; 29414360
+$ total_boosters_1            &lt;int&gt; 7604022
+$ total_vaccines_distributed  &lt;int&gt; 74272404</code></pre>
 </div>
 <h3 id="province">Province</h3>
 <p>Instead of aggregating over all provinces, I can use <code>/summary/split</code> to get province-level summaries:</p>
@@ -1758,7 +1759,7 @@ $ total_vaccines_distributed  &lt;int&gt; 73907682</code></pre>
   ..$ :List of 22
   ..$ :List of 22
   ..$ :List of 22
- $ last_updated: chr &quot;2021-12-30 13:33:02&quot;</code></pre>
+ $ last_updated: chr &quot;2022-01-03 17:15:07&quot;</code></pre>
 </div>
 <p>The <code>data</code> list now has 13 lists corresponding to the 13 provinces and territories. Look at the structure of one of them:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1768,26 +1769,26 @@ $ total_vaccines_distributed  &lt;int&gt; 73907682</code></pre>
 </div>
 <pre><code>List of 22
  $ province                   : chr &quot;ON&quot;
- $ date                       : chr &quot;2021-12-30&quot;
- $ change_cases               : int 13807
- $ change_fatalities          : int 8
- $ change_tests               : int 67301
- $ change_hospitalizations    : int 239
- $ change_criticals           : int 10
- $ change_recoveries          : int 4037
- $ change_vaccinations        : int 197280
- $ change_vaccinated          : int 4884
- $ change_boosters_1          : int 181344
+ $ date                       : chr &quot;2022-01-03&quot;
+ $ change_cases               : int 13578
+ $ change_fatalities          : int 6
+ $ change_tests               : int 0
+ $ change_hospitalizations    : int 115
+ $ change_criticals           : int 24
+ $ change_recoveries          : int 6547
+ $ change_vaccinations        : int 0
+ $ change_vaccinated          : int 0
+ $ change_boosters_1          : int 0
  $ change_vaccines_distributed: int 0
- $ total_cases                : int 739648
- $ total_fatalities           : int 10179
- $ total_tests                : int 21178944
- $ total_hospitalizations     : int 965
- $ total_criticals            : int 200
- $ total_recoveries           : int 642715
- $ total_vaccinations         : int 27012866
- $ total_vaccinated           : int 11404979
- $ total_boosters_1           : int 3392882
+ $ total_cases                : int 805098
+ $ total_fatalities           : int 10229
+ $ total_tests                : int 21254037
+ $ total_hospitalizations     : int 1232
+ $ total_criticals            : int 248
+ $ total_recoveries           : int 664562
+ $ total_vaccinations         : int 27208675
+ $ total_vaccinated           : int 11410550
+ $ total_boosters_1           : int 3571791
  $ total_vaccines_distributed : int 28411391</code></pre>
 </div>
 <p>This is the same structure as the overall summary, but with the extra variable <code>province</code> indicating that these numbers are specific to Ontario.</p>
@@ -1801,26 +1802,26 @@ $ total_vaccines_distributed  &lt;int&gt; 73907682</code></pre>
 <pre><code>Rows: 13
 Columns: 22
 $ province                    &lt;chr&gt; &quot;ON&quot;, &quot;QC&quot;, &quot;NS&quot;, &quot;NB&quot;, &quot;MB&quot;, &quot;B~
-$ date                        &lt;chr&gt; &quot;2021-12-30&quot;, &quot;2021-12-30&quot;, &quot;202~
-$ change_cases                &lt;int&gt; 13807, 14188, 511, 0, 1121, 0, 0~
-$ change_fatalities           &lt;int&gt; 8, 9, 0, 0, 3, 0, 0, 4, 0, 0, 0,~
-$ change_tests                &lt;int&gt; 67301, 311161, 0, 0, 3409, 0, 0,~
-$ change_hospitalizations     &lt;int&gt; 239, 135, 1, 0, 7, 0, 0, -4, 0, ~
-$ change_criticals            &lt;int&gt; 10, 16, 0, 0, 0, 0, 0, -1, 0, 0,~
-$ change_recoveries           &lt;int&gt; 4037, 10176, 0, 0, 188, 0, 0, 56~
-$ change_vaccinations         &lt;int&gt; 197280, 96271, 8704, 0, 0, 0, 0,~
-$ change_vaccinated           &lt;int&gt; 4884, 2678, 317, 0, 0, 0, 0, 109~
-$ change_boosters_1           &lt;int&gt; 181344, 88990, 7470, 0, 0, 0, 0,~
+$ date                        &lt;chr&gt; &quot;2022-01-03&quot;, &quot;2022-01-03&quot;, &quot;202~
+$ change_cases                &lt;int&gt; 13578, 15293, 1020, 2548, 5411, ~
+$ change_fatalities           &lt;int&gt; 6, 15, 0, 2, 6, 0, 0, 0, 0, 0, 0~
+$ change_tests                &lt;int&gt; 0, 0, 0, 6357, 13898, 0, 0, 0, 0~
+$ change_hospitalizations     &lt;int&gt; 115, 165, 2, 6, 36, 0, 0, 0, 0, ~
+$ change_criticals            &lt;int&gt; 24, 19, 0, -4, 2, 0, 0, 0, 0, 0,~
+$ change_recoveries           &lt;int&gt; 6547, 0, 0, 435, 11, 0, 0, 0, 0,~
+$ change_vaccinations         &lt;int&gt; 0, 0, 0, 7460, 0, 0, 0, 0, 0, 0,~
+$ change_vaccinated           &lt;int&gt; 0, 0, 0, 257, 0, 0, 0, 0, 0, 0, ~
+$ change_boosters_1           &lt;int&gt; 0, 0, 0, 6483, 0, 0, 0, 0, 0, 0,~
 $ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
-$ total_cases                 &lt;int&gt; 739648, 586607, 17063, 13018, 78~
-$ total_fatalities            &lt;int&gt; 10179, 11711, 111, 157, 1387, 24~
-$ total_tests                 &lt;int&gt; 21178944, 14813533, 1568215, 611~
-$ total_hospitalizations      &lt;int&gt; 965, 939, 25, 43, 190, 206, 0, 7~
-$ total_criticals             &lt;int&gt; 200, 138, 3, 17, 29, 66, 0, 14, ~
-$ total_recoveries            &lt;int&gt; 642715, 488030, 8643, 10478, 688~
-$ total_vaccinations          &lt;int&gt; 27012866, 15245140, 1785034, 143~
-$ total_vaccinated            &lt;int&gt; 11404979, 6685158, 794509, 62177~
-$ total_boosters_1            &lt;int&gt; 3392882, 1260684, 128183, 140212~
+$ total_cases                 &lt;int&gt; 805098, 651328, 20594, 16820, 85~
+$ total_fatalities            &lt;int&gt; 10229, 11760, 111, 162, 1398, 24~
+$ total_tests                 &lt;int&gt; 21254037, 14868979, 1568215, 624~
+$ total_hospitalizations      &lt;int&gt; 1232, 1396, 36, 51, 228, 220, 0,~
+$ total_criticals             &lt;int&gt; 248, 181, 4, 17, 32, 73, 0, 12, ~
+$ total_recoveries            &lt;int&gt; 664562, 488030, 8643, 11214, 687~
+$ total_vaccinations          &lt;int&gt; 27208675, 15333304, 1791016, 145~
+$ total_vaccinated            &lt;int&gt; 11410550, 6687698, 794817, 62265~
+$ total_boosters_1            &lt;int&gt; 3571791, 1342896, 133044, 158890~
 $ total_vaccines_distributed  &lt;int&gt; 28411391, 16179459, 1950040, 160~</code></pre>
 </div>
 <p><code>bind_rows</code> also automatically converts the numeric columns to <code>integer</code>, but the <code>date</code> column is still <code>character</code>:</p>
@@ -1843,7 +1844,7 @@ $ total_vaccines_distributed  &lt;int&gt; 28411391, 16179459, 1950040, 160~</cod
 </div>
 <pre><code>List of 2
  $ data        :List of 92
- $ last_updated: chr &quot;2021-12-30 13:33:02&quot;</code></pre>
+ $ last_updated: chr &quot;2022-01-03 17:15:07&quot;</code></pre>
 </div>
 <p>This <code>data</code> consists of 92 entries with mostly the same variables as previous summaries:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1882,25 +1883,27 @@ $ total_vaccines_distributed  &lt;int&gt; 28411391, 16179459, 1950040, 160~</cod
 </code></pre>
 </div>
 <pre><code>Rows: 92
-Columns: 18
-$ hr_uid                 &lt;int&gt; 6101, 6001, 1100, 6201, 1301, 1302, 1~
-$ date                   &lt;date&gt; 2021-12-23, 2021-12-23, 2021-12-23, ~
-$ change_cases           &lt;int&gt; 0, 9, NA, 31, 552, 681, 197, 102, 31,~
-$ change_fatalities      &lt;int&gt; 0, 0, NA, 0, 1, 1, 1, 2, 0, 0, 1, NA,~
-$ change_recoveries      &lt;int&gt; 0, 7, NA, 0, 162, 238, 276, 67, 15, 2~
-$ total_cases            &lt;int&gt; 2090, 1661, 529, 710, 3642, 2637, 284~
-$ total_fatalities       &lt;int&gt; 12, 14, 0, 4, 40, 18, 24, 40, 21, 5, ~
-$ total_tests            &lt;int&gt; 36435, 25087, 242814, 137805, 214471,~
-$ total_hospitalizations &lt;int&gt; 0, NA, 0, 263, NA, NA, NA, NA, NA, NA~
-$ total_criticals        &lt;int&gt; 0, 0, 0, NA, NA, NA, NA, NA, NA, NA, ~
-$ total_recoveries       &lt;int&gt; 2059, 1602, 417, 672, 2907, 1604, 249~
-$ total_vaccinations     &lt;int&gt; 91434, 80825, 292619, 55230, NA, NA, ~
-$ total_vaccinated       &lt;int&gt; 36803, 34029, 133999, 24746, NA, NA, ~
-$ total_boosters_1       &lt;int&gt; 14692, 10341, 15181, NA, NA, NA, NA, ~
-$ change_tests           &lt;int&gt; NA, 70, NA, 114419, 3918, 2577, 1475,~
-$ change_vaccinations    &lt;int&gt; NA, 0, 3486, 439, NA, NA, NA, NA, NA,~
-$ change_vaccinated      &lt;int&gt; NA, 0, 128, 81, NA, NA, NA, NA, NA, N~
-$ change_boosters_1      &lt;int&gt; NA, 0, 2336, NA, NA, NA, NA, NA, NA, ~</code></pre>
+Columns: 20
+$ hr_uid                  &lt;int&gt; 6101, 6001, 1100, 6201, 1011, 1012, ~
+$ date                    &lt;date&gt; 2021-12-23, 2021-12-23, 2021-12-23,~
+$ change_cases            &lt;int&gt; 0, 9, NA, 31, NA, NA, NA, NA, NA, NA~
+$ change_fatalities       &lt;int&gt; 0, 0, NA, 0, NA, NA, NA, NA, NA, NA,~
+$ change_recoveries       &lt;int&gt; 0, 7, NA, 0, NA, NA, NA, NA, NA, NA,~
+$ total_cases             &lt;int&gt; 2090, 1661, 529, 710, 1380, 540, 305~
+$ total_fatalities        &lt;int&gt; 12, 14, 0, 4, 7, 10, 1, 0, 290, 858,~
+$ total_tests             &lt;int&gt; 36435, 25087, 242814, 24355, 240838,~
+$ total_hospitalizations  &lt;int&gt; 0, NA, 0, 263, 0, 0, 0, 0, 17, 107, ~
+$ total_criticals         &lt;int&gt; 0, 0, 0, NA, 1, 0, 0, 0, 2, 18, 8, 3~
+$ total_recoveries        &lt;int&gt; 2059, 1602, 417, 672, 1319, 473, 234~
+$ total_vaccinations      &lt;int&gt; 91434, 80825, 292619, 55230, NA, NA,~
+$ total_vaccinated        &lt;int&gt; 36803, 34029, 133999, 24746, NA, NA,~
+$ total_boosters_1        &lt;int&gt; 14692, 10341, 15181, NA, NA, NA, NA,~
+$ change_tests            &lt;int&gt; NA, 70, NA, 969, NA, NA, NA, NA, NA,~
+$ change_vaccinations     &lt;int&gt; NA, 0, 3486, 439, NA, NA, NA, NA, NA~
+$ change_vaccinated       &lt;int&gt; NA, 0, 128, 81, NA, NA, NA, NA, NA, ~
+$ change_boosters_1       &lt;int&gt; NA, 0, 2336, NA, NA, NA, NA, NA, NA,~
+$ change_hospitalizations &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_criticals        &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</code></pre>
 </div>
 <p><code>hr_uid</code> is a unique identifier for each health region. A lookup table is available through the API with <code>regions</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1938,28 +1941,30 @@ $ frename  &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&q
 </code></pre>
 </div>
 <pre><code>Rows: 92
-Columns: 21
-$ hr_uid                 &lt;int&gt; 471, 472, 473, 474, 475, 476, 591, 59~
-$ province               &lt;chr&gt; &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;~
-$ engname                &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Sas~
-$ frename                &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Sas~
-$ date                   &lt;date&gt; 2021-12-30, 2021-12-30, 2021-12-30, ~
-$ change_cases           &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
-$ change_fatalities      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
-$ change_recoveries      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
-$ total_cases            &lt;int&gt; 9424, 20119, 6380, 20136, 16571, 1058~
-$ total_fatalities       &lt;int&gt; 84, 249, 79, 179, 211, 148, 1125, 295~
-$ total_tests            &lt;int&gt; 63451, 193204, 105240, 346968, 266657~
-$ total_hospitalizations &lt;int&gt; 0, 12, 5, 35, 25, 6, 59, 43, 40, 10, ~
-$ total_criticals        &lt;int&gt; 0, 0, 0, 9, 6, 0, 20, 26, 15, 5, 10, ~
-$ total_recoveries       &lt;int&gt; 9314, 19738, 6130, 19458, 15863, 1021~
-$ total_vaccinations     &lt;int&gt; 67313, 308709, 195700, 492298, 413270~
-$ total_vaccinated       &lt;int&gt; 31372, 145557, 94074, 235700, 197459,~
-$ total_boosters_1       &lt;int&gt; NA, NA, NA, NA, NA, NA, 264515, 16245~
-$ change_tests           &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
-$ change_vaccinations    &lt;int&gt; NA, NA, NA, NA, NA, NA, 35806, 11236,~
-$ change_vaccinated      &lt;int&gt; NA, NA, NA, NA, NA, NA, 1933, 534, 87~
-$ change_boosters_1      &lt;int&gt; NA, NA, NA, NA, NA, NA, 27854, 9347, ~</code></pre>
+Columns: 23
+$ hr_uid                  &lt;int&gt; 471, 472, 473, 474, 475, 476, 591, 5~
+$ province                &lt;chr&gt; &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, &quot;SK&quot;, ~
+$ engname                 &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Sa~
+$ frename                 &lt;chr&gt; &quot;Far North&quot;, &quot;North&quot;, &quot;Central&quot;, &quot;Sa~
+$ date                    &lt;date&gt; 2021-12-31, 2021-12-31, 2021-12-31,~
+$ change_cases            &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_fatalities       &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_recoveries       &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ total_cases             &lt;int&gt; 9428, 20161, 6442, 20383, 16709, 106~
+$ total_fatalities        &lt;int&gt; 84, 250, 79, 180, 212, 149, 1130, 29~
+$ total_tests             &lt;int&gt; 63495, 193421, 105447, 347679, 26723~
+$ total_hospitalizations  &lt;int&gt; 0, 11, 6, 33, 22, 7, 69, 39, 41, 17,~
+$ total_criticals         &lt;int&gt; 0, 0, 0, 8, 6, 0, 18, 25, 12, 5, 6, ~
+$ total_recoveries        &lt;int&gt; 9314, 19740, 6139, 19483, 15878, 102~
+$ total_vaccinations      &lt;int&gt; 67399, 308967, 195830, 492755, 41380~
+$ total_vaccinated        &lt;int&gt; 31432, 145730, 94167, 235964, 197822~
+$ total_boosters_1        &lt;int&gt; NA, NA, NA, NA, NA, NA, 271365, 1667~
+$ change_tests            &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_vaccinations     &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_vaccinated       &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_boosters_1       &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_hospitalizations &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+$ change_criticals        &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</code></pre>
 </div>
 <h2 id="reports">Reports</h2>
 <h3 id="overall-1">Overall</h3>
@@ -1975,8 +1980,8 @@ $ change_boosters_1      &lt;int&gt; NA, NA, NA, NA, NA, NA, 27854, 9347, ~</cod
 </div>
 <pre><code>List of 3
  $ province    : chr &quot;All&quot;
- $ last_updated: chr &quot;2021-12-30 13:33:02&quot;
- $ data        :List of 706</code></pre>
+ $ last_updated: chr &quot;2022-01-03 17:15:07&quot;
+ $ data        :List of 710</code></pre>
 </div>
 <p>An additional top-level variable <code>province</code> defines the scope of the report. The <code>data</code> list here consists of 705 elements with the following structure:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2014,27 +2019,27 @@ $ change_boosters_1      &lt;int&gt; NA, NA, NA, NA, NA, NA, 27854, 9347, ~</cod
 </code></pre>
 </div>
 <pre><code>List of 21
- $ date                       : chr &quot;2021-12-30&quot;
- $ change_cases               : int 30218
- $ change_fatalities          : int 24
- $ change_tests               : int 384379
- $ change_hospitalizations    : int 378
- $ change_criticals           : int 25
- $ change_recoveries          : int 14457
- $ change_vaccinations        : int 304006
- $ change_vaccinated          : int 8977
- $ change_boosters_1          : int 277804
+ $ date                       : chr &quot;2022-01-03&quot;
+ $ change_cases               : int 37850
+ $ change_fatalities          : int 29
+ $ change_tests               : int 20255
+ $ change_hospitalizations    : int 324
+ $ change_criticals           : int 41
+ $ change_recoveries          : int 6993
+ $ change_vaccinations        : int 7460
+ $ change_vaccinated          : int 257
+ $ change_boosters_1          : int 6483
  $ change_vaccines_distributed: int 0
- $ total_cases                : int 2132047
- $ total_fatalities           : int 30277
- $ total_tests                : int 53028929
- $ total_hospitalizations     : int 2796
- $ total_criticals            : int 524
- $ total_recoveries           : int 1871668
- $ total_vaccinations         : int 68388999
- $ total_vaccinated           : int 29400542
- $ total_boosters_1           : int 7268901
- $ total_vaccines_distributed : int 73907682</code></pre>
+ $ total_cases                : int 2289372
+ $ total_fatalities           : int 30396
+ $ total_tests                : int 53097669
+ $ total_hospitalizations     : int 3613
+ $ total_criticals            : int 615
+ $ total_recoveries           : int 1897319
+ $ total_vaccinations         : int 68763671
+ $ total_vaccinated           : int 29414360
+ $ total_boosters_1           : int 7604022
+ $ total_vaccines_distributed : int 74272404</code></pre>
 </div>
 <p>The data may be bound together in the same way:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2057,7 +2062,7 @@ $ change_boosters_1      &lt;int&gt; NA, NA, NA, NA, NA, NA, 27854, 9347, ~</cod
 <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>report_ns</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>Rows: 706
+<pre><code>Rows: 710
 Columns: 21
 $ date                        &lt;date&gt; 2020-01-25, 2020-01-26, 2020-01~
 $ change_cases                &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
@@ -2094,7 +2099,7 @@ $ total_vaccines_distributed  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~</cod
 <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>report_ns_central</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>Rows: 691
+<pre><code>Rows: 695
 Columns: 7
 $ date              &lt;date&gt; 2020-01-17, 2020-01-18, 2020-01-19, 2020-~
 $ change_cases      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
@@ -2112,7 +2117,7 @@ $ total_recoveries  &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~</cod
 </div>
 <pre><code>Rows: 6
 Columns: 7
-$ date              &lt;date&gt; 2021-12-25, 2021-12-26, 2021-12-27, 2021-~
+$ date              &lt;date&gt; 2021-12-29, 2021-12-30, 2021-12-31, 2022-~
 $ change_cases      &lt;int&gt; NA, NA, NA, NA, NA, NA
 $ change_fatalities &lt;int&gt; NA, NA, NA, NA, NA, NA
 $ total_cases       &lt;int&gt; 6781, 6781, 6781, 6781, 6781, 6781
@@ -2128,26 +2133,26 @@ $ total_recoveries  &lt;int&gt; 6344, 6344, 6344, 6344, 6344, 6344</code></pre>
 </div>
 <pre><code>Rows: 6
 Columns: 21
-$ date                        &lt;date&gt; 2021-12-25, 2021-12-26, 2021-12~
-$ change_cases                &lt;int&gt; 569, 578, 581, 561, 586, 511
+$ date                        &lt;date&gt; 2021-12-29, 2021-12-30, 2021-12~
+$ change_cases                &lt;int&gt; 586, 511, 618, 709, 1184, 1020
 $ change_fatalities           &lt;int&gt; 0, 0, 0, 0, 0, 0
-$ change_tests                &lt;int&gt; 0, 0, 0, 0, 51743, 0
-$ change_hospitalizations     &lt;int&gt; 0, 0, 0, 0, 10, 1
-$ change_criticals            &lt;int&gt; 0, 0, 0, 0, -1, 0
+$ change_tests                &lt;int&gt; 51743, 0, 0, 0, 0, 0
+$ change_hospitalizations     &lt;int&gt; 10, 1, 9, 0, 0, 2
+$ change_criticals            &lt;int&gt; -1, 0, 1, 0, 0, 0
 $ change_recoveries           &lt;int&gt; 0, 0, 0, 0, 0, 0
-$ change_vaccinations         &lt;int&gt; 0, 0, 0, 0, 18044, 8704
-$ change_vaccinated           &lt;int&gt; 0, 0, 0, 0, 703, 317
-$ change_boosters_1           &lt;int&gt; 0, 0, 0, 0, 15694, 7470
+$ change_vaccinations         &lt;int&gt; 18044, 8704, 5982, 0, 0, 0
+$ change_vaccinated           &lt;int&gt; 703, 317, 308, 0, 0, 0
+$ change_boosters_1           &lt;int&gt; 15694, 7470, 4861, 0, 0, 0
 $ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0
-$ total_cases                 &lt;int&gt; 14246, 14824, 15405, 15966, 1655~
+$ total_cases                 &lt;int&gt; 16552, 17063, 17681, 18390, 1957~
 $ total_fatalities            &lt;int&gt; 111, 111, 111, 111, 111, 111
-$ total_tests                 &lt;int&gt; 1516472, 1516472, 1516472, 15164~
-$ total_hospitalizations      &lt;int&gt; 14, 14, 14, 14, 24, 25
-$ total_criticals             &lt;int&gt; 4, 4, 4, 4, 3, 3
+$ total_tests                 &lt;int&gt; 1568215, 1568215, 1568215, 15682~
+$ total_hospitalizations      &lt;int&gt; 24, 25, 34, 34, 34, 36
+$ total_criticals             &lt;int&gt; 3, 3, 4, 4, 4, 4
 $ total_recoveries            &lt;int&gt; 8643, 8643, 8643, 8643, 8643, 86~
-$ total_vaccinations          &lt;int&gt; 1758286, 1758286, 1758286, 17582~
-$ total_vaccinated            &lt;int&gt; 793489, 793489, 793489, 793489, ~
-$ total_boosters_1            &lt;int&gt; 105019, 105019, 105019, 105019, ~
+$ total_vaccinations          &lt;int&gt; 1776330, 1785034, 1791016, 17910~
+$ total_vaccinated            &lt;int&gt; 794192, 794509, 794817, 794817, ~
+$ total_boosters_1            &lt;int&gt; 120713, 128183, 133044, 133044, ~
 $ total_vaccines_distributed  &lt;int&gt; 1950040, 1950040, 1950040, 19500~</code></pre>
 </div>
 <h3 id="parameters">Parameters</h3>
@@ -2161,7 +2166,7 @@ $ total_vaccines_distributed  &lt;int&gt; 1950040, 1950040, 1950040, 19500~</cod
 <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>Rows: 714
+<pre><code>Rows: 718
 Columns: 8
 $ date              &lt;chr&gt; &quot;2020-01-17&quot;, &quot;2020-01-18&quot;, &quot;2020-01-19&quot;, ~
 $ change_cases      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
@@ -2182,7 +2187,7 @@ $ fill              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA~</cod
 <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<pre><code>Rows: 706
+<pre><code>Rows: 710
 Columns: 3
 $ date         &lt;chr&gt; &quot;2020-01-25&quot;, &quot;2020-01-26&quot;, &quot;2020-01-27&quot;, &quot;2020~
 $ change_cases &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
@@ -2236,7 +2241,7 @@ Columns: 21
 $ date                        &lt;chr&gt; &quot;2021-12-24&quot;, &quot;2021-12-25&quot;, &quot;202~
 $ change_cases                &lt;int&gt; 10031, 9206, 8231
 $ change_fatalities           &lt;int&gt; 2, 4, 10
-$ change_tests                &lt;int&gt; 0, 0, 0
+$ change_tests                &lt;int&gt; 55863, 53334, 44022
 $ change_hospitalizations     &lt;int&gt; 0, 0, 0
 $ change_criticals            &lt;int&gt; 0, 0, 0
 $ change_recoveries           &lt;int&gt; 3017, 3559, 0
@@ -2246,7 +2251,7 @@ $ change_boosters_1           &lt;int&gt; 87581, 0, 0
 $ change_vaccines_distributed &lt;int&gt; 0, 0, 0
 $ total_cases                 &lt;int&gt; 521126, 530332, 538563
 $ total_fatalities            &lt;int&gt; 11660, 11664, 11674
-$ total_tests                 &lt;int&gt; 14502372, 14502372, 14502372
+$ total_tests                 &lt;int&gt; 14573238, 14626572, 14670594
 $ total_hospitalizations      &lt;int&gt; 473, 473, 473
 $ total_criticals             &lt;int&gt; 91, 91, 91
 $ total_recoveries            &lt;int&gt; 460647, 464206, 464206
@@ -2275,14 +2280,14 @@ $ total_vaccines_distributed  &lt;int&gt; 16179459, 16179459, 16179459</code></p
 </div>
 <pre><code>Rows: 1
 Columns: 9
-$ date                        &lt;date&gt; 2021-12-30
-$ change_vaccinations         &lt;int&gt; 8704
-$ change_vaccinated           &lt;int&gt; 317
-$ change_boosters_1           &lt;int&gt; 7470
+$ date                        &lt;date&gt; 2022-01-03
+$ change_vaccinations         &lt;int&gt; 0
+$ change_vaccinated           &lt;int&gt; 0
+$ change_boosters_1           &lt;int&gt; 0
 $ change_vaccines_distributed &lt;int&gt; 0
-$ total_vaccinations          &lt;int&gt; 1785034
-$ total_vaccinated            &lt;int&gt; 794509
-$ total_boosters_1            &lt;int&gt; 128183
+$ total_vaccinations          &lt;int&gt; 1791016
+$ total_vaccinated            &lt;int&gt; 794817
+$ total_boosters_1            &lt;int&gt; 133044
 $ total_vaccines_distributed  &lt;int&gt; 1950040</code></pre>
 </div>
 <p>At the report level:</p>
@@ -2296,14 +2301,14 @@ $ total_vaccines_distributed  &lt;int&gt; 1950040</code></pre>
 </div>
 <pre><code>Rows: 6
 Columns: 9
-$ date                        &lt;date&gt; 2021-12-25, 2021-12-26, 2021-12~
-$ change_vaccinations         &lt;int&gt; 0, 0, 0, 0, 18044, 8704
-$ change_vaccinated           &lt;int&gt; 0, 0, 0, 0, 703, 317
-$ change_boosters_1           &lt;int&gt; 0, 0, 0, 0, 15694, 7470
+$ date                        &lt;date&gt; 2021-12-29, 2021-12-30, 2021-12~
+$ change_vaccinations         &lt;int&gt; 18044, 8704, 5982, 0, 0, 0
+$ change_vaccinated           &lt;int&gt; 703, 317, 308, 0, 0, 0
+$ change_boosters_1           &lt;int&gt; 15694, 7470, 4861, 0, 0, 0
 $ change_vaccines_distributed &lt;int&gt; 0, 0, 0, 0, 0, 0
-$ total_vaccinations          &lt;int&gt; 1758286, 1758286, 1758286, 17582~
-$ total_vaccinated            &lt;int&gt; 793489, 793489, 793489, 793489, ~
-$ total_boosters_1            &lt;int&gt; 105019, 105019, 105019, 105019, ~
+$ total_vaccinations          &lt;int&gt; 1776330, 1785034, 1791016, 17910~
+$ total_vaccinated            &lt;int&gt; 794192, 794509, 794817, 794817, ~
+$ total_boosters_1            &lt;int&gt; 120713, 128183, 133044, 133044, ~
 $ total_vaccines_distributed  &lt;int&gt; 1950040, 1950040, 1950040, 19500~</code></pre>
 </div>
 <h3 id="subregions">Subregions</h3>
@@ -2709,7 +2714,7 @@ Columns: 2
 $ date &lt;chr&gt; &quot;2021-11-06&quot;, &quot;2021-11-13&quot;, &quot;2021-11-20&quot;, &quot;2021-11-27&quot;
 $ data &lt;chr&gt; &quot;{\&quot;0-4\&quot;: {\&quot;full\&quot;: 0, \&quot;group\&quot;: \&quot;0-4\&quot;, \&quot;partial\~</code></pre>
 </div>
-<p>A specific age group can also be queries with the <code>group</code> parameter. The value must be passed in <a href="https://www.w3schools.com/tags/ref_urlencode.ASP">URL encoding</a>. For example, the 80+ range:</p>
+<p>A specific age group can also be queried with the <code>group</code> parameter. The value must be passed in <a href="https://www.w3schools.com/tags/ref_urlencode.ASP">URL encoding</a>. For example, the 80+ range:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>,
@@ -2784,8 +2789,8 @@ $ population  &lt;int&gt; 14826276, 8604495, 992055, 789225, 1383765, 5214~
 $ area        &lt;int&gt; 917741, 1356128, 53338, 71450, 553556, 925186, 5~
 $ gdp         &lt;int&gt; 857384, 439375, 44354, 36966, 72688, 295401, 699~
 $ geographic  &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0
-$ data_status &lt;chr&gt; &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, &quot;Waiting for~
-$ updated_at  &lt;chr&gt; &quot;2021-12-30T16:04:59.000000Z&quot;, &quot;2021-12-30T18:37~
+$ data_status &lt;chr&gt; &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, ~
+$ updated_at  &lt;chr&gt; &quot;2022-01-03T23:14:48.000000Z&quot;, &quot;2022-01-03T18:15~
 $ density     &lt;dbl&gt; 16.15518540, 6.34489886, 18.59940380, 11.0458362~</code></pre>
 </div>
 <p>The extra elements reported here are not related to any particular province/territory:</p>
@@ -2826,35 +2831,35 @@ $ population  &lt;int&gt; 14826276, 8604495, 992055, 789225, 1383765, 5214~
 $ area        &lt;int&gt; 917741, 1356128, 53338, 71450, 553556, 925186, 5~
 $ gdp         &lt;int&gt; 857384, 439375, 44354, 36966, 72688, 295401, 699~
 $ geographic  &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-$ data_status &lt;chr&gt; &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, &quot;Waiting for~
-$ updated_at  &lt;chr&gt; &quot;2021-12-30T16:04:59.000000Z&quot;, &quot;2021-12-30T18:37~
+$ data_status &lt;chr&gt; &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, &quot;Reported&quot;, ~
+$ updated_at  &lt;chr&gt; &quot;2022-01-03T23:14:48.000000Z&quot;, &quot;2022-01-03T18:15~
 $ density     &lt;dbl&gt; 16.15518540, 6.34489886, 18.59940380, 11.0458362~</code></pre>
 </div>
-<p>A helpful variable is the <code>data_status</code>, which indicates if the daily numbers have been reported:</p>
+<p>A helpful variable is <code>data_status</code>, which indicates if the daily numbers have been reported:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>provinces</span> <span class='op'><a href='https://rdrr.io/pkg/dunnr/man/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>name</span>, <span class='va'>data_status</span>, <span class='va'>updated_at</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code># A tibble: 16 x 3
-   name                      data_status          updated_at          
-   &lt;chr&gt;                     &lt;chr&gt;                &lt;chr&gt;               
- 1 Ontario                   &quot;Reported&quot;           2021-12-30T16:04:59~
- 2 Quebec                    &quot;Reported&quot;           2021-12-30T18:37:31~
- 3 Nova Scotia               &quot;Reported&quot;           2021-12-30T18:42:26~
- 4 New Brunswick             &quot;Waiting for report&quot; 2021-12-30T16:14:24~
- 5 Manitoba                  &quot;Reported&quot;           2021-12-30T18:35:54~
- 6 British Columbia          &quot;Waiting for report&quot; 2021-12-30T16:27:59~
- 7 Prince Edward Island      &quot;Waiting for report&quot; 2021-12-30T15:45:25~
- 8 Saskatchewan              &quot;Reported&quot;           2021-12-30T19:32:58~
- 9 Alberta                   &quot;Waiting for report&quot; 2021-12-30T16:33:20~
-10 Newfoundland and Labrador &quot;Waiting for report&quot; 2021-12-30T15:45:25~
-11 Northwest Territories     &quot;Waiting for report&quot; 2021-12-30T15:45:25~
-12 Yukon                     &quot;Waiting for report&quot; 2021-12-30T15:45:25~
-13 Nunavut                   &quot;Waiting for report&quot; 2021-12-30T15:45:25~
-14 Repatriated Canadians     &quot;&quot;                   &lt;NA&gt;                
-15 Federal Allocation        &quot;&quot;                   2021-10-21T16:21:19~
-16 National Federal Reserve  &quot;&quot;                   2021-10-21T16:19:33~</code></pre>
+   name                      data_status                updated_at    
+   &lt;chr&gt;                     &lt;chr&gt;                      &lt;chr&gt;         
+ 1 Ontario                   &quot;Reported&quot;                 2022-01-03T23~
+ 2 Quebec                    &quot;Reported&quot;                 2022-01-03T18~
+ 3 Nova Scotia               &quot;Reported&quot;                 2022-01-03T18~
+ 4 New Brunswick             &quot;Reported&quot;                 2022-01-03T22~
+ 5 Manitoba                  &quot;Reported&quot;                 2022-01-03T18~
+ 6 British Columbia          &quot;No report expected today&quot; 2022-01-03T16~
+ 7 Prince Edward Island      &quot;No report expected today&quot; 2022-01-03T16~
+ 8 Saskatchewan              &quot;No report expected today&quot; 2022-01-03T16~
+ 9 Alberta                   &quot;No report expected today&quot; 2022-01-03T16~
+10 Newfoundland and Labrador &quot;No report expected today&quot; 2022-01-03T16~
+11 Northwest Territories     &quot;No report expected today&quot; 2022-01-03T16~
+12 Yukon                     &quot;No report expected today&quot; 2022-01-03T16~
+13 Nunavut                   &quot;No report expected today&quot; 2022-01-03T16~
+14 Repatriated Canadians     &quot;&quot;                         &lt;NA&gt;          
+15 Federal Allocation        &quot;&quot;                         2021-10-21T16~
+16 National Federal Reserve  &quot;&quot;                         2021-10-21T16~</code></pre>
 </div>
 <p><code>data_status</code> may take on the following values:</p>
 <table>
@@ -2939,6 +2944,8 @@ $ density     &lt;dbl&gt; 16.15518540, 6.34489886, 18.59940380, 11.0458362~</cod
 15 Federal Allocation                NA      NA NA             NA     
 16 National Federal Reserve          NA      NA NA             NA     </code></pre>
 </div>
+<h2 id="next-steps">Next steps</h2>
+<p>I’m impressed by the organization and accessibility of this API, and decided to write a simple R package to wrap it. In my next post, I’ll detail my steps and thought process.</p>
 <h2 class="appendix" id="reproducibility">Reproducibility</h2>
 <details>
 <summary>
@@ -2954,10 +2961,10 @@ Session info
  collate  English_Canada.1252         
  ctype    English_Canada.1252         
  tz       America/Curacao             
- date     2021-12-30                  </code></pre>
+ date     2022-01-03                  </code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.10","3":"0.7.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-10-31","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"cli","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-12-20","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.3","3":"2.4.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"digest","2":"0.6.28","3":"0.6.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-09-23","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.4","3":"0.2.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2021-12-16","9":"Github (taylordunn/dunnr@c0598e2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"farver","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","5":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"farver"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2021-10-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"glue","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2021-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"highr","2":"0.9","3":"0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","6":"FALSE","7":"FALSE","8":"2021-04-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"highr"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"TRUE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"labeling","2":"0.4.2","3":"0.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","6":"FALSE","7":"FALSE","8":"2020-10-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labeling"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"patchwork","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","5":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"patchwork"},{"1":"pillar","2":"1.6.4","3":"1.6.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"remotes","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"0.4.12","3":"0.4.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.8","3":"1.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2020-01-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.7.5","3":"1.7.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-10-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.1.1","3":"3.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-12-03","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"tzdb","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tzdb"},{"1":"usethis","2":"2.1.5","3":"2.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-12-09","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"viridisLite","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","6":"FALSE","7":"FALSE","8":"2021-04-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"viridisLite"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.28","3":"0.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-11-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.10","3":"0.7.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-10-31","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"cli","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-12-20","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.3","3":"2.4.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"digest","2":"0.6.28","3":"0.6.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-09-23","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.4","3":"0.2.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2021-12-16","9":"Github (taylordunn/dunnr@c0598e2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"farver","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","5":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"farver"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2021-10-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"glue","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2021-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"highr","2":"0.9","3":"0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","6":"FALSE","7":"FALSE","8":"2021-04-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"highr"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"TRUE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"labeling","2":"0.4.2","3":"0.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","6":"FALSE","7":"FALSE","8":"2020-10-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labeling"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"patchwork","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","5":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"patchwork"},{"1":"pillar","2":"1.6.4","3":"1.6.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"remotes","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"0.4.12","3":"0.4.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.8","3":"1.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2020-01-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.7.5","3":"1.7.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-10-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.1.1","3":"3.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-12-03","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"tzdb","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tzdb"},{"1":"usethis","2":"2.1.5","3":"2.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-12-09","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"viridisLite","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","6":"FALSE","7":"FALSE","8":"2021-04-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"viridisLite"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.28","3":"0.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-11-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -2969,7 +2976,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [de7f27e] 2021-12-30: Added the COVID API post</code></pre>
+Head:     [97fcf28] 2022-01-02: Started the regions section</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
