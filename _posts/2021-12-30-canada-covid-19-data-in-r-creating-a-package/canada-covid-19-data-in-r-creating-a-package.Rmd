@@ -197,7 +197,7 @@ get_summary <- function(split = c("overall", "province", "region")) {
 
 Now I'll edit the `test-summary.R` file with some simple tests (and run it here as an example):
 
-```{r eval=TRUE}
+```{r eval=TRUE, cache=TRUE}
 library(testthat)
 
 test_that("get_summary works", {
@@ -238,7 +238,7 @@ I pushed this first iteration of the package to GitHub and, after about 10 minut
 
 ![](github-actions-2.PNG)
 
-## Detour: refactoring code (already)
+### Detour: refactoring code (already)
 
 Before continuing with other functions, it occurred to me that I would end up re-writing this particular block of code multiple times:
 
@@ -263,11 +263,11 @@ A quote from [R for Data Science book](https://r4ds.had.co.nz/functions.html?q=f
 
 >You should consider writing a function whenever you’ve copied and pasted a block of code more than twice (i.e. you now have three copies of the same code).
 
-So instead of copying and pasting this code block, I made a new function in a new file:
+So instead of copying and pasting this code block, I made a new function in a new file, `api.R`:
 
 ```{r}
-usethis::use_r("reports")
-usethis::use_test("reports")
+usethis::use_r("api")
+usethis::use_test("api")
 ```
 
 ```{r eval=TRUE}
@@ -320,7 +320,7 @@ get_content_parsed <- function(url) {
 This function expects a full `url`, but will add "https://api.covid19tracker.ca" if it is missing (and return a warning).
 Some simple tests for `get_content_parsed`:
 
-```{r eval=TRUE}
+```{r eval=TRUE, cache=TRUE}
 test_that("get_content_parsed works", {
   expect_warning(get_content_parsed("provinces"), "base")
   expect_error(
@@ -349,7 +349,6 @@ usethis::use_test("reports")
 The reports are a bit more complicated because the queries can [accept a few different parameters](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#parameters).
 Here is my first draft of `get_reports`, along with Roxygen documentation:
 
-
 ```{r eval=TRUE}
 #' Get the day-to-day reports
 #'
@@ -369,6 +368,12 @@ Here is my first draft of `get_reports`, along with Roxygen documentation:
 #'   Upper, lower and mixed case strings are accepted.
 #' @param region One or more health region IDs to get reports. Numeric and
 #'   character values are accepted.
+#' @param fill_dates When TRUE, the response fills in any missing dates with
+#'   blank entries.
+#' @param stat Returns only the specified statistics, e.g. "cases".
+#' @param date Returns reports from only the specified date.
+#' @param after Returns reports from only on or after the specified date.
+#' @param before Returns reports from only on or before the specified date.
 #'
 #' @return A data frame containing the reports data, one row per day. Includes
 #'   a `province` variable if data is split by province, and a `hr_uid` variable
@@ -381,7 +386,7 @@ Here is my first draft of `get_reports`, along with Roxygen documentation:
 #' get_reports("province")
 #' get_reports(province = c("AB", "SK"))
 #' get_reports(region = 1204)
-#' get_reports(region = c("472", 1204))
+#' get_reports(region = c("472", 1204), stat = "cases")
 #' @importFrom dplyr bind_rows bind_cols mutate across
 #' @importFrom tidyselect matches
 #' @importFrom rlang .data
@@ -412,14 +417,7 @@ get_reports <- function(split = c("overall", "province"),
   }
 
   if (!is.null(province)) {
-    province <- match.arg(
-      toupper(province),
-      choices = c(
-        "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE",
-        "QC", "SK", "YT"
-      ),
-      several.ok = TRUE
-    )
+    province <- match.arg(toupper(province), province_codes, several.ok = TRUE)
 
     reports <- purrr::map_dfr(
       province,
@@ -474,6 +472,8 @@ usethis::use_package("purrr")
 
 </aside>
 
+The `get_content_parsed` function paid off already -- I used it three times above, saving ~20 lines of code each time.
+
 Note that I didn't allow `split = "region"` as an option because, if the function queries all regions, 92 separate `GET` requests are sent to the API in a short period.
 This eventually fails with HTTP code 429, indicating too many requests.
 This is called "rate limiting", and the error code is a polite way of asking someone to stop spamming requests.
@@ -481,7 +481,7 @@ I might alter this function in the future to send these requests slower, either 
 
 `get_reports` is a more complex function than `get_summary`, and so I wrote more tests to try to capture that complexity:
 
-```{r eval=TRUE}
+```{r eval=TRUE, cache=TRUE}
 test_that("get_reports works", {
   reports_overall <- get_reports()
   expect_equal(ncol(reports_overall), 22)
@@ -530,45 +530,605 @@ test_that("get_reports works", {
 })
 ```
 
+### Detour: rate limiting
+
+Pushing the `reports` file and tests to GitHub resulted in failed `R CMD check`s on all platforms, with the HTTP code 429.
+This is because all my `testthat` tests were running on 9 different platforms and flooding the API with too many requests.
+
+There are probably more sophisticated ways to limit my request rate (e.g. using the [re-written `httr2` package](https://httr2.r-lib.org/), the [`vcr` package](https://github.com/vcr/vcr), the [`httptest` package](https://github.com/nealrichardson/httptest)) but I decided to use the humble `Sys.sleep()`.
+To control the delay time across all tests, I added a [setup file](https://testthat.r-lib.org/articles/test-fixtures.html#package) at `tests/testthat/setup.R` with a very simple function:
+
+```{r eval=TRUE}
+request_sleep <- function(seconds = 10) {
+  Sys.sleep(seconds)
+}
+```
+
+I then called this function before every `GET` request in my tests so that there was at least a 10 second delay between each (I initially tried 5 seconds, but it was still too fast).
+
 ## Vaccination data
 
+The vaccination data is organized a bit differently -- see the [API documentation](https://api.covid19tracker.ca/docs/1.0/vaccinations) or [my exploration of it](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccination-data).
 
+### Summary and reports
 
-## Regions
+The summary and reports vaccination data is simply the same summary and reports from before, but with only the statistics related to vaccination: `vaccinations`, `vaccinated`, `boosters_1`, and `vaccines_distributed`.
+This function simply wraps my previous `get_summary()` and `get_reports()` functions, and returns the relevant variables:
 
-```{r}
-get_regions <- function() {
-  api_url <- paste0("https://api.covid19tracker.ca/", "regions")
-  resp <- httr::GET(api_url)
+```{r code_folding="get_vaccination_data documentation"}
+#' Get vaccination data
+#'
+#' Runs a GET request of vaccination data from the COVID-19 tracker API, and
+#' returns parsed data.
+#' Data may be returned as `type` = "summary" (the most recent data) or
+#' `type` = "reports" (day-to-day reports).
+#' Via the `split` argument, data may be "overall" (all provinces/territories
+#' combined), by "province", or by "region".
+#' Alternatively, provide one or more two-letter codes (e.g. "AB") to `province`
+#' to return reports for specific provinces, or one or more numeric `region`
+#' codes (e.g. "1204") to return specific health regions.
+#'
+#' @param type One of "summary" (most recent data) or "reports" (day-to-day
+#'   data).
+#' @param split One of "overall", "province", or "region" to specify how the
+#'   data is split. An "overall" summary or report gives cumulative numbers
+#'   across Canada. Splitting by "province" returns data for all
+#'   provinces/territories. Splitting by "region" is only available for
+#'   "summary" data, and returns data for all health regions.
+#' @param province One or more province/territory codes ("AB", "BC", "MB", "NB",
+#'   "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT") to get reports.
+#'   Upper, lower and mixed case strings are accepted.
+#' @param region One or more health region IDs to get reports. Numeric and
+#'   character values are accepted.
+#' @param fill_dates When TRUE, the response fills in any missing dates with
+#'   blank entries.
+#' @param stat Returns only the specified statistics, e.g. "cases".
+#' @param date Returns reports from only the specified date.
+#' @param after Returns reports from only on or after the specified date.
+#' @param before Returns reports from only on or before the specified date.
+#'
+#' @return A data frame containing the vaccinations data. Includes
+#'   a `province` variable if data is split by province, and a `hr_uid` variable
+#'   if data is split by health region.
+#' @export
+#'
+#' @examples
+#'
+#' get_vaccination_data()
+#' get_vaccination_data(split = "province")
+#' get_vaccination_data(type = "reports", split = "overall")
+#' get_vaccination_data(type = "reports", split = "overall",
+#'                      date = "2021-12-25")
+#' @importFrom dplyr select
+#' @importFrom tidyselect matches
+```
 
-  if (resp$status_code != 200) {
-    stop(paste0("Unsuccessful HTTP response returned: ", resp$status_code))
+```{r eval=TRUE}
+get_vaccination_data <- function(type = c("summary", "reports"),
+                                 split = c("overall", "province", "region"),
+                                 province = NULL, region = NULL,
+                                 fill_dates = NULL, stat = NULL, date = NULL,
+                                 after = NULL, before = NULL) {
+  type <- match.arg(type)
+  split <- match.arg(split)
+
+  if (type == "summary") {
+    vaccination_data <- get_summary(split)
+  } else {
+    # Getting reports for each region sends too many requests to the API
+    if (split == "region") {
+      stop(paste(
+        "For `type` = 'reports', only ",
+        "`split` = 'overall' and 'province' are available."
+      ))
+    }
+
+    vaccination_data <- get_reports(
+      split, province, region, fill_dates, stat,
+      date, after, before
+    )
   }
-  if (httr::http_type(resp) != "application/json") {
-    stop("API did not return json", call. = FALSE)
-  }
 
-  data <- httr::content(resp, as = "parsed")
-  bind_rows(data$data)
+  vaccination_data %>%
+    dplyr::select(
+      tidyselect::matches("province|hr_uid"),
+      tidyselect::matches("date|last_updated"),
+      tidyselect::matches("vacc|boost")
+    )
 }
-regions <- get_regions()
 ```
+
+Because this function can return both summaries and reports, I have to put in `stop()` condition if reports by health region is requested (not allowed by the API).
+
+The tests for `get_vaccination_data` make use of my new `request_sleep` function:
+
+```{r eval=TRUE, cache=TRUE}
+test_that("get_vaccination_data works", {
+  request_sleep()
+  vaccination_data_summary <- get_vaccination_data()
+  expect_equal(nrow(vaccination_data_summary), 1)
+  expect_equal(ncol(vaccination_data_summary), 10)
+
+  request_sleep()
+  vaccination_data_report <- get_vaccination_data(type = "reports")
+  expect_equal(ncol(vaccination_data_report), 10)
+  expect_equal(
+    vaccination_data_report$date,
+    seq.Date(min(vaccination_data_report$date),
+             max(vaccination_data_report$date), by = "day")
+  )
+  expect_false(any(is.na(vaccination_data_report)))
+
+  request_sleep()
+  vaccination_data_summary_region <- get_vaccination_data(split = "region")
+  expect_equal(nrow(vaccination_data_summary_region), 92)
+  expect_error(get_vaccination_data(type = "reports", split = "region"))
+
+  request_sleep()
+  vaccination_data_ns_pe <- get_vaccination_data(type = "reports",
+                                                 province = c("NS", "pe"))
+  expect_equal(unique(vaccination_data_ns_pe$province), c("NS", "PE"))
+
+  request_sleep()
+  expect_equal(nrow(vaccination_data_ns_pe),
+               nrow(get_reports(province = c("NS", "pe"))))
+})
+
+```
+
+### Sub-regions
+
+In some provinces/territories, there is additional vaccination data at the sub-region level, which requires unique requests from the API:
+
+```{r eval=TRUE}
+#' Get sub-region vaccination data
+#'
+#' Runs a GET request of sub-region vaccination data from the COVID-19 tracker
+#' API, and returns parsed data.
+#' The `dates` argument specifies the time frame of the data: "current"
+#' (the default; latest report for each sub-region), "recent"
+#' (15 most recent reports for each sub-region), and "all" (returns all reports
+#' for one or more sub-regions specified by the `subregion_code` argument).
+#' To get a list of available sub-regions, use the function `get_subregions()`.
+#'
+#' Note that sub-region vaccination data is only for select provinces and
+#' territories. Also the percentages reported differ between percent of total
+#' population, and percent of eligible population.
+#' See the API documentation for more details:
+#' https://api.covid19tracker.ca/docs/1.0/vaccinations.
+#'
+#' @param dates One of "current", "recent", or "all" to specify the time frame
+#'   of the reports returned. If choosing "all" reports, must also provide one
+#'   or more sub-region codes.
+#' @param subregion_code One or more sub-region codes. Returns all reports for
+#'   those sub-regions (even if `dates` is not "all")
+#'
+#' @return A data frame with one row per sub-region report.
+#' @export
+#'
+#' @examples
+#'
+#' get_subregion_vaccination_data()
+#' get_subregion_vaccination_data("recent")
+#' get_subregion_vaccination_data("all", subregion_code = c("ON382", "SK007"))
+#' @importFrom dplyr bind_cols bind_rows mutate
+#' @importFrom purrr map_dfr
+#' @importFrom tidyselect matches
+get_subregion_vaccination_data <- function(dates = c("current", "recent", "all"),
+                                           subregion_code = NULL) {
+  dates <- match.arg(dates)
+  base_url <- "https://api.covid19tracker.ca/reports/sub-regions/"
+  dates_path <- switch(dates,
+    current = "summary",
+    recent = "recent",
+    all = ""
+  )
+  url <- paste0(base_url, dates_path)
+
+  if (is.null(subregion_code)) {
+    if (dates == "all") {
+      stop("Must specify sub-region(s) to return all vaccination reports.")
+    }
+    content_parsed <- get_content_parsed(url)
+
+    vaccination_data <- dplyr::bind_cols(
+      content_parsed["last_updated"],
+      dplyr::bind_rows(content_parsed$data)
+    )
+  } else {
+    vaccination_data <- purrr::map_dfr(
+      subregion_code,
+      function(subregion_code) {
+        url <- paste0(url, subregion_code)
+        content_parsed <- get_content_parsed(url)
+
+        dplyr::bind_cols(
+          content_parsed["sub_region"],
+          dplyr::bind_rows(content_parsed$data)
+        )
+      }
+    )
+  }
+
+  vaccination_data %>%
+    dplyr::mutate(
+      dplyr::across(tidyselect::matches("^total"), as.integer),
+      dplyr::across(tidyselect::matches("^percent"), as.numeric),
+      dplyr::across(tidyselect::matches("date"), as.Date),
+      dplyr::across(tidyselect::matches("last_updated"), as.POSIXct)
+    )
+}
+```
+
+Another `stop` condition prevents sending too many requests: this time requesting all data for all subregions.
+
+```{r eval=TRUE, cache=TRUE}
+test_that("get_subregion_vaccination_data works", {
+  request_sleep()
+  subregion_vaccination_data_current <- get_subregion_vaccination_data()
+  expect_equal(nrow(subregion_vaccination_data_current), 806)
+  expect_equal(ncol(subregion_vaccination_data_current), 12)
+
+  request_sleep()
+  subregion_vaccination_data_recent <-
+    get_subregion_vaccination_data(dates = "recent")
+  expect_true(nrow(subregion_vaccination_data_recent) > 0)
+})
+```
+
+## Vaccine age groups
+
+These data are week-by-week vaccination statistics by various age groups.
+The request URL is `/vaccines/age-groups` and takes a few parameters:
+
+```{r code_folding="get_vaccine_age_groups documentation"}
+#' Get vaccination reports by age group
+#'
+#' Runs a GET request of vaccination data by age groups from the COVID-19
+#' tracker API, and returns parsed data.
+#' Via the `split` argument, data may be "overall" (all provinces/territories
+#' combined), or by "province".
+#' Alternatively, provide one or more two-letter codes (e.g. "AB") to `province`
+#' to return reports for specific provinces.
+#'
+#' @param split One of "overall", or "province" to specify how the
+#'   data is split. An "overall" report gives cumulative numbers across Canada.
+#'   Splitting by "province" returns all reports for all provinces/territories.
+#' @param province One or more province/territory codes ("AB", "BC", "MB", "NB",
+#'   "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT") to get reports.
+#'   Upper, lower and mixed case strings are accepted.
+#' @param group A specific age group to return, for example: "0-4", "05-11",
+#'   "30-39", "80+", "not_reported"
+#' @param after Returns reports from only on or after the specified date,
+#'   in YYYY-MM-DD format.
+#' @param before Returns reports from only on or before the specified date,
+#'   in YYYY-MM-DD format.
+#'
+#' @return A data frame with, one row per age group per date. Includes
+#'   a `province` variable if data is split by province.
+#' @export
+#'
+#' @examples
+#'
+#' get_vaccine_age_groups()
+#' get_vaccine_age_groups(split = "province")
+#' get_vaccine_age_groups(province = c("AB", "SK"))
+#' get_vaccine_age_groups(province = "NS", group = "18-29")
+#' get_vaccine_age_groups(group = "80+", after = "2021-12-01")
+#' @importFrom dplyr bind_rows bind_cols mutate across
+#' @importFrom tidyselect matches
+#' @importFrom rlang .data
+#' @importFrom purrr imap_chr map_dfr discard
+#' @importFrom tibble lst
+#' @importFrom jsonlite fromJSON
+#' @importFrom tidyr unnest
+#' @importFrom utils URLencode
+```
+
+```{r eval=TRUE}
+get_vaccine_age_groups <- function(split = c("overall", "province"),
+                                   province = NULL,
+                                   group = NULL, before = NULL, after = NULL) {
+  base_url <- "https://api.covid19tracker.ca/vaccines/age-groups"
+  province_codes <- c(
+    "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON",
+    "PE", "QC", "SK", "YT"
+  )
+
+  split <- match.arg(split)
+  if (split == "province") {
+    base_url <- paste0(base_url, "/split")
+  } else if (!is.null(province)) {
+    province <- match.arg(toupper(province), province_codes, several.ok = TRUE)
+    base_url <- paste0(base_url, "/province/", province)
+  }
+
+  parameters <- tibble::lst(group, before, after)
+  # Remove NULL parameters
+  parameters <- parameters[lengths(parameters) == 1]
+  if (length(parameters) > 0) {
+    params_url <- purrr::imap_chr(
+      parameters,
+      ~ paste0(.y, "=", utils::URLencode(.x, reserved = TRUE))
+    ) %>%
+      paste(collapse = "&")
+    params_url <- paste0("?", params_url)
+  } else {
+    params_url <- ""
+  }
+
+  purrr::map_dfr(
+    base_url,
+    function(base_url) {
+      url <- paste0(base_url, params_url)
+      content_parsed <- get_content_parsed(url)
+
+      # Because age ranges can change over time, some data returned is NULL
+      #  if the `group` param is used
+      if (!is.null(group)) {
+        # So discard NULL elements
+        content_parsed$data <- purrr::discard(content_parsed$data,
+                                              ~ is.null(.x$data))
+      }
+
+      if (!is.null(province)) {
+        dplyr::bind_cols(
+          content_parsed["province"],
+          dplyr::bind_rows(content_parsed$data)
+        )
+      } else {
+        dplyr::bind_rows(content_parsed$data)
+      }
+    }
+  ) %>%
+    dplyr::mutate(
+      data = purrr::map(
+        .data$data,
+        ~jsonlite::fromJSON(.x) %>% dplyr::bind_rows(.id = "group_code")
+      )
+    ) %>%
+    tidyr::unnest(.data$data) %>%
+    dplyr::mutate(dplyr::across(tidyselect::matches("date"), as.Date))
+}
+```
+
+<aside>
+
+And the new dependencies:
 
 ```{r}
-summary_region %>%
-  left_join(
-    regions, by = "hr_uid"
-  ) %>%
-  filter(province == "NS")
+usethis::use_package("tidyr")
+usethis::use_package("utils")
 ```
 
+</aside>
 
+There were some tricky aspects to this function, like how the content is JSON within JSON (see my [previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccine-age-groups)).
+
+```{r eval=TRUE, cache=TRUE}
+test_that("get_vaccine_age_groups works", {
+  request_sleep()
+  vacc_age_overall <- get_vaccine_age_groups()
+  expect_equal(dplyr::n_distinct(vacc_age_overall$group), 19)
+
+  request_sleep()
+  vacc_age_province <- get_vaccine_age_groups(split = "province")
+  expect_equal(dplyr::n_distinct(vacc_age_province$province), 13)
+
+  request_sleep()
+  vacc_age_mb_nt <- get_vaccine_age_groups(province = c("test", "mB", "NT"))
+  expect_setequal(unique(vacc_age_mb_nt$province), c("MB", "NT"))
+
+  request_sleep()
+  vacc_age_ns_18_29 <- get_vaccine_age_groups(province = "NS", group = "18-29")
+  expect_setequal(unique(vacc_age_ns_18_29$province), c("NS"))
+  expect_setequal(unique(vacc_age_ns_18_29$group), c("18-29"))
+
+  request_sleep()
+  vacc_age_80p_date_range <-
+    get_vaccine_age_groups(group = "80+",
+                           after = "2021-03-20", before = "2021-05-10")
+  expect_equal(unique(vacc_age_80p_date_range$group), "80+")
+  expect_true(min(vacc_age_80p_date_range$date) >= "2021-03-20")
+  expect_true(max(vacc_age_80p_date_range$date) <= "2021-05-10")
+
+  request_sleep()
+  vacc_age_not_reported <- get_vaccine_age_groups(group = "not_reported")
+  expect_equal(unique(vacc_age_not_reported$group), "Not reported")
+
+  request_sleep()
+  expect_error(get_vaccine_age_groups(group = "90+"))
+})
+```
+
+## Regions and sub-regions
+
+Health regions from `get_summary` and `get_reports` are specified by the non-descript `hr_uid` variable only.
+Also, the sub-regions from `get_subregion_vaccination_data` are specified by `code` only.
+Naturally, the API provides lists of regions and sub-regions, which I wrap with two new functions in the `regions.R` file:
+
+```{r}
+usethis::use_r("regions")
+usethis::use_test("regions")
+```
+
+```{r eval=TRUE}
+#' Get health regions
+#'
+#' Returns a list of health regions in the COVID-19 tracker.
+#' By default (`hr_uid` and `province` `NULL`), returns all 92 regions.
+#'
+#' @param hr_uid One or more health region UIDs (e.g. 3553) to return.
+#' @param province One or more provinces to return.
+#'
+#' @return A data frame with a row per health region.
+#' @export
+#'
+#' @examples
+#'
+#' get_regions()
+#' get_regions(hr_uid = c("2414", 591))
+#' get_regions(province = c("ns", "SK"))
+#' @importFrom dplyr bind_rows
+#' @importFrom purrr map_dfr
+get_regions <- function(hr_uid = NULL, province = NULL) {
+  base_url <- "https://api.covid19tracker.ca/"
+  if (!is.null(hr_uid)) {
+    url <- paste0(base_url, "regions/", hr_uid)
+  } else if (!is.null(province)) {
+    url <- paste0(base_url, "province/", province, "/regions")
+  } else {
+    url <- paste0(base_url, "regions")
+  }
+
+  purrr::map_dfr(
+    url,
+    function(url) {
+      content_parsed <- get_content_parsed(url)
+      if (!is.null(province)) {
+        dplyr::bind_rows(content_parsed)
+      } else {
+        dplyr::bind_rows(content_parsed$data)
+      }
+    }
+  )
+}
+
+#' Get sub-regions
+#'
+#' Returns a list of sub-regions in the COVID-19 tracker.
+#' By default, returns all 805 sub-regions.
+#'
+#' @param subregion_code One or more sub-regions to be returned.
+#'
+#' @return A data frame with a row per sub-region.
+#' @export
+#'
+#' @examples
+#'
+#' get_subregions()
+#' get_subregions("AB001")
+#' get_subregions(c("SK003", "SK005"))
+#' @importFrom dplyr bind_rows
+#' @importFrom purrr map_dfr
+get_subregions <- function(subregion_code = NULL) {
+  base_url <- "https://api.covid19tracker.ca/sub-regions"
+
+  if (is.null(subregion_code)) {
+    url <- base_url
+  } else {
+    url <- paste0(base_url, "/", subregion_code)
+  }
+
+  purrr::map_dfr(
+    url,
+    function(url) {
+      content_parsed <- get_content_parsed(url)
+      dplyr::bind_rows(content_parsed$data)
+    }
+  )
+}
+```
+
+Not very complicated, and neither are the corresponding tests:
+
+```{r cache=TRUE}
+test_that("get_regions works", {
+  request_sleep()
+  regions <- get_regions()
+  expect_true("hr_uid" %in% names(regions))
+  expect_equal(nrow(regions), 92)
+  expect_equal(dplyr::n_distinct(regions$province), 13)
+
+  request_sleep()
+  regions_2418_3534 <- get_regions(hr_uid = c(2418, "3534"))
+  expect_equal(regions_2418_3534$hr_uid, c(2418, 3534))
+
+  request_sleep()
+  regions_mb_bc <- get_regions(province = c("mb", "bC"))
+  expect_equal(unique(regions_mb_bc$province), c("MB", "BC"))
+})
+
+test_that("get_subregions works", {
+  request_sleep()
+  subregions <- get_subregions()
+  expect_equal(nrow(subregions), 806)
+  expect_equal(dplyr::n_distinct(subregions$province), 6)
+
+  request_sleep()
+  subregions_3 <- get_subregions(c("ON322", "SK010", "MB029", "test"))
+  expect_setequal(unique(subregions_3$province), c("ON", "SK", "MB"))
+})
+```
+
+## Provinces
+
+The last function I added to this first iteration of the package is `get_provinces`, which has some population/geographical data, as well as a [`data_status` variable which indicates if a province's daily numbers have been updated](https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#provinces):
+
+```{r eval=TRUE}
+#' Get provinces and territories
+#'
+#' @param geo_only Logical, indicating if only provinces/territories should be
+#'   returned. If FALSE, also returned non-geographic entities like
+#'   Repatriated Canadians and the Federal Allocation for vaccinations.
+#'
+#' @return A data frame with a row per province/territory.
+#' @export
+#'
+#' @examples
+#'
+#' get_provinces()
+#' get_provinces(geo_only = FALSE)
+#' @importFrom dplyr bind_rows mutate
+#' @importFrom rlang .data
+get_provinces <- function(geo_only = TRUE) {
+  base_url <- "https://api.covid19tracker.ca/provinces"
+  if (geo_only) {
+    api_params <- "?geo_only=true"
+  } else {
+    api_params <- ""
+  }
+  url <- paste0(base_url, api_params)
+
+  content_parsed <- get_content_parsed(url)
+
+  dplyr::bind_rows(content_parsed) %>%
+    dplyr::mutate(
+      # Use logical type instead of 0/1
+      geographic = .data$geographic == 1,
+      updated_at = as.POSIXct(.data$updated_at)
+    )
+}
+```
+
+```{r eval=TRUE, cache=TRUE}
+test_that("get_provinces", {
+  request_sleep()
+  provinces <- get_provinces()
+  expect_equal(nrow(provinces), 13)
+  expect_equal(ncol(provinces), 10)
+  expect_setequal(provinces$code,
+                  c("ON", "QC", "NS", "NB", "MB", "BC", "PE", "SK", "AB",
+                    "NL", "NT", "YT", "NU"))
+
+  request_sleep()
+  provinces_geo_false <- get_provinces(geo_only = FALSE)
+
+  expect_equal(nrow(provinces_geo_false), 16)
+  expect_equal(ncol(provinces_geo_false), 10)
+  expect_setequal(provinces_geo_false$code,
+                  c("ON", "QC", "NS", "NB", "MB", "BC", "PE", "SK", "AB",
+                    "NL", "NT", "YT", "NU",
+                    "_RC", "FA", "NFR"))
+
+})
+```
 
 ## Reproducibility {.appendix}
 
 <details><summary>Session info</summary>
 
-```{r echo=FALSE}
+```{r eval=TRUE, echo=FALSE}
 devtools::session_info()$platform
 devtools::session_info()$packages %>%
   rmarkdown::paged_table()
@@ -578,13 +1138,13 @@ devtools::session_info()$packages %>%
 
 <details><summary>Git repository</summary>
 
-```{r echo=FALSE}
+```{r eval=TRUE, echo=FALSE}
 git2r::repository()
 ```
 
 </details>
 
-```{r echo=FALSE}
+```{r eval=TRUE, echo=FALSE}
 dunnr::get_distill_source(date = params$date, slug = params$slug)
 ```
 

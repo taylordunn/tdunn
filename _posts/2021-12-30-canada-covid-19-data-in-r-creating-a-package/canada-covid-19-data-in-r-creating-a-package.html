@@ -1439,6 +1439,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   <!--/radix_placeholder_distill-->
   <script src="canada-covid-19-data-in-r-creating-a-package_files/header-attrs-2.11/header-attrs.js"></script>
+  <link href="canada-covid-19-data-in-r-creating-a-package_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+  <script src="canada-covid-19-data-in-r-creating-a-package_files/pagedtable-1.1/js/pagedtable.js"></script>
   <script src="canada-covid-19-data-in-r-creating-a-package_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="canada-covid-19-data-in-r-creating-a-package_files/popper-2.6.0/popper.min.js"></script>
   <link href="canada-covid-19-data-in-r-creating-a-package_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1492,13 +1494,25 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
+<li><a href="#introduction">Introduction</a></li>
 <li><a href="#naming">Naming</a></li>
 <li><a href="#general-steps">General steps</a></li>
-<li><a href="#summary">Summary</a></li>
+<li><a href="#summary">Summary</a>
+<ul>
+<li><a href="#detour-refactoring-code-already">Detour: refactoring code (already)</a></li>
+</ul></li>
 <li><a href="#reports">Reports</a>
 <ul>
-<li><a href="#regions">Regions</a></li>
+<li><a href="#detour-rate-limiting">Detour: rate limiting</a></li>
 </ul></li>
+<li><a href="#vaccination-data">Vaccination data</a>
+<ul>
+<li><a href="#summary-and-reports">Summary and reports</a></li>
+<li><a href="#sub-regions">Sub-regions</a></li>
+</ul></li>
+<li><a href="#vaccine-age-groups">Vaccine age groups</a></li>
+<li><a href="#regions-and-sub-regions">Regions and sub-regions</a></li>
+<li><a href="#provinces">Provinces</a></li>
 <li><a href="#reproducibility">Reproducibility</a></li>
 </ul>
 </nav>
@@ -1521,6 +1535,8 @@ Setup
 </div>
 </details>
 </div>
+<h2 id="introduction">Introduction</h2>
+<p>In <a href="../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#summary">my previous post</a>, I explored the <a href="https://api.covid19tracker.ca/">Canadian COVID-19 tracker API</a> and decided to make an API wrapper package to facilitate using it in R.</p>
 <h2 id="naming">Naming</h2>
 <p>The first, and <a href="https://devguide.ropensci.org/building.html#package-name-and-metadata">some</a> <a href="https://r-pkgs.org/workflows101.html#naming">would say</a> <a href="https://www.njtierney.com/post/2018/06/20/naming-things/">the hardest step</a> for writing a package (or any piece of code for that matter) is naming it. I considered a lot of options, and in the end decided on the admittedly boring <code>canadacovid</code>, which I verified was available:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1553,7 +1569,7 @@ Sentiment:???</code></pre>
 <li><code>usethis::use_github_actions()</code> configures a basic <code>R CMD check</code> workflow on GitHub actions. <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
 <li><code>usethis::use_tidy_github_actions()</code> sets up additional workflows for GitHub actions.</li>
 </ul></li>
-<li><code>usethis::use_pipe</code>. As <code>tidyverse</code> enthusiast, I always setup my packages to use <code>magittr</code>’s pipe operator <code>%&gt;%</code>.</li>
+<li>As a <code>tidyverse</code> enthusiast, I always setup my packages to use <code>magittr</code>’s pipe operator <code>%&gt;%</code> with <code>usethis::use_pipe</code>.</li>
 <li><code>usethis::use_testthat()</code> sets up the <code>testthat</code> package and directory structure.
 <ul>
 <li>This step actually isn’t necessary, as it was already done by <code>create_tidy_package</code>.</li>
@@ -1582,7 +1598,7 @@ Sentiment:???</code></pre>
 </ul></li>
 <li>Write tests with <code>testthat</code>.
 <ul>
-<li><code>use_test("file-name")</code> creates the <code>tests/testthat/file-name.R</code> file, paired to <code>R/file-name.R</code> file.</li>
+<li><code>use_test("file-name")</code> creates the <code>tests/testthat/test-file-name.R</code> file, paired to <code>R/file-name.R</code> file.</li>
 <li><code>devtools::test()</code> or <code>usethis::test_package()</code> runs all tests.</li>
 <li><code>devtools::test_active_file()</code> tests just the active file.</li>
 </ul></li>
@@ -1648,7 +1664,7 @@ Sentiment:???</code></pre>
 <ul>
 <li>The exception is the very last line where I use <code>rlang</code> to refer to the variable <code>.data$last_updated</code>. I find it clunky to include package names within pipe operations like that.</li>
 </ul></li>
-<li><code>match.arg</code> is a helpful base R function which matches the <code>split</code> parameter to just one of the given values. It returns an error is an unexpected value is provided.</li>
+<li><code>match.arg</code> is a helpful base R function which matches the <code>split</code> parameter to just one of the given values. It returns an error if an unexpected value is provided.</li>
 <li>I followed the advice from <a href="https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html">this <code>httr</code> vignette</a> and turned API errors into R errors.
 <ul>
 <li>The <code>httr::http_error</code> conditional returns an error message if the GET request failed, with the resulting HTTP status code.</li>
@@ -1746,96 +1762,901 @@ Sentiment:???</code></pre>
 </ul>
 <p>I pushed this first iteration of the package to GitHub and, after about 10 minutes, all of the GitHub actions workflows were successful:</p>
 <p><img src="github-actions-2.PNG" /></p>
-<h2 id="reports">Reports</h2>
+<h3 id="detour-refactoring-code-already">Detour: refactoring code (already)</h3>
+<p>Before continuing with other functions, it occurred to me that I would end up re-writing this particular block of code multiple times:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>get_reports</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>fill_dates</span> <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>stat</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>date</span> <span class='op'>=</span> <span class='cn'>NULL</span>,
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/http_error.html'>http_error</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"API requested failed with code"</span>, <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/status_code.html'>status_code</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span><span class='op'>)</span>,
+       call. <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/http_type.html'>http_type</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span> <span class='op'>!=</span> <span class='st'>"application/json"</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='st'>"API did not return JSON"</span>, call. <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='va'>content_parsed</span> <span class='op'>&lt;-</span>
+  <span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, <span class='st'>"text"</span>, encoding <span class='op'>=</span> <span class='st'>"UTF-8"</span><span class='op'>)</span>,
+                     simplifyVector <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>A quote from <a href="https://r4ds.had.co.nz/functions.html?q=function#when-should-you-write-a-function">R for Data Science book</a>:</p>
+<blockquote>
+<p>You should consider writing a function whenever you’ve copied and pasted a block of code more than twice (i.e. you now have three copies of the same code).</p>
+</blockquote>
+<p>So instead of copying and pasting this code block, I made a new function in a new file, <code>api.R</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_r.html'>use_r</a></span><span class='op'>(</span><span class='st'>"api"</span><span class='op'>)</span>
+<span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_r.html'>use_test</a></span><span class='op'>(</span><span class='st'>"api"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get content and parse it</span>
+<span class='co'>#'</span>
+<span class='co'>#' Sends a GET request to https://api.covid19tracker.ca/.</span>
+<span class='co'>#' If the request is successful and the returned content is JSON, formats it and</span>
+<span class='co'>#' returns it parsed (via `jsonlite::fromJSON`).</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param url A string URL linking to the API. If it does not contain the base</span>
+<span class='co'>#'   "https://api.covid19tracker.ca", then `url` will be combined with the base</span>
+<span class='co'>#'   to attempt to make a valid URL (and return a warning).</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A list.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_content_parsed("https://api.covid19tracker.ca/provinces")</span>
+<span class='co'>#'</span>
+<span class='co'>#' @importFrom httr GET http_error http_type content</span>
+<span class='co'>#' @importFrom jsonlite fromJSON</span>
+<span class='co'>#' @importFrom stringr str_detect</span>
+<span class='va'>get_content_parsed</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca"</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'>stringr</span><span class='fu'>::</span><span class='fu'><a href='https://stringr.tidyverse.org/reference/str_detect.html'>str_detect</a></span><span class='op'>(</span><span class='va'>url</span>, <span class='va'>base_url</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"/"</span>, <span class='va'>url</span><span class='op'>)</span>
+    <span class='kw'><a href='https://rdrr.io/r/base/warning.html'>warning</a></span><span class='op'>(</span>
+      <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"Provided URL did not include base ("</span>, <span class='va'>base_url</span>, <span class='st'>").\n"</span>,
+             <span class='st'>"Combined URL with base for GET request: "</span>, <span class='va'>url</span><span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/http_error.html'>http_error</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"API requested failed with code"</span>, <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/status_code.html'>status_code</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span><span class='op'>)</span>,
+         call. <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/http_type.html'>http_type</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span> <span class='op'>!=</span> <span class='st'>"application/json"</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='st'>"API did not return JSON"</span>, call. <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, <span class='st'>"text"</span>, encoding <span class='op'>=</span> <span class='st'>"UTF-8"</span><span class='op'>)</span>,
+                     simplifyVector <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</div>
+<p>This function expects a full <code>url</code>, but will add “<a href="https://api.covid19tracker.ca" class="uri">https://api.covid19tracker.ca</a>” if it is missing (and return a warning). Some simple tests for <code>get_content_parsed</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_content_parsed works"</span>, <span class='op'>{</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_error.html'>expect_warning</a></span><span class='op'>(</span><span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='st'>"provinces"</span><span class='op'>)</span>, <span class='st'>"base"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_error.html'>expect_error</a></span><span class='op'>(</span>
+    <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='st'>"https://api.covid19tracker.ca/provices"</span><span class='op'>)</span>, <span class='st'>"API"</span>
+  <span class='op'>)</span>
+
+  <span class='va'>provinces</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='st'>"https://api.covid19tracker.ca/provinces"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_true</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>is.list</a></span><span class='op'>(</span><span class='va'>provinces</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lengths.html'>lengths</a></span><span class='op'>(</span><span class='va'>provinces</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>12</span>, <span class='fl'>16</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Test passed </code></pre>
+</div>
+<p>Everything checks out. I don’t need to re-write tests for <code>get_summary()</code> but I <em>do re-run those tests</em> to make sure I didn’t break it with these changes (this is the whole point of unit testing). I then run <code>devtools::check()</code> and push changes to GitHub.</p>
+<h2 id="reports">Reports</h2>
+<p>Writing the function to get reports follows the same procedure:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_r.html'>use_r</a></span><span class='op'>(</span><span class='st'>"reports"</span><span class='op'>)</span>
+<span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_r.html'>use_test</a></span><span class='op'>(</span><span class='st'>"reports"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>The reports are a bit more complicated because the queries can <a href="../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#parameters">accept a few different parameters</a>. Here is my first draft of <code>get_reports</code>, along with Roxygen documentation:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get the day-to-day reports</span>
+<span class='co'>#'</span>
+<span class='co'>#' Runs a GET request of reports data from the COVID-19 tracker API, and</span>
+<span class='co'>#' returns parsed data.</span>
+<span class='co'>#' Via the `split` argument, data may be "overall" (all provinces/territories</span>
+<span class='co'>#' combined), or by "province".</span>
+<span class='co'>#' Alternatively, provide one or more two-letter codes (e.g. "AB") to `province`</span>
+<span class='co'>#' to return reports for specific provinces, or one or more numeric `region`</span>
+<span class='co'>#' codes (e.g. "1204") to return specific health regions.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param split One of "overall", or "province" to specify how the</span>
+<span class='co'>#'   data is split. An "overall" report gives cumulative numbers across Canada.</span>
+<span class='co'>#'   Splitting by "province" returns all reports for all provinces/territories.</span>
+<span class='co'>#' @param province One or more province/territory codes ("AB", "BC", "MB", "NB",</span>
+<span class='co'>#'   "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT") to get reports.</span>
+<span class='co'>#'   Upper, lower and mixed case strings are accepted.</span>
+<span class='co'>#' @param region One or more health region IDs to get reports. Numeric and</span>
+<span class='co'>#'   character values are accepted.</span>
+<span class='co'>#' @param fill_dates When TRUE, the response fills in any missing dates with</span>
+<span class='co'>#'   blank entries.</span>
+<span class='co'>#' @param stat Returns only the specified statistics, e.g. "cases".</span>
+<span class='co'>#' @param date Returns reports from only the specified date.</span>
+<span class='co'>#' @param after Returns reports from only on or after the specified date.</span>
+<span class='co'>#' @param before Returns reports from only on or before the specified date.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame containing the reports data, one row per day. Includes</span>
+<span class='co'>#'   a `province` variable if data is split by province, and a `hr_uid` variable</span>
+<span class='co'>#'   if data is split by health region.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_reports()</span>
+<span class='co'>#' get_reports("province")</span>
+<span class='co'>#' get_reports(province = c("AB", "SK"))</span>
+<span class='co'>#' get_reports(region = 1204)</span>
+<span class='co'>#' get_reports(region = c("472", 1204), stat = "cases")</span>
+<span class='co'>#' @importFrom dplyr bind_rows bind_cols mutate across</span>
+<span class='co'>#' @importFrom tidyselect matches</span>
+<span class='co'>#' @importFrom rlang .data</span>
+<span class='co'>#' @importFrom purrr imap_chr map_dfr</span>
+<span class='co'>#' @importFrom tibble lst</span>
+<span class='va'>get_reports</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"overall"</span>, <span class='st'>"province"</span><span class='op'>)</span>,
+                        <span class='va'>province</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>region</span> <span class='op'>=</span> <span class='cn'>NULL</span>,
+                        <span class='va'>fill_dates</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>stat</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>date</span> <span class='op'>=</span> <span class='cn'>NULL</span>,
                         <span class='va'>after</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>before</span> <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/"</span>
-  
-  <span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"https://api.covid19tracker.ca/"</span>, <span class='st'>"reports"</span><span class='op'>)</span>
-  
-  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>fill_dates</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='va'>fill_dates</span> <span class='op'>&lt;-</span> <span class='st'>"fill_dates=true"</span>
-  <span class='op'>}</span>
-  <span class='kw'>else</span> <span class='op'>{</span>
-    <span class='va'>fill_dates</span> <span class='op'>&lt;-</span> <span class='cn'>NULL</span>
-  <span class='op'>}</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>stat</span><span class='op'>)</span><span class='op'>)</span> <span class='va'>stat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"stat="</span>, <span class='va'>stat</span><span class='op'>)</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span> <span class='va'>date</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"date="</span>, <span class='va'>date</span><span class='op'>)</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>after</span><span class='op'>)</span><span class='op'>)</span> <span class='va'>after</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"after="</span>, <span class='va'>after</span><span class='op'>)</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>before</span><span class='op'>)</span><span class='op'>)</span> <span class='va'>before</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"before="</span>, <span class='va'>before</span><span class='op'>)</span>
-  
-  <span class='va'>api_params</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>fill_dates</span>, <span class='va'>stat</span>, <span class='va'>date</span>, <span class='va'>after</span>, <span class='va'>before</span><span class='op'>)</span>,
-                      collapse <span class='op'>=</span> <span class='st'>"&amp;"</span><span class='op'>)</span>
-  
-  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nchar.html'>nchar</a></span><span class='op'>(</span><span class='va'>api_params</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>api_url</span>, <span class='st'>"?"</span>, <span class='va'>api_params</span><span class='op'>)</span>
-  <span class='op'>}</span>
-  <span class='kw'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
-  
-  <span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/reports/"</span>
+  <span class='va'>province_codes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+    <span class='st'>"AB"</span>, <span class='st'>"BC"</span>, <span class='st'>"MB"</span>, <span class='st'>"NB"</span>, <span class='st'>"NL"</span>, <span class='st'>"NS"</span>, <span class='st'>"NT"</span>, <span class='st'>"NU"</span>, <span class='st'>"ON"</span>,
+    <span class='st'>"PE"</span>, <span class='st'>"QC"</span>, <span class='st'>"SK"</span>, <span class='st'>"YT"</span>
+  <span class='op'>)</span>
 
-  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>resp</span><span class='op'>$</span><span class='va'>status_code</span> <span class='op'>!=</span> <span class='fl'>200</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"Unsuccessful HTTP response returned: "</span>, <span class='va'>resp</span><span class='op'>$</span><span class='va'>status_code</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='va'>split</span><span class='op'>)</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>split</span> <span class='op'>==</span> <span class='st'>"province"</span><span class='op'>)</span> <span class='va'>province</span> <span class='op'>&lt;-</span> <span class='va'>province_codes</span>
+
+  <span class='va'>parameters</span> <span class='op'>&lt;-</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/lst.html'>lst</a></span><span class='op'>(</span><span class='va'>fill_dates</span>, <span class='va'>stat</span>, <span class='va'>date</span>, <span class='va'>after</span>, <span class='va'>before</span><span class='op'>)</span>
+  <span class='co'># Remove NULL parameters</span>
+  <span class='va'>parameters</span> <span class='op'>&lt;-</span> <span class='va'>parameters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/lengths.html'>lengths</a></span><span class='op'>(</span><span class='va'>parameters</span><span class='op'>)</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>parameters</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>params_url</span> <span class='op'>&lt;-</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/imap.html'>imap_chr</a></span><span class='op'>(</span><span class='va'>parameters</span>, <span class='op'>~</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>.y</span>, <span class='st'>"="</span>, <span class='fu'><a href='https://rdrr.io/r/base/chartr.html'>tolower</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+      <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span>collapse <span class='op'>=</span> <span class='st'>"&amp;"</span><span class='op'>)</span>
+    <span class='va'>params_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"?"</span>, <span class='va'>params_url</span><span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>params_url</span> <span class='op'>&lt;-</span> <span class='st'>""</span>
   <span class='op'>}</span>
 
-  <span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>province</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/chartr.html'>toupper</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span>, <span class='va'>province_codes</span>, several.ok <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
-    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>[</span><span class='st'>"last_updated"</span><span class='op'>]</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
-    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
-      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'><a href='https://testthat.r-lib.org/reference/oldskool.html'>matches</a></span><span class='op'>(</span><span class='st'>"^change|total"</span><span class='op'>)</span>, <span class='va'>as.integer</span><span class='op'>)</span>,
-      <span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'><a href='https://testthat.r-lib.org/reference/oldskool.html'>matches</a></span><span class='op'>(</span><span class='st'>"date"</span><span class='op'>)</span>, <span class='va'>as.Date</span><span class='op'>)</span>,
-      last_updated <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='va'>last_updated</span><span class='op'>)</span>
+    <span class='va'>reports</span> <span class='op'>&lt;-</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span>
+      <span class='va'>province</span>,
+      <span class='kw'>function</span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"province/"</span>, <span class='va'>province</span>, <span class='va'>params_url</span><span class='op'>)</span>
+        <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span>
+          <span class='va'>content_parsed</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"province"</span>, <span class='st'>"last_updated"</span><span class='op'>)</span><span class='op'>]</span>,
+          <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+        <span class='op'>)</span>
+      <span class='op'>}</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>region</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>reports</span> <span class='op'>&lt;-</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span>
+      <span class='va'>region</span>,
+      <span class='kw'>function</span><span class='op'>(</span><span class='va'>region</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"regions/"</span>, <span class='va'>region</span>, <span class='va'>params_url</span><span class='op'>)</span>
+        <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span>
+          <span class='va'>content_parsed</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hr_uid"</span>, <span class='st'>"last_updated"</span><span class='op'>)</span><span class='op'>]</span>,
+          <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+        <span class='op'>)</span>
+      <span class='op'>}</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='va'>params_url</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='va'>reports</span> <span class='op'>&lt;-</span> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span>
+      <span class='va'>content_parsed</span><span class='op'>[</span><span class='st'>"last_updated"</span><span class='op'>]</span>,
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='va'>reports</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"^change|total"</span><span class='op'>)</span>, <span class='va'>as.integer</span><span class='op'>)</span>,
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"date"</span><span class='op'>)</span>, <span class='va'>as.Date</span><span class='op'>)</span>,
+      last_updated <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='va'>.data</span><span class='op'>$</span><span class='va'>last_updated</span><span class='op'>)</span>
     <span class='op'>)</span>
 <span class='op'>}</span>
-<span class='fu'>get_reports</span><span class='op'>(</span>before <span class='op'>=</span> <span class='st'>"2021-10-10"</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
-<h3 id="regions">Regions</h3>
+<aside>
+<p>And the new dependencies:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>get_regions</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>api_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"https://api.covid19tracker.ca/"</span>, <span class='st'>"regions"</span><span class='op'>)</span>
-  <span class='va'>resp</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/GET.html'>GET</a></span><span class='op'>(</span><span class='va'>api_url</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_package.html'>use_package</a></span><span class='op'>(</span><span class='st'>"tibble"</span><span class='op'>)</span>
+<span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_package.html'>use_package</a></span><span class='op'>(</span><span class='st'>"purrr"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+</aside>
+<p>The <code>get_content_parsed</code> function paid off already – I used it three times above, saving ~20 lines of code each time.</p>
+<p>Note that I didn’t allow <code>split = "region"</code> as an option because, if the function queries all regions, 92 separate <code>GET</code> requests are sent to the API in a short period. This eventually fails with HTTP code 429, indicating too many requests. This is called “rate limiting”, and the error code is a polite way of asking someone to stop spamming requests. I might alter this function in the future to send these requests slower, either with a call to <code>Sys.sleep()</code> or with the <a href="https://github.com/dmi3kno/polite"><code>polite</code> package</a>.</p>
+<p><code>get_reports</code> is a more complex function than <code>get_summary</code>, and so I wrote more tests to try to capture that complexity:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_reports works"</span>, <span class='op'>{</span>
+  <span class='va'>reports_overall</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>reports_overall</span><span class='op'>)</span>, <span class='fl'>22</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span>
+    <span class='va'>reports_overall</span><span class='op'>$</span><span class='va'>date</span>,
+    <span class='fu'><a href='https://rdrr.io/r/base/seq.Date.html'>seq.Date</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>reports_overall</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>reports_overall</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='st'>"day"</span><span class='op'>)</span>
+  <span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_false</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/any.html'>any</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>reports_overall</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 
-  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>resp</span><span class='op'>$</span><span class='va'>status_code</span> <span class='op'>!=</span> <span class='fl'>200</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"Unsuccessful HTTP response returned: "</span>, <span class='va'>resp</span><span class='op'>$</span><span class='va'>status_code</span><span class='op'>)</span><span class='op'>)</span>
-  <span class='op'>}</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/http_type.html'>http_type</a></span><span class='op'>(</span><span class='va'>resp</span><span class='op'>)</span> <span class='op'>!=</span> <span class='st'>"application/json"</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='st'>"API did not return json"</span>, call. <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-  <span class='op'>}</span>
+  <span class='va'>reports_province</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>split <span class='op'>=</span> <span class='st'>"province"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>reports_province</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fl'>13</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>reports_province</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>reports_overall</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>reports_province</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>reports_overall</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span><span class='op'>)</span>
 
-  <span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='op'>(</span><span class='va'>resp</span>, as <span class='op'>=</span> <span class='st'>"parsed"</span><span class='op'>)</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+  <span class='va'>reports_ns_nb_nv</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>province <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NS"</span>, <span class='st'>"nb"</span>, <span class='st'>"nU"</span>, <span class='st'>"test"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>reports_ns_nb_nv</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NS"</span>, <span class='st'>"NB"</span>, <span class='st'>"NU"</span><span class='op'>)</span>
+  <span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span>
+    <span class='va'>reports_province</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>province</span> <span class='op'>==</span> <span class='st'>"NS"</span><span class='op'>)</span>,
+    <span class='va'>reports_ns_nb_nv</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>province</span> <span class='op'>==</span> <span class='st'>"NS"</span><span class='op'>)</span>
+  <span class='op'>)</span>
+
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_error.html'>expect_error</a></span><span class='op'>(</span><span class='fu'>get_reports</span><span class='op'>(</span>split <span class='op'>=</span> <span class='st'>"region"</span><span class='op'>)</span>, <span class='st'>"arg"</span><span class='op'>)</span>
+
+  <span class='va'>reports_592_2407_3561</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>region <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>592</span>, <span class='st'>"2407"</span>, <span class='fl'>3561</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>reports_592_2407_3561</span><span class='op'>$</span><span class='va'>hr_uid</span><span class='op'>)</span>,
+    <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>592</span>, <span class='fl'>2407</span>, <span class='fl'>3561</span><span class='op'>)</span>
+  <span class='op'>)</span>
+
+  <span class='va'>reports_criticals</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>split <span class='op'>=</span> <span class='st'>"province"</span>, stat <span class='op'>=</span> <span class='st'>"criticals"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>reports_criticals</span><span class='op'>)</span>, <span class='fl'>5</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>reports_criticals</span><span class='op'>)</span>,
+                  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"province"</span>, <span class='st'>"last_updated"</span>, <span class='st'>"date"</span>,
+                    <span class='st'>"change_criticals"</span>, <span class='st'>"total_criticals"</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='va'>report_2021_07_20</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>province <span class='op'>=</span> <span class='st'>"MB"</span>, date <span class='op'>=</span> <span class='st'>"2021-07-20"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='va'>report_2021_07_20</span><span class='op'>$</span><span class='va'>date</span>, <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='st'>"2021-07-20"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='va'>report_2021_07_20</span><span class='op'>$</span><span class='va'>province</span>, <span class='st'>"MB"</span><span class='op'>)</span>
+
+  <span class='va'>report_date_range</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>region <span class='op'>=</span> <span class='fl'>3570</span>,
+                                   after <span class='op'>=</span> <span class='st'>"2021-10-28"</span>, before <span class='op'>=</span> <span class='st'>"2021-11-02"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>report_date_range</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='st'>"2021-10-28"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>report_date_range</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='st'>"2021-11-02"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Test passed </code></pre>
+</div>
+<h3 id="detour-rate-limiting">Detour: rate limiting</h3>
+<p>Pushing the <code>reports</code> file and tests to GitHub resulted in failed <code>R CMD check</code>s on all platforms, with the HTTP code 429. This is because all my <code>testthat</code> tests were running on 9 different platforms and flooding the API with too many requests.</p>
+<p>There are probably more sophisticated ways to limit my request rate (e.g. using the <a href="https://httr2.r-lib.org/">re-written <code>httr2</code> package</a>, the <a href="https://github.com/vcr/vcr"><code>vcr</code> package</a>, the <a href="https://github.com/nealrichardson/httptest"><code>httptest</code> package</a>) but I decided to use the humble <code>Sys.sleep()</code>. To control the delay time across all tests, I added a <a href="https://testthat.r-lib.org/articles/test-fixtures.html#package">setup file</a> at <code>tests/testthat/setup.R</code> with a very simple function:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>request_sleep</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>seconds</span> <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/Sys.sleep.html'>Sys.sleep</a></span><span class='op'>(</span><span class='va'>seconds</span><span class='op'>)</span>
 <span class='op'>}</span>
-<span class='va'>regions</span> <span class='op'>&lt;-</span> <span class='fu'>get_regions</span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<p>I then called this function before every <code>GET</code> request in my tests so that there was at least a 10 second delay between each (I initially tried 5 seconds, but it was still too fast).</p>
+<h2 id="vaccination-data">Vaccination data</h2>
+<p>The vaccination data is organized a bit differently – see the <a href="https://api.covid19tracker.ca/docs/1.0/vaccinations">API documentation</a> or <a href="../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccination-data">my exploration of it</a>.</p>
+<h3 id="summary-and-reports">Summary and reports</h3>
+<p>The summary and reports vaccination data is simply the same summary and reports from before, but with only the statistics related to vaccination: <code>vaccinations</code>, <code>vaccinated</code>, <code>boosters_1</code>, and <code>vaccines_distributed</code>. This function simply wraps my previous <code>get_summary()</code> and <code>get_reports()</code> functions, and returns the relevant variables:</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+get_vaccination_data documentation
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get vaccination data</span>
+<span class='co'>#'</span>
+<span class='co'>#' Runs a GET request of vaccination data from the COVID-19 tracker API, and</span>
+<span class='co'>#' returns parsed data.</span>
+<span class='co'>#' Data may be returned as `type` = "summary" (the most recent data) or</span>
+<span class='co'>#' `type` = "reports" (day-to-day reports).</span>
+<span class='co'>#' Via the `split` argument, data may be "overall" (all provinces/territories</span>
+<span class='co'>#' combined), by "province", or by "region".</span>
+<span class='co'>#' Alternatively, provide one or more two-letter codes (e.g. "AB") to `province`</span>
+<span class='co'>#' to return reports for specific provinces, or one or more numeric `region`</span>
+<span class='co'>#' codes (e.g. "1204") to return specific health regions.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param type One of "summary" (most recent data) or "reports" (day-to-day</span>
+<span class='co'>#'   data).</span>
+<span class='co'>#' @param split One of "overall", "province", or "region" to specify how the</span>
+<span class='co'>#'   data is split. An "overall" summary or report gives cumulative numbers</span>
+<span class='co'>#'   across Canada. Splitting by "province" returns data for all</span>
+<span class='co'>#'   provinces/territories. Splitting by "region" is only available for</span>
+<span class='co'>#'   "summary" data, and returns data for all health regions.</span>
+<span class='co'>#' @param province One or more province/territory codes ("AB", "BC", "MB", "NB",</span>
+<span class='co'>#'   "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT") to get reports.</span>
+<span class='co'>#'   Upper, lower and mixed case strings are accepted.</span>
+<span class='co'>#' @param region One or more health region IDs to get reports. Numeric and</span>
+<span class='co'>#'   character values are accepted.</span>
+<span class='co'>#' @param fill_dates When TRUE, the response fills in any missing dates with</span>
+<span class='co'>#'   blank entries.</span>
+<span class='co'>#' @param stat Returns only the specified statistics, e.g. "cases".</span>
+<span class='co'>#' @param date Returns reports from only the specified date.</span>
+<span class='co'>#' @param after Returns reports from only on or after the specified date.</span>
+<span class='co'>#' @param before Returns reports from only on or before the specified date.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame containing the vaccinations data. Includes</span>
+<span class='co'>#'   a `province` variable if data is split by province, and a `hr_uid` variable</span>
+<span class='co'>#'   if data is split by health region.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_vaccination_data()</span>
+<span class='co'>#' get_vaccination_data(split = "province")</span>
+<span class='co'>#' get_vaccination_data(type = "reports", split = "overall")</span>
+<span class='co'>#' get_vaccination_data(type = "reports", split = "overall",</span>
+<span class='co'>#'                      date = "2021-12-25")</span>
+<span class='co'>#' @importFrom dplyr select</span>
+<span class='co'>#' @importFrom tidyselect matches</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>get_vaccination_data</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>type</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"summary"</span>, <span class='st'>"reports"</span><span class='op'>)</span>,
+                                 <span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"overall"</span>, <span class='st'>"province"</span>, <span class='st'>"region"</span><span class='op'>)</span>,
+                                 <span class='va'>province</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>region</span> <span class='op'>=</span> <span class='cn'>NULL</span>,
+                                 <span class='va'>fill_dates</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>stat</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>date</span> <span class='op'>=</span> <span class='cn'>NULL</span>,
+                                 <span class='va'>after</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>before</span> <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>type</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='va'>type</span><span class='op'>)</span>
+  <span class='va'>split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='va'>split</span><span class='op'>)</span>
+
+  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>type</span> <span class='op'>==</span> <span class='st'>"summary"</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>vaccination_data</span> <span class='op'>&lt;-</span> <span class='fu'>get_summary</span><span class='op'>(</span><span class='va'>split</span><span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='co'># Getting reports for each region sends too many requests to the API</span>
+    <span class='kw'>if</span> <span class='op'>(</span><span class='va'>split</span> <span class='op'>==</span> <span class='st'>"region"</span><span class='op'>)</span> <span class='op'>{</span>
+      <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span>
+        <span class='st'>"For `type` = 'reports', only "</span>,
+        <span class='st'>"`split` = 'overall' and 'province' are available."</span>
+      <span class='op'>)</span><span class='op'>)</span>
+    <span class='op'>}</span>
+
+    <span class='va'>vaccination_data</span> <span class='op'>&lt;-</span> <span class='fu'>get_reports</span><span class='op'>(</span>
+      <span class='va'>split</span>, <span class='va'>province</span>, <span class='va'>region</span>, <span class='va'>fill_dates</span>, <span class='va'>stat</span>,
+      <span class='va'>date</span>, <span class='va'>after</span>, <span class='va'>before</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='va'>vaccination_data</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span>
+      <span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"province|hr_uid"</span><span class='op'>)</span>,
+      <span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"date|last_updated"</span><span class='op'>)</span>,
+      <span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"vacc|boost"</span><span class='op'>)</span>
+    <span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</div>
+<p>Because this function can return both summaries and reports, I have to put in <code>stop()</code> condition if reports by health region is requested (not allowed by the API).</p>
+<p>The tests for <code>get_vaccination_data</code> make use of my new <code>request_sleep</code> function:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_vaccination_data works"</span>, <span class='op'>{</span>
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vaccination_data_summary</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccination_data</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>vaccination_data_summary</span><span class='op'>)</span>, <span class='fl'>1</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>vaccination_data_summary</span><span class='op'>)</span>, <span class='fl'>10</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vaccination_data_report</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccination_data</span><span class='op'>(</span>type <span class='op'>=</span> <span class='st'>"reports"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>vaccination_data_report</span><span class='op'>)</span>, <span class='fl'>10</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span>
+    <span class='va'>vaccination_data_report</span><span class='op'>$</span><span class='va'>date</span>,
+    <span class='fu'><a href='https://rdrr.io/r/base/seq.Date.html'>seq.Date</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>vaccination_data_report</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>,
+             <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>vaccination_data_report</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='st'>"day"</span><span class='op'>)</span>
+  <span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_false</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/any.html'>any</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>vaccination_data_report</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vaccination_data_summary_region</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccination_data</span><span class='op'>(</span>split <span class='op'>=</span> <span class='st'>"region"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>vaccination_data_summary_region</span><span class='op'>)</span>, <span class='fl'>92</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_error.html'>expect_error</a></span><span class='op'>(</span><span class='fu'>get_vaccination_data</span><span class='op'>(</span>type <span class='op'>=</span> <span class='st'>"reports"</span>, split <span class='op'>=</span> <span class='st'>"region"</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vaccination_data_ns_pe</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccination_data</span><span class='op'>(</span>type <span class='op'>=</span> <span class='st'>"reports"</span>,
+                                                 province <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NS"</span>, <span class='st'>"pe"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>vaccination_data_ns_pe</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NS"</span>, <span class='st'>"PE"</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>vaccination_data_ns_pe</span><span class='op'>)</span>,
+               <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='fu'>get_reports</span><span class='op'>(</span>province <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NS"</span>, <span class='st'>"pe"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Test passed </code></pre>
+</div>
+<h3 id="sub-regions">Sub-regions</h3>
+<p>In some provinces/territories, there is additional vaccination data at the sub-region level, which requires unique requests from the API:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get sub-region vaccination data</span>
+<span class='co'>#'</span>
+<span class='co'>#' Runs a GET request of sub-region vaccination data from the COVID-19 tracker</span>
+<span class='co'>#' API, and returns parsed data.</span>
+<span class='co'>#' The `dates` argument specifies the time frame of the data: "current"</span>
+<span class='co'>#' (the default; latest report for each sub-region), "recent"</span>
+<span class='co'>#' (15 most recent reports for each sub-region), and "all" (returns all reports</span>
+<span class='co'>#' for one or more sub-regions specified by the `subregion_code` argument).</span>
+<span class='co'>#' To get a list of available sub-regions, use the function `get_subregions()`.</span>
+<span class='co'>#'</span>
+<span class='co'>#' Note that sub-region vaccination data is only for select provinces and</span>
+<span class='co'>#' territories. Also the percentages reported differ between percent of total</span>
+<span class='co'>#' population, and percent of eligible population.</span>
+<span class='co'>#' See the API documentation for more details:</span>
+<span class='co'>#' https://api.covid19tracker.ca/docs/1.0/vaccinations.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param dates One of "current", "recent", or "all" to specify the time frame</span>
+<span class='co'>#'   of the reports returned. If choosing "all" reports, must also provide one</span>
+<span class='co'>#'   or more sub-region codes.</span>
+<span class='co'>#' @param subregion_code One or more sub-region codes. Returns all reports for</span>
+<span class='co'>#'   those sub-regions (even if `dates` is not "all")</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame with one row per sub-region report.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_subregion_vaccination_data()</span>
+<span class='co'>#' get_subregion_vaccination_data("recent")</span>
+<span class='co'>#' get_subregion_vaccination_data("all", subregion_code = c("ON382", "SK007"))</span>
+<span class='co'>#' @importFrom dplyr bind_cols bind_rows mutate</span>
+<span class='co'>#' @importFrom purrr map_dfr</span>
+<span class='co'>#' @importFrom tidyselect matches</span>
+<span class='va'>get_subregion_vaccination_data</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>dates</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"current"</span>, <span class='st'>"recent"</span>, <span class='st'>"all"</span><span class='op'>)</span>,
+                                           <span class='va'>subregion_code</span> <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>dates</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='va'>dates</span><span class='op'>)</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/reports/sub-regions/"</span>
+  <span class='va'>dates_path</span> <span class='op'>&lt;-</span> <span class='kw'><a href='https://rdrr.io/r/base/switch.html'>switch</a></span><span class='op'>(</span><span class='va'>dates</span>,
+    current <span class='op'>=</span> <span class='st'>"summary"</span>,
+    recent <span class='op'>=</span> <span class='st'>"recent"</span>,
+    all <span class='op'>=</span> <span class='st'>""</span>
+  <span class='op'>)</span>
+  <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='va'>dates_path</span><span class='op'>)</span>
+
+  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>subregion_code</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='kw'>if</span> <span class='op'>(</span><span class='va'>dates</span> <span class='op'>==</span> <span class='st'>"all"</span><span class='op'>)</span> <span class='op'>{</span>
+      <span class='kw'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span><span class='op'>(</span><span class='st'>"Must specify sub-region(s) to return all vaccination reports."</span><span class='op'>)</span>
+    <span class='op'>}</span>
+    <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+    <span class='va'>vaccination_data</span> <span class='op'>&lt;-</span> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span>
+      <span class='va'>content_parsed</span><span class='op'>[</span><span class='st'>"last_updated"</span><span class='op'>]</span>,
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>vaccination_data</span> <span class='op'>&lt;-</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span>
+      <span class='va'>subregion_code</span>,
+      <span class='kw'>function</span><span class='op'>(</span><span class='va'>subregion_code</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>url</span>, <span class='va'>subregion_code</span><span class='op'>)</span>
+        <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span>
+          <span class='va'>content_parsed</span><span class='op'>[</span><span class='st'>"sub_region"</span><span class='op'>]</span>,
+          <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+        <span class='op'>)</span>
+      <span class='op'>}</span>
+    <span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='va'>vaccination_data</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"^total"</span><span class='op'>)</span>, <span class='va'>as.integer</span><span class='op'>)</span>,
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"^percent"</span><span class='op'>)</span>, <span class='va'>as.numeric</span><span class='op'>)</span>,
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"date"</span><span class='op'>)</span>, <span class='va'>as.Date</span><span class='op'>)</span>,
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"last_updated"</span><span class='op'>)</span>, <span class='va'>as.POSIXct</span><span class='op'>)</span>
+    <span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</div>
+<p>Another <code>stop</code> condition prevents sending too many requests: this time requesting all data for all subregions.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_subregion_vaccination_data works"</span>, <span class='op'>{</span>
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>subregion_vaccination_data_current</span> <span class='op'>&lt;-</span> <span class='fu'>get_subregion_vaccination_data</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>subregion_vaccination_data_current</span><span class='op'>)</span>, <span class='fl'>806</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>subregion_vaccination_data_current</span><span class='op'>)</span>, <span class='fl'>12</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>subregion_vaccination_data_recent</span> <span class='op'>&lt;-</span>
+    <span class='fu'>get_subregion_vaccination_data</span><span class='op'>(</span>dates <span class='op'>=</span> <span class='st'>"recent"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_true</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>subregion_vaccination_data_recent</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Test passed </code></pre>
+</div>
+<h2 id="vaccine-age-groups">Vaccine age groups</h2>
+<p>These data are week-by-week vaccination statistics by various age groups. The request URL is <code>/vaccines/age-groups</code> and takes a few parameters:</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+get_vaccine_age_groups documentation
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get vaccination reports by age group</span>
+<span class='co'>#'</span>
+<span class='co'>#' Runs a GET request of vaccination data by age groups from the COVID-19</span>
+<span class='co'>#' tracker API, and returns parsed data.</span>
+<span class='co'>#' Via the `split` argument, data may be "overall" (all provinces/territories</span>
+<span class='co'>#' combined), or by "province".</span>
+<span class='co'>#' Alternatively, provide one or more two-letter codes (e.g. "AB") to `province`</span>
+<span class='co'>#' to return reports for specific provinces.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param split One of "overall", or "province" to specify how the</span>
+<span class='co'>#'   data is split. An "overall" report gives cumulative numbers across Canada.</span>
+<span class='co'>#'   Splitting by "province" returns all reports for all provinces/territories.</span>
+<span class='co'>#' @param province One or more province/territory codes ("AB", "BC", "MB", "NB",</span>
+<span class='co'>#'   "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT") to get reports.</span>
+<span class='co'>#'   Upper, lower and mixed case strings are accepted.</span>
+<span class='co'>#' @param group A specific age group to return, for example: "0-4", "05-11",</span>
+<span class='co'>#'   "30-39", "80+", "not_reported"</span>
+<span class='co'>#' @param after Returns reports from only on or after the specified date,</span>
+<span class='co'>#'   in YYYY-MM-DD format.</span>
+<span class='co'>#' @param before Returns reports from only on or before the specified date,</span>
+<span class='co'>#'   in YYYY-MM-DD format.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame with, one row per age group per date. Includes</span>
+<span class='co'>#'   a `province` variable if data is split by province.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_vaccine_age_groups()</span>
+<span class='co'>#' get_vaccine_age_groups(split = "province")</span>
+<span class='co'>#' get_vaccine_age_groups(province = c("AB", "SK"))</span>
+<span class='co'>#' get_vaccine_age_groups(province = "NS", group = "18-29")</span>
+<span class='co'>#' get_vaccine_age_groups(group = "80+", after = "2021-12-01")</span>
+<span class='co'>#' @importFrom dplyr bind_rows bind_cols mutate across</span>
+<span class='co'>#' @importFrom tidyselect matches</span>
+<span class='co'>#' @importFrom rlang .data</span>
+<span class='co'>#' @importFrom purrr imap_chr map_dfr discard</span>
+<span class='co'>#' @importFrom tibble lst</span>
+<span class='co'>#' @importFrom jsonlite fromJSON</span>
+<span class='co'>#' @importFrom tidyr unnest</span>
+<span class='co'>#' @importFrom utils URLencode</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>get_vaccine_age_groups</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>split</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"overall"</span>, <span class='st'>"province"</span><span class='op'>)</span>,
+                                   <span class='va'>province</span> <span class='op'>=</span> <span class='cn'>NULL</span>,
+                                   <span class='va'>group</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>before</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>after</span> <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/vaccines/age-groups"</span>
+  <span class='va'>province_codes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+    <span class='st'>"AB"</span>, <span class='st'>"BC"</span>, <span class='st'>"MB"</span>, <span class='st'>"NB"</span>, <span class='st'>"NL"</span>, <span class='st'>"NS"</span>, <span class='st'>"NT"</span>, <span class='st'>"NU"</span>, <span class='st'>"ON"</span>,
+    <span class='st'>"PE"</span>, <span class='st'>"QC"</span>, <span class='st'>"SK"</span>, <span class='st'>"YT"</span>
+  <span class='op'>)</span>
+
+  <span class='va'>split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='va'>split</span><span class='op'>)</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>split</span> <span class='op'>==</span> <span class='st'>"province"</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"/split"</span><span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>province</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/match.arg.html'>match.arg</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/chartr.html'>toupper</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span>, <span class='va'>province_codes</span>, several.ok <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+    <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"/province/"</span>, <span class='va'>province</span><span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='va'>parameters</span> <span class='op'>&lt;-</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/lst.html'>lst</a></span><span class='op'>(</span><span class='va'>group</span>, <span class='va'>before</span>, <span class='va'>after</span><span class='op'>)</span>
+  <span class='co'># Remove NULL parameters</span>
+  <span class='va'>parameters</span> <span class='op'>&lt;-</span> <span class='va'>parameters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/lengths.html'>lengths</a></span><span class='op'>(</span><span class='va'>parameters</span><span class='op'>)</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>parameters</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>params_url</span> <span class='op'>&lt;-</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/imap.html'>imap_chr</a></span><span class='op'>(</span>
+      <span class='va'>parameters</span>,
+      <span class='op'>~</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>.y</span>, <span class='st'>"="</span>, <span class='fu'>utils</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/utils/URLencode.html'>URLencode</a></span><span class='op'>(</span><span class='va'>.x</span>, reserved <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+      <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span>collapse <span class='op'>=</span> <span class='st'>"&amp;"</span><span class='op'>)</span>
+    <span class='va'>params_url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"?"</span>, <span class='va'>params_url</span><span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>params_url</span> <span class='op'>&lt;-</span> <span class='st'>""</span>
+  <span class='op'>}</span>
+
+  <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span>
+    <span class='va'>base_url</span>,
+    <span class='kw'>function</span><span class='op'>(</span><span class='va'>base_url</span><span class='op'>)</span> <span class='op'>{</span>
+      <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='va'>params_url</span><span class='op'>)</span>
+      <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+      <span class='co'># Because age ranges can change over time, some data returned is NULL</span>
+      <span class='co'>#  if the `group` param is used</span>
+      <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='co'># So discard NULL elements</span>
+        <span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/keep.html'>discard</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span>,
+                                              <span class='op'>~</span> <span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span><span class='op'>)</span>
+      <span class='op'>}</span>
+
+      <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_cols</a></span><span class='op'>(</span>
+          <span class='va'>content_parsed</span><span class='op'>[</span><span class='st'>"province"</span><span class='op'>]</span>,
+          <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+        <span class='op'>)</span>
+      <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+      <span class='op'>}</span>
+    <span class='op'>}</span>
+  <span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+      data <span class='op'>=</span> <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='op'>(</span>
+        <span class='va'>.data</span><span class='op'>$</span><span class='va'>data</span>,
+        <span class='op'>~</span><span class='fu'>jsonlite</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>.id <span class='op'>=</span> <span class='st'>"group_code"</span><span class='op'>)</span>
+      <span class='op'>)</span>
+    <span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='op'>(</span><span class='va'>.data</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span><span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>tidyselect</span><span class='fu'>::</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>matches</a></span><span class='op'>(</span><span class='st'>"date"</span><span class='op'>)</span>, <span class='va'>as.Date</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</div>
+<aside>
+<p>And the new dependencies:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_package.html'>use_package</a></span><span class='op'>(</span><span class='st'>"tidyr"</span><span class='op'>)</span>
+<span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_package.html'>use_package</a></span><span class='op'>(</span><span class='st'>"utils"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+</aside>
+<p>There were some tricky aspects to this function, like how the content is JSON within JSON (see my <a href="../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccine-age-groups">previous post</a>).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_vaccine_age_groups works"</span>, <span class='op'>{</span>
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vacc_age_overall</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>vacc_age_overall</span><span class='op'>$</span><span class='va'>group</span><span class='op'>)</span>, <span class='fl'>19</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vacc_age_province</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span>split <span class='op'>=</span> <span class='st'>"province"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>vacc_age_province</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fl'>13</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vacc_age_mb_nt</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span>province <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"test"</span>, <span class='st'>"mB"</span>, <span class='st'>"NT"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>vacc_age_mb_nt</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"MB"</span>, <span class='st'>"NT"</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vacc_age_ns_18_29</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span>province <span class='op'>=</span> <span class='st'>"NS"</span>, group <span class='op'>=</span> <span class='st'>"18-29"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>vacc_age_ns_18_29</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NS"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>vacc_age_ns_18_29</span><span class='op'>$</span><span class='va'>group</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"18-29"</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vacc_age_80p_date_range</span> <span class='op'>&lt;-</span>
+    <span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span>group <span class='op'>=</span> <span class='st'>"80+"</span>,
+                           after <span class='op'>=</span> <span class='st'>"2021-03-20"</span>, before <span class='op'>=</span> <span class='st'>"2021-05-10"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>vacc_age_80p_date_range</span><span class='op'>$</span><span class='va'>group</span><span class='op'>)</span>, <span class='st'>"80+"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_true</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='op'>(</span><span class='va'>vacc_age_80p_date_range</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span> <span class='op'>&gt;=</span> <span class='st'>"2021-03-20"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_true</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='va'>vacc_age_80p_date_range</span><span class='op'>$</span><span class='va'>date</span><span class='op'>)</span> <span class='op'>&lt;=</span> <span class='st'>"2021-05-10"</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>vacc_age_not_reported</span> <span class='op'>&lt;-</span> <span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span>group <span class='op'>=</span> <span class='st'>"not_reported"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>vacc_age_not_reported</span><span class='op'>$</span><span class='va'>group</span><span class='op'>)</span>, <span class='st'>"Not reported"</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_error.html'>expect_error</a></span><span class='op'>(</span><span class='fu'>get_vaccine_age_groups</span><span class='op'>(</span>group <span class='op'>=</span> <span class='st'>"90+"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
+</div>
+<pre><code>Test passed </code></pre>
+</div>
+<h2 id="regions-and-sub-regions">Regions and sub-regions</h2>
+<p>Health regions from <code>get_summary</code> and <code>get_reports</code> are specified by the non-descript <code>hr_uid</code> variable only. Also, the sub-regions from <code>get_subregion_vaccination_data</code> are specified by <code>code</code> only. Naturally, the API provides lists of regions and sub-regions, which I wrap with two new functions in the <code>regions.R</code> file:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_r.html'>use_r</a></span><span class='op'>(</span><span class='st'>"regions"</span><span class='op'>)</span>
+<span class='fu'>usethis</span><span class='fu'>::</span><span class='fu'><a href='https://usethis.r-lib.org/reference/use_r.html'>use_test</a></span><span class='op'>(</span><span class='st'>"regions"</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>summary_region</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate-joins.html'>left_join</a></span><span class='op'>(</span>
-    <span class='va'>regions</span>, by <span class='op'>=</span> <span class='st'>"hr_uid"</span>
-  <span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>province</span> <span class='op'>==</span> <span class='st'>"NS"</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get health regions</span>
+<span class='co'>#'</span>
+<span class='co'>#' Returns a list of health regions in the COVID-19 tracker.</span>
+<span class='co'>#' By default (`hr_uid` and `province` `NULL`), returns all 92 regions.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param hr_uid One or more health region UIDs (e.g. 3553) to return.</span>
+<span class='co'>#' @param province One or more provinces to return.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame with a row per health region.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_regions()</span>
+<span class='co'>#' get_regions(hr_uid = c("2414", 591))</span>
+<span class='co'>#' get_regions(province = c("ns", "SK"))</span>
+<span class='co'>#' @importFrom dplyr bind_rows</span>
+<span class='co'>#' @importFrom purrr map_dfr</span>
+<span class='va'>get_regions</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>hr_uid</span> <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>province</span> <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/"</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>hr_uid</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"regions/"</span>, <span class='va'>hr_uid</span><span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"province/"</span>, <span class='va'>province</span>, <span class='st'>"/regions"</span><span class='op'>)</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"regions"</span><span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span>
+    <span class='va'>url</span>,
+    <span class='kw'>function</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span> <span class='op'>{</span>
+      <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+      <span class='kw'>if</span> <span class='op'>(</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>province</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>)</span>
+      <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+        <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+      <span class='op'>}</span>
+    <span class='op'>}</span>
+  <span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='co'>#' Get sub-regions</span>
+<span class='co'>#'</span>
+<span class='co'>#' Returns a list of sub-regions in the COVID-19 tracker.</span>
+<span class='co'>#' By default, returns all 805 sub-regions.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param subregion_code One or more sub-regions to be returned.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame with a row per sub-region.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_subregions()</span>
+<span class='co'>#' get_subregions("AB001")</span>
+<span class='co'>#' get_subregions(c("SK003", "SK005"))</span>
+<span class='co'>#' @importFrom dplyr bind_rows</span>
+<span class='co'>#' @importFrom purrr map_dfr</span>
+<span class='va'>get_subregions</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>subregion_code</span> <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/sub-regions"</span>
+
+  <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span><span class='op'>(</span><span class='va'>subregion_code</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='va'>base_url</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='st'>"/"</span>, <span class='va'>subregion_code</span><span class='op'>)</span>
+  <span class='op'>}</span>
+
+  <span class='fu'>purrr</span><span class='fu'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map.html'>map_dfr</a></span><span class='op'>(</span>
+    <span class='va'>url</span>,
+    <span class='kw'>function</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span> <span class='op'>{</span>
+      <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+      <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>$</span><span class='va'>data</span><span class='op'>)</span>
+    <span class='op'>}</span>
+  <span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</div>
+<p>Not very complicated, and neither are the corresponding tests:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_regions works"</span>, <span class='op'>{</span>
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>regions</span> <span class='op'>&lt;-</span> <span class='fu'>get_regions</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/logical-expectations.html'>expect_true</a></span><span class='op'>(</span><span class='st'>"hr_uid"</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>regions</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>regions</span><span class='op'>)</span>, <span class='fl'>92</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>regions</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fl'>13</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>regions_2418_3534</span> <span class='op'>&lt;-</span> <span class='fu'>get_regions</span><span class='op'>(</span>hr_uid <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2418</span>, <span class='st'>"3534"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='va'>regions_2418_3534</span><span class='op'>$</span><span class='va'>hr_uid</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2418</span>, <span class='fl'>3534</span><span class='op'>)</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>regions_mb_bc</span> <span class='op'>&lt;-</span> <span class='fu'>get_regions</span><span class='op'>(</span>province <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mb"</span>, <span class='st'>"bC"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>regions_mb_bc</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"MB"</span>, <span class='st'>"BC"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_subregions works"</span>, <span class='op'>{</span>
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>subregions</span> <span class='op'>&lt;-</span> <span class='fu'>get_subregions</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>subregions</span><span class='op'>)</span>, <span class='fl'>806</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>subregions</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fl'>6</span><span class='op'>)</span>
+
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>subregions_3</span> <span class='op'>&lt;-</span> <span class='fu'>get_subregions</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ON322"</span>, <span class='st'>"SK010"</span>, <span class='st'>"MB029"</span>, <span class='st'>"test"</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>subregions_3</span><span class='op'>$</span><span class='va'>province</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ON"</span>, <span class='st'>"SK"</span>, <span class='st'>"MB"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h2 id="provinces">Provinces</h2>
+<p>The last function I added to this first iteration of the package is <code>get_provinces</code>, which has some population/geographical data, as well as a <a href="https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#provinces"><code>data_status</code> variable which indicates if a province’s daily numbers have been updated</a>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#' Get provinces and territories</span>
+<span class='co'>#'</span>
+<span class='co'>#' @param geo_only Logical, indicating if only provinces/territories should be</span>
+<span class='co'>#'   returned. If FALSE, also returned non-geographic entities like</span>
+<span class='co'>#'   Repatriated Canadians and the Federal Allocation for vaccinations.</span>
+<span class='co'>#'</span>
+<span class='co'>#' @return A data frame with a row per province/territory.</span>
+<span class='co'>#' @export</span>
+<span class='co'>#'</span>
+<span class='co'>#' @examples</span>
+<span class='co'>#'</span>
+<span class='co'>#' get_provinces()</span>
+<span class='co'>#' get_provinces(geo_only = FALSE)</span>
+<span class='co'>#' @importFrom dplyr bind_rows mutate</span>
+<span class='co'>#' @importFrom rlang .data</span>
+<span class='va'>get_provinces</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>geo_only</span> <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://api.covid19tracker.ca/provinces"</span>
+  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>geo_only</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>api_params</span> <span class='op'>&lt;-</span> <span class='st'>"?geo_only=true"</span>
+  <span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+    <span class='va'>api_params</span> <span class='op'>&lt;-</span> <span class='st'>""</span>
+  <span class='op'>}</span>
+  <span class='va'>url</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>base_url</span>, <span class='va'>api_params</span><span class='op'>)</span>
+
+  <span class='va'>content_parsed</span> <span class='op'>&lt;-</span> <span class='fu'>get_content_parsed</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span>
+
+  <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>content_parsed</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>
+      <span class='co'># Use logical type instead of 0/1</span>
+      geographic <span class='op'>=</span> <span class='va'>.data</span><span class='op'>$</span><span class='va'>geographic</span> <span class='op'>==</span> <span class='fl'>1</span>,
+      updated_at <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.POSIXlt.html'>as.POSIXct</a></span><span class='op'>(</span><span class='va'>.data</span><span class='op'>$</span><span class='va'>updated_at</span><span class='op'>)</span>
+    <span class='op'>)</span>
+<span class='op'>}</span>
 </code></pre>
 </div>
 </div>
 <div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://testthat.r-lib.org/reference/test_that.html'>test_that</a></span><span class='op'>(</span><span class='st'>"get_provinces"</span>, <span class='op'>{</span>
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>provinces</span> <span class='op'>&lt;-</span> <span class='fu'>get_provinces</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>provinces</span><span class='op'>)</span>, <span class='fl'>13</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>provinces</span><span class='op'>)</span>, <span class='fl'>10</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='va'>provinces</span><span class='op'>$</span><span class='va'>code</span>,
+                  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ON"</span>, <span class='st'>"QC"</span>, <span class='st'>"NS"</span>, <span class='st'>"NB"</span>, <span class='st'>"MB"</span>, <span class='st'>"BC"</span>, <span class='st'>"PE"</span>, <span class='st'>"SK"</span>, <span class='st'>"AB"</span>,
+                    <span class='st'>"NL"</span>, <span class='st'>"NT"</span>, <span class='st'>"YT"</span>, <span class='st'>"NU"</span><span class='op'>)</span><span class='op'>)</span>
 
+  <span class='fu'>request_sleep</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>provinces_geo_false</span> <span class='op'>&lt;-</span> <span class='fu'>get_provinces</span><span class='op'>(</span>geo_only <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>provinces_geo_false</span><span class='op'>)</span>, <span class='fl'>16</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/equality-expectations.html'>expect_equal</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>provinces_geo_false</span><span class='op'>)</span>, <span class='fl'>10</span><span class='op'>)</span>
+  <span class='fu'><a href='https://testthat.r-lib.org/reference/expect_setequal.html'>expect_setequal</a></span><span class='op'>(</span><span class='va'>provinces_geo_false</span><span class='op'>$</span><span class='va'>code</span>,
+                  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ON"</span>, <span class='st'>"QC"</span>, <span class='st'>"NS"</span>, <span class='st'>"NB"</span>, <span class='st'>"MB"</span>, <span class='st'>"BC"</span>, <span class='st'>"PE"</span>, <span class='st'>"SK"</span>, <span class='st'>"AB"</span>,
+                    <span class='st'>"NL"</span>, <span class='st'>"NT"</span>, <span class='st'>"YT"</span>, <span class='st'>"NU"</span>,
+                    <span class='st'>"_RC"</span>, <span class='st'>"FA"</span>, <span class='st'>"NFR"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='op'>}</span><span class='op'>)</span>
+</code></pre>
 </div>
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<div class="layout-chunk" data-layout="l-body">
-
+<pre><code>Test passed </code></pre>
 </div>
 <h2 class="appendix" id="reproducibility">Reproducibility</h2>
 <details>
@@ -1843,7 +2664,21 @@ Sentiment:???</code></pre>
 Session info
 </summary>
 <div class="layout-chunk" data-layout="l-body">
-
+<pre><code> setting  value                       
+ version  R version 4.1.2 (2021-11-01)
+ os       Windows 10 x64              
+ system   x86_64, mingw32             
+ ui       RTerm                       
+ language (EN)                        
+ collate  English_Canada.1252         
+ ctype    English_Canada.1252         
+ tz       America/Curacao             
+ date     2022-01-06                  </code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.7.10","3":"0.7.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2021-10-31","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"cli","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"codetools","2":"0.2.18","3":"0.2-18","4":"C:/Program Files/R/R-4.1.2/library/codetools","5":"C:/Program Files/R/R-4.1.2/library/codetools","6":"FALSE","7":"FALSE","8":"2020-11-04","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Program Files/R/R-4.1.2/library","_rn_":"codetools"},{"1":"colorspace","2":"2.0.2","3":"2.0-2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2021-06-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-12-20","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.3","3":"2.4.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"diffobj","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/diffobj","5":"C:/Users/tdunn/Documents/R/win-library/4.1/diffobj","6":"FALSE","7":"FALSE","8":"2021-03-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"diffobj"},{"1":"digest","2":"0.6.28","3":"0.6.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-09-23","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.4","3":"0.2.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2021-12-16","9":"Github (taylordunn/dunnr@c0598e2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"fansi","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2021-05-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"fs","2":"1.5.0","3":"1.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2020-07-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"generics","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2021-10-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"glue","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2021-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"hms","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-05-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"FALSE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.7.2","3":"1.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.36","3":"1.36","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-09-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2020-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"memoise","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-01-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"pillar","2":"1.6.4","3":"1.6.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.7","3":"1.0.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2021-07-07","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"rematch2","2":"2.1.2","3":"2.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rematch2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rematch2","6":"FALSE","7":"FALSE","8":"2020-05-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rematch2"},{"1":"remotes","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"0.4.12","3":"0.4.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2021-10-18","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2020-05-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"stringi","2":"1.7.5","3":"1.7.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-10-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"testthat","2":"3.1.1","3":"3.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"TRUE","7":"FALSE","8":"2021-12-03","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.4","3":"1.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-09-27","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"tzdb","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tzdb"},{"1":"usethis","2":"2.1.5","3":"2.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-12-09","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.3.8","3":"0.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"waldo","2":"0.2.5","3":"0.2.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/waldo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/waldo","6":"FALSE","7":"FALSE","8":"2021-03-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"waldo"},{"1":"withr","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2021-04-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"xfun","2":"0.28","3":"0.28","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-11-04","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.2","3":"1.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2020-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 </details>
 <details>
@@ -1851,13 +2686,15 @@ Session info
 Git repository
 </summary>
 <div class="layout-chunk" data-layout="l-body">
-
+<pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
+Remote:   main @ origin (https://github.com/taylordunn/tdunn)
+Head:     [39a4f22] 2022-01-04: Minor typo</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
-
+<p><a href="https://github.com/taylordunn/tdunn/tree/main/_posts/2021-12-30-2021-12-30-canada-covid-19-data-in-r-creating-a-package">Source code</a></p>
 </div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
