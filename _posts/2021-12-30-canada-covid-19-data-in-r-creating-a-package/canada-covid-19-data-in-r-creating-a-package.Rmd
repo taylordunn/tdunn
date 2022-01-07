@@ -17,15 +17,15 @@ output:
   distill::distill_article:
     self_contained: false
     toc: true
-draft: false
 ---
 
 ```{r setup, include=TRUE, code_folding="Setup"}
-knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(ggtext)
 
 library(dunnr)
-#extrafont::loadfonts(device = "win", quiet = TRUE)
+extrafont::loadfonts(device = "win", quiet = TRUE)
 theme_set(theme_td())
 set_geom_fonts()
 set_palette()
@@ -33,7 +33,7 @@ set_palette()
 
 ## Introduction
 
-In [my previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#summary), I explored the 
+In [my previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api), I explored the 
 [Canadian COVID-19 tracker API](https://api.covid19tracker.ca/) and decided to make an API wrapper package to facilitate using it in R.
 
 ## Naming
@@ -41,7 +41,7 @@ In [my previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/
 The first, and [some](https://devguide.ropensci.org/building.html#package-name-and-metadata) [would say](https://r-pkgs.org/workflows101.html#naming) [the hardest step](https://www.njtierney.com/post/2018/06/20/naming-things/) for writing a package (or any piece of code for that matter) is naming it.
 I considered a lot of options, and in the end decided on the admittedly boring `canadacovid`, which I verified was available:
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 available::available("canadacovid", browse = FALSE)
 ```
 
@@ -49,7 +49,7 @@ available::available("canadacovid", browse = FALSE)
 
 With the `usethis` and `devtools` packages, getting an R package started with best practices is very easy.
 
-First, I create the package, set it up on GitHub and do some minor documentation:
+First, I create the package, set it up on GitHub, and write some minor documentation:
 
 1. `usethis::create_tidy_package("canadacovid")`: creates the RStudio project and opens it.
 2. Connect GitHub.
@@ -61,7 +61,7 @@ First, I create the package, set it up on GitHub and do some minor documentation
 3. As a `tidyverse` enthusiast, I always setup my packages to use `magittr`'s pipe operator `%>%` with `usethis::use_pipe`.
 4. `usethis::use_testthat()` sets up the `testthat` package and directory structure.
     * This step actually isn't necessary, as it was already done by `create_tidy_package`.
-4. Update the `DESCRIPTION` file, particularly the `Title`, `Descrption` and `Authors` fields.
+4. Update the `DESCRIPTION` file, particularly the `Title`, `Description` and `Authors` fields.
 5. Run `devtools::document()` which will update the `NAMESPACE` file with the `magittr` pipe.
 
 Immediately after pushing these setup steps to GitHub, GitHub actions got to work but failed on two of three workflows:
@@ -73,7 +73,7 @@ Which brings me to the main package development process:
 
 1. `usethis::use_r("file-name")` creates the `R/file-name.R` file.
 2. Add one or more R functions to `file-name.R`.
-3. `usethis::use_package("dependency")` is used to declare any package dependencies, updating the `DESCRIPTION` file.
+3. `usethis::use_package("dependency")` to declare any package dependencies, updating the `DESCRIPTION` file.
 4. Document the function(s):
     * In RStudio, select `Code -> Insert Roxygen Skeleton` (or Ctrl+Alt+Shift+R on Windows).
     * Run `devtools::document()` to generate the `.Rd` file and update `NAMESPACE`.
@@ -94,17 +94,17 @@ Which brings me to the main package development process:
 
 ## Summary
 
-The first function I will add will retrieve the latest summary data from the API.
-I will call this file `summary.R`, and create it (and it's associated test file) with:
+The first function I will add retrieves the latest summary data from the API.
+I'll call this file `summary.R`, and create it (and it's associated test file) with:
 
-```{r}
+```{r eval=FALSE}
 usethis::use_r("summary")
 usethis::use_test("summary")
 ```
 
 And here is the `get_summary` function added to `R/summary.R`:
 
-```{r eval=TRUE}
+```{r}
 get_summary <- function(split = c("overall", "province", "region")) {
   split <- match.arg(split)
   base_url <- "https://api.covid19tracker.ca/summary"
@@ -151,7 +151,7 @@ Some notes:
     
 Add the dependencies:
     
-```{r}
+```{r eval=FALSE}
 usethis::use_package("httr", type = "Imports")
 usethis::use_package("jsonlite", type = "Imports")
 usethis::use_package("dplyr", type = "Imports")
@@ -165,7 +165,7 @@ I've explicitly set the `type` to "Imports" (which wasn't necessary as this is t
     
 Next, some [Roxygen documentation](https://r-pkgs.org/man.html#roxygen-comments):
     
-```{r}
+```{r eval=FALSE}
 #' Get the most recent summary data
 #'
 #' Runs a GET request of summary data from the COVID-19 tracker API, and
@@ -197,7 +197,7 @@ get_summary <- function(split = c("overall", "province", "region")) {
 
 Now I'll edit the `test-summary.R` file with some simple tests (and run it here as an example):
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 library(testthat)
 
 test_that("get_summary works", {
@@ -242,7 +242,7 @@ I pushed this first iteration of the package to GitHub and, after about 10 minut
 
 Before continuing with other functions, it occurred to me that I would end up re-writing this particular block of code multiple times:
 
-```{r}
+```{r eval=FALSE}
 resp <- httr::GET(url)
 
 if (httr::http_error(resp)) {
@@ -265,12 +265,12 @@ A quote from [R for Data Science book](https://r4ds.had.co.nz/functions.html?q=f
 
 So instead of copying and pasting this code block, I made a new function in a new file, `api.R`:
 
-```{r}
+```{r eval=FALSE}
 usethis::use_r("api")
 usethis::use_test("api")
 ```
 
-```{r eval=TRUE}
+```{r}
 #' Get content and parse it
 #'
 #' Sends a GET request to https://api.covid19tracker.ca/.
@@ -317,10 +317,10 @@ get_content_parsed <- function(url) {
 }
 ```
 
-This function expects a full `url`, but will add "https://api.covid19tracker.ca" if it is missing (and return a warning).
+This function expects a full `url`, but will add "https://api.covid19tracker.ca" if it is missing (and return a warning to say so).
 Some simple tests for `get_content_parsed`:
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 test_that("get_content_parsed works", {
   expect_warning(get_content_parsed("provinces"), "base")
   expect_error(
@@ -333,15 +333,16 @@ test_that("get_content_parsed works", {
 })
 ```
 
-Everything checks out.
-I don't need to re-write tests for `get_summary()` but I *do re-run those tests* to make sure I didn't break it with these changes (this is the whole point of unit testing).
+Everything checks out, so I replace some of the code in `get_summary` with a call to `get_content_parsed`.
+
+I don't need to re-write tests for `get_summary` because it is functionally the same, but I *do re-run those tests* to make sure I didn't break it with these changes (this is the whole point of unit testing).
 I then run `devtools::check()` and push changes to GitHub.
 
 ## Reports
 
 Writing the function to get reports follows the same procedure:
 
-```{r}
+```{r eval=FALSE}
 usethis::use_r("reports")
 usethis::use_test("reports")
 ```
@@ -349,7 +350,7 @@ usethis::use_test("reports")
 The reports are a bit more complicated because the queries can [accept a few different parameters](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#parameters).
 Here is my first draft of `get_reports`, along with Roxygen documentation:
 
-```{r eval=TRUE}
+```{r}
 #' Get the day-to-day reports
 #'
 #' Runs a GET request of reports data from the COVID-19 tracker API, and
@@ -465,7 +466,7 @@ get_reports <- function(split = c("overall", "province"),
 
 And the new dependencies:
 
-```{r}
+```{r eval=FALSE}
 usethis::use_package("tibble")
 usethis::use_package("purrr")
 ```
@@ -481,7 +482,7 @@ I might alter this function in the future to send these requests slower, either 
 
 `get_reports` is a more complex function than `get_summary`, and so I wrote more tests to try to capture that complexity:
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 test_that("get_reports works", {
   reports_overall <- get_reports()
   expect_equal(ncol(reports_overall), 22)
@@ -532,13 +533,13 @@ test_that("get_reports works", {
 
 ### Detour: rate limiting
 
-Pushing the `reports` file and tests to GitHub resulted in failed `R CMD check`s on all platforms, with the HTTP code 429.
+Pushing the `reports` file and tests to GitHub resulted in failed `R CMD check`s due to API errors with the HTTP code 429.
 This is because all my `testthat` tests were running on 9 different platforms and flooding the API with too many requests.
 
-There are probably more sophisticated ways to limit my request rate (e.g. using the [re-written `httr2` package](https://httr2.r-lib.org/), the [`vcr` package](https://github.com/vcr/vcr), the [`httptest` package](https://github.com/nealrichardson/httptest)) but I decided to use the humble `Sys.sleep()`.
+There are more sophisticated ways to limit the request rate (e.g. using the [re-written `httr2` package](https://httr2.r-lib.org/), the [`vcr` package](https://github.com/vcr/vcr), the [`httptest` package](https://github.com/nealrichardson/httptest)) but I decided to use the humble `Sys.sleep()`.
 To control the delay time across all tests, I added a [setup file](https://testthat.r-lib.org/articles/test-fixtures.html#package) at `tests/testthat/setup.R` with a very simple function:
 
-```{r eval=TRUE}
+```{r}
 request_sleep <- function(seconds = 10) {
   Sys.sleep(seconds)
 }
@@ -603,7 +604,7 @@ This function simply wraps my previous `get_summary()` and `get_reports()` funct
 #' @importFrom tidyselect matches
 ```
 
-```{r eval=TRUE}
+```{r}
 get_vaccination_data <- function(type = c("summary", "reports"),
                                  split = c("overall", "province", "region"),
                                  province = NULL, region = NULL,
@@ -640,9 +641,9 @@ get_vaccination_data <- function(type = c("summary", "reports"),
 
 Because this function can return both summaries and reports, I have to put in `stop()` condition if reports by health region is requested (not allowed by the API).
 
-The tests for `get_vaccination_data` make use of my new `request_sleep` function:
+The tests for `get_vaccination_data` make use of the new `request_sleep` function:
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 test_that("get_vaccination_data works", {
   request_sleep()
   vaccination_data_summary <- get_vaccination_data()
@@ -680,7 +681,7 @@ test_that("get_vaccination_data works", {
 
 In some provinces/territories, there is additional vaccination data at the sub-region level, which requires unique requests from the API:
 
-```{r eval=TRUE}
+```{r code_folding="get_subregion_vaccination_data documentation"}
 #' Get sub-region vaccination data
 #'
 #' Runs a GET request of sub-region vaccination data from the COVID-19 tracker
@@ -714,6 +715,9 @@ In some provinces/territories, there is additional vaccination data at the sub-r
 #' @importFrom dplyr bind_cols bind_rows mutate
 #' @importFrom purrr map_dfr
 #' @importFrom tidyselect matches
+```
+
+```{r}
 get_subregion_vaccination_data <- function(dates = c("current", "recent", "all"),
                                            subregion_code = NULL) {
   dates <- match.arg(dates)
@@ -762,7 +766,7 @@ get_subregion_vaccination_data <- function(dates = c("current", "recent", "all")
 
 Another `stop` condition prevents sending too many requests: this time requesting all data for all subregions.
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 test_that("get_subregion_vaccination_data works", {
   request_sleep()
   subregion_vaccination_data_current <- get_subregion_vaccination_data()
@@ -825,7 +829,7 @@ The request URL is `/vaccines/age-groups` and takes a few parameters:
 #' @importFrom utils URLencode
 ```
 
-```{r eval=TRUE}
+```{r}
 get_vaccine_age_groups <- function(split = c("overall", "province"),
                                    province = NULL,
                                    group = NULL, before = NULL, after = NULL) {
@@ -896,7 +900,7 @@ get_vaccine_age_groups <- function(split = c("overall", "province"),
 
 And the new dependencies:
 
-```{r}
+```{r eval=FALSE}
 usethis::use_package("tidyr")
 usethis::use_package("utils")
 ```
@@ -905,7 +909,7 @@ usethis::use_package("utils")
 
 There were some tricky aspects to this function, like how the content is JSON within JSON (see my [previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccine-age-groups)).
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 test_that("get_vaccine_age_groups works", {
   request_sleep()
   vacc_age_overall <- get_vaccine_age_groups()
@@ -947,12 +951,12 @@ Health regions from `get_summary` and `get_reports` are specified by the non-des
 Also, the sub-regions from `get_subregion_vaccination_data` are specified by `code` only.
 Naturally, the API provides lists of regions and sub-regions, which I wrap with two new functions in the `regions.R` file:
 
-```{r}
+```{r eval=FALSE}
 usethis::use_r("regions")
 usethis::use_test("regions")
 ```
 
-```{r eval=TRUE}
+```{r}
 #' Get health regions
 #'
 #' Returns a list of health regions in the COVID-19 tracker.
@@ -1063,9 +1067,9 @@ test_that("get_subregions works", {
 
 ## Provinces
 
-The last function I added to this first iteration of the package is `get_provinces`, which has some population/geographical data, as well as a [`data_status` variable which indicates if a province's daily numbers have been updated](https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#provinces):
+The last function I added to the package is `get_provinces`, which has some population/geographical data, as well as a [`data_status` variable indicating if a province's daily numbers have been updated](https://tdunn.ca/posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#provinces):
 
-```{r eval=TRUE}
+```{r}
 #' Get provinces and territories
 #'
 #' @param geo_only Logical, indicating if only provinces/territories should be
@@ -1101,7 +1105,7 @@ get_provinces <- function(geo_only = TRUE) {
 }
 ```
 
-```{r eval=TRUE, cache=TRUE}
+```{r cache=TRUE}
 test_that("get_provinces", {
   request_sleep()
   provinces <- get_provinces()
@@ -1123,6 +1127,139 @@ test_that("get_provinces", {
 
 })
 ```
+
+## An example use case
+
+Now with the package up-and-running on GitHub, I'll install it with:
+
+```{r eval=FALSE}
+remotes::install_github("taylordunn/canadacovid")
+```
+
+Get cases per day across Canada, and compute a 7-day rolling average:
+
+```{r cache=TRUE}
+reports_overall <- canadacovid::get_reports() %>%
+  mutate(
+    date, change_cases,
+    change_cases_rolling_avg = zoo::rollapply(change_cases, 7, mean,
+                                              align = "right", fill = NA)
+  )
+```
+
+Make a plot of the cases:
+
+```{r preview=TRUE, warning=FALSE}
+canada_red <- "#FF0000"
+canada_red_desat <- "#bf3f3f"
+p_title <- glue::glue(
+  "COVID-19 cases reported per day in Canada (with ",
+  "<span style='color:{canada_red}'>7-day rolling average</span>)"
+)
+
+reports_overall %>%
+  ggplot(aes(x = date, y = change_cases)) +
+  geom_col(aes(y = change_cases), fill = canada_red, alpha = 0.5, width = 1) +
+  geom_line(aes(y = change_cases_rolling_avg),
+            color = canada_red, size = 2) +
+  scale_y_continuous(expand = c(0, 0), labels = scales::comma) +
+  labs(y = "Cases", x = "Date", title = p_title) +
+  theme(plot.title = ggtext::element_markdown())
+```
+
+## Hex sticker
+
+To represent the package, I'll quickly put together a hex sticker based on the above plot.
+I'm not artist, so I'll use the `hexSticker` package to make it.
+
+First iteration of the plot:
+
+```{r}
+# Use data from before the omicron peak, which (sadly) extends the y axis a lot
+d <- reports_overall %>%
+  filter(date < "2021-12-01", !is.na(change_cases_rolling_avg))
+p <- d %>%
+  ggplot(aes(x = date, y = change_cases_rolling_avg)) +
+  geom_ribbon(aes(ymin = 0, ymax = change_cases_rolling_avg),
+              fill = canada_red, alpha = 0.5) +
+  geom_line(color = canada_red, size = 1.5) +
+  dunnr::remove_axis("y") +
+  labs(x = NULL)
+p
+```
+
+For some extra visual interest, I'll mark the peaks in the plot.
+My lazy approach for finding those days is to first roughly group the data into waves:
+
+```{r}
+waves <- as.Date(c("2020-03-01", "2020-07-01", "2021-03-01",
+                   "2021-07-15", "2021-11-01"))
+p + geom_vline(xintercept = waves)
+```
+
+Then find the maximum case count in each wave:
+
+```{r}
+peaks <- d %>%
+  mutate(wave = cut(date, breaks = waves, labels = paste0("wave ", 1:4))) %>%
+  filter(!is.na(wave)) %>%
+  group_by(wave) %>%
+  filter(change_cases_rolling_avg == max(change_cases_rolling_avg)) %>%
+  ungroup() %>%
+  select(wave, date, change_cases, change_cases_rolling_avg)
+peaks
+```
+
+Now add these as white horizontal lines on the plot:
+
+```{r}
+p <- p +
+  geom_vline(xintercept = peaks$date, color = "white", size = 1) +
+  # Re-draw the line so that it appears over the white lines
+  geom_line(color = canada_red, size = 1.5)
+p
+```
+
+Remove un-needed elements from the plot:
+
+```{r}
+p <- p +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme(
+    plot.margin = margin(t = 0, r = 0, b = 0, l = 0),
+    axis.text.x = element_blank(),
+    axis.line.x = element_line(size = 1),
+    axis.ticks.x = element_blank()
+  )
+p
+```
+
+Finally, put it into a `hexSticker` and save the image:
+
+```{r eval=FALSE}
+# Save the figure separately so I can control the size
+ggsave("hex-plot.png", plot = p, width = 10, height = 5, dpi = 500)
+
+library(hexSticker)
+sysfonts::font_add_google("Inter")
+showtext::showtext_auto()
+
+canada_red_a0.5 <- grDevices::adjustcolor(canada_red, alpha.f = 0.5)
+
+hexSticker::sticker(
+  subplot = "hex-plot.png", s_width = 0.7, s_x = 1.0, s_y = 0.8,
+  package = "canadacovid",
+  p_family = "Inter", p_size = 30, p_color = canada_red,
+  h_fill = "white", h_color = canada_red_a0.5,
+  filename = "canadacovid-sticker.png", dpi = 500
+)
+```
+
+```{r out.width="30%"}
+knitr::include_graphics("canadacovid-sticker.png")
+```
+
+Not bad. Not great.
 
 ## Reproducibility {.appendix}
 
