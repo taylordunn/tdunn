@@ -56,15 +56,15 @@ First, I create the package, set it up on GitHub, and write some minor documenta
     * `usethis::use_git()` creates the local repo.
     * `usethis::use_github()` creates the repo on GitHub and makes an initial commit and push.
     * `usethis::use_tidy_github()` adds some files to follow `tidyverse` package conventions, e.g. a template `contributing.md`.
-    * `usethis::use_github_actions()` configures a basic `R CMD check` workflow on GitHub actions. ^[Using GitHub actions is new to me, and probably overkill for a small hobby project like this, but I was inspired by [Jim Hester's RStudio::Conf 2020 talk](https://www.rstudio.com/resources/rstudioconf-2020/azure-pipelines-and-github-actions/) to give it a try.]
-    * `usethis::use_tidy_github_actions()` sets up additional workflows for GitHub actions.
+    * `usethis::use_github_actions()` configures a basic `R CMD check` workflow on GitHub Actions. ^[Using GitHub Actions is new to me, and probably overkill for a small hobby project like this, but I was inspired by [Jim Hester's RStudio::Conf 2020 talk](https://www.rstudio.com/resources/rstudioconf-2020/azure-pipelines-and-github-actions/) to give it a try.]
+    * `usethis::use_tidy_github_actions()` sets up additional workflows for GitHub Actions.
 3. As a `tidyverse` enthusiast, I always setup my packages to use `magittr`'s pipe operator `%>%` with `usethis::use_pipe`.
 4. `usethis::use_testthat()` sets up the `testthat` package and directory structure.
     * This step actually isn't necessary, as it was already done by `create_tidy_package`.
 4. Update the `DESCRIPTION` file, particularly the `Title`, `Description` and `Authors` fields.
 5. Run `devtools::document()` which will update the `NAMESPACE` file with the `magittr` pipe.
 
-Immediately after pushing these setup steps to GitHub, GitHub actions got to work but failed on two of three workflows:
+Immediately after pushing these setup steps to GitHub, GitHub Actions got to work but failed on two of three workflows:
 
 ![](github-actions-1.PNG)
 
@@ -234,7 +234,7 @@ Now with a documented and tested function, I do the following:
 * `devtools::check()` to run a `R CMD check` (also runs the `testthat` tests), which passes.
 * Update the `README.Rmd` with installation instructions, and an example of using `get_summary()`. Then build with `devtools::build_readme()`.
 
-I pushed this first iteration of the package to GitHub and, after about 10 minutes, all of the GitHub actions workflows were successful:
+I pushed this first iteration of the package to GitHub and, after about 10 minutes, all of the GitHub Actions workflows were successful:
 
 ![](github-actions-2.PNG)
 
@@ -259,7 +259,7 @@ content_parsed <-
                      simplifyVector = FALSE)
 ```
 
-A quote from [R for Data Science book](https://r4ds.had.co.nz/functions.html?q=function#when-should-you-write-a-function):
+A quote from [R for Data Science](https://r4ds.had.co.nz/functions.html?q=function#when-should-you-write-a-function):
 
 >You should consider writing a function whenever you’ve copied and pasted a block of code more than twice (i.e. you now have three copies of the same code).
 
@@ -556,7 +556,7 @@ The vaccination data is organized a bit differently -- see the [API documentatio
 The summary and reports vaccination data is simply the same summary and reports from before, but with only the statistics related to vaccination: `vaccinations`, `vaccinated`, `boosters_1`, and `vaccines_distributed`.
 This function simply wraps my previous `get_summary()` and `get_reports()` functions, and returns the relevant variables:
 
-```{r code_folding="get_vaccination_data documentation"}
+```{r code_folding="`get_vaccination_data` documentation"}
 #' Get vaccination data
 #'
 #' Runs a GET request of vaccination data from the COVID-19 tracker API, and
@@ -639,7 +639,7 @@ get_vaccination_data <- function(type = c("summary", "reports"),
 }
 ```
 
-Because this function can return both summaries and reports, I have to put in `stop()` condition if reports by health region is requested (not allowed by the API).
+Because this function can return both summaries and reports, I have to put in a `stop()` condition if reports by health region is requested, as this is not allowed by the API.
 
 The tests for `get_vaccination_data` make use of the new `request_sleep` function:
 
@@ -681,7 +681,7 @@ test_that("get_vaccination_data works", {
 
 In some provinces/territories, there is additional vaccination data at the sub-region level, which requires unique requests from the API:
 
-```{r code_folding="get_subregion_vaccination_data documentation"}
+```{r code_folding="`get_subregion_vaccination_data` documentation"}
 #' Get sub-region vaccination data
 #'
 #' Runs a GET request of sub-region vaccination data from the COVID-19 tracker
@@ -764,7 +764,7 @@ get_subregion_vaccination_data <- function(dates = c("current", "recent", "all")
 }
 ```
 
-Another `stop` condition prevents sending too many requests: this time requesting all data for all subregions.
+Another `stop` condition prevents sending too many requests: this time when all subregion data is requested.
 
 ```{r cache=TRUE}
 test_that("get_subregion_vaccination_data works", {
@@ -782,10 +782,10 @@ test_that("get_subregion_vaccination_data works", {
 
 ## Vaccine age groups
 
-These data are week-by-week vaccination statistics by various age groups.
+These data are week-by-week vaccination statistics for various age groups.
 The request URL is `/vaccines/age-groups` and takes a few parameters:
 
-```{r code_folding="get_vaccine_age_groups documentation"}
+```{r code_folding="`get_vaccine_age_groups` documentation"}
 #' Get vaccination reports by age group
 #'
 #' Runs a GET request of vaccination data by age groups from the COVID-19
@@ -907,7 +907,8 @@ usethis::use_package("utils")
 
 </aside>
 
-There were some tricky aspects to this function, like how the content is JSON within JSON (see my [previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccine-age-groups)).
+There were some tricky aspects to this function, like how the content is JSON within JSON and the URL encoding for the age group parameter (see my [previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api/#vaccine-age-groups)).
+Run some tests:
 
 ```{r cache=TRUE}
 test_that("get_vaccine_age_groups works", {
@@ -1170,7 +1171,7 @@ reports_overall %>%
 ## Hex sticker
 
 To represent the package, I'll quickly put together a hex sticker based on the above plot.
-I'm not artist, so I'll use the `hexSticker` package to make it.
+I'm no artist, so I'll use the `hexSticker` package to make it.
 
 First iteration of the plot:
 
