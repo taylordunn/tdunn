@@ -31,6 +31,10 @@ set_geom_fonts()
 set_palette()
 ```
 
+## TL;DR
+
+To see the finished product, check out the [package website](https://taylordunn.github.io/canadacovid/) and the [source code](https://github.com/taylordunn/canadacovid).
+
 ## Introduction
 
 In [my previous post](../2021-12-28-canada-covid-19-data-in-r-exploring-the-api), I explored the 
