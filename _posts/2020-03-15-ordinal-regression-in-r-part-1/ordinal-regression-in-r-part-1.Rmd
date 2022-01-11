@@ -2,13 +2,13 @@
 title: "Ordinal regression in R: part 1"
 description: |
   A theoretical and applied walkthrough of ordinal regression.
-  Part 1: frequentist approach with `ordinal`.
+  Part 1: the frequentist approach with `ordinal`.
 author:
   - name: Taylor Dunn
 date: 2020-03-15
 params:
   date: 2020-03-15
-  slug: "ordinal-regression-in-r-part1"
+  slug: "ordinal-regression-in-r-part-1"
 categories:
   - regression
   - ordinal
@@ -20,7 +20,7 @@ output:
 bibliography: references.bib
 ---
 
-```{r setup, include=TRUE, code_folding="Setup"}
+```{r setup, include=TRUE, code_folding="R packages"}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dunnr)
@@ -425,7 +425,6 @@ wine %>%
   ggplot(aes(x = judge, y = rating)) +
   geom_tile(aes(fill = n)) +
   geom_text(aes(label = n), color = "white") +
-  #cowplot::theme_half_open() +
   scale_x_discrete(expand = c(0, 0)) +
   scale_y_discrete(expand = c(0, 0)) +
   theme(legend.position = "none") +
@@ -526,7 +525,7 @@ There is no predicted probability for `rating` > 3, `temp` cold and `contact` no
 
 Another way is to pre-specify which values we want to predict:
 
-```{r fig.height=3, fig.width=5}
+```{r fig.height=3, fig.width=5, preview=TRUE}
 nd <-
   crossing(
     temp = factor(c("cold", "warm")),
@@ -539,7 +538,7 @@ nd %>%
   geom_col() +
   scale_fill_td(palette = "div5") +
   scale_y_continuous(expand = c(0, 0), labels = scales::percent) +
-  labs(x = "temp-contact")
+  labs(x = "temp-contact", y = "predicted probability")
 ```
 
 We can also get model-estimated cumulative probabilities by considering the model coefficients.
