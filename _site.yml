@@ -9,7 +9,9 @@ navbar:
     - text: "Posts"
       href: index.html
     - text: "About"
-      href: about.html
+      href: content/docs/tdunn-cv.html
+    - text: "CV"
+      href: content/docs/tdunn-cv.html
     - text: "Projects"
       href: projects.html
     - icon: fa fa-twitter
