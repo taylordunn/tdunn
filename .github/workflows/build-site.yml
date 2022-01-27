@@ -19,7 +19,7 @@ jobs:
         run: |
           install.packages("rmarkdown")
           install.packages("distill")
-          #install.packages("postcards")
+          install.packages("bs4cards")
           #install.packages("devtools")
         shell: Rscript {0}
 

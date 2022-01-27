@@ -14,21 +14,20 @@ twitter:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(tidyverse)
 
-projects <- read_csv("content/projects.csv", col_types = "cccc")
+projects <- read.csv("content/projects.csv")
 ```
 
 
 ```{r echo=FALSE}
-projects %>%
-  bs4cards::cards(
-    title = title,
-    #text = text,
-    text = text,
-    link = link,
-    image = image
-  )
+bs4cards::cards(
+  data = projects,
+  title = title,
+  #text = text,
+  text = text,
+  link = link,
+  image = image
+)
 ```
 
 
