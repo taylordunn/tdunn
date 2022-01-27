@@ -12,7 +12,21 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Thu, 30 Dec 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 22 Jan 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Canada COVID-19 data in R: scheduling API queries</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2022-01-22-canada-covid-19-data-in-r-scheduling-api-queries</link>
+      <description>Scheduling data retrieval and updating with GitHub Actions and cron.</description>
+      <category>R</category>
+      <category>COVID-19</category>
+      <category>API</category>
+      <category>package development</category>
+      <category>GitHub actions</category>
+      <category>cron</category>
+      <guid>https://tdunn.ca/posts/2022-01-22-canada-covid-19-data-in-r-scheduling-api-queries</guid>
+      <pubDate>Sat, 22 Jan 2022 00:00:00 +0000</pubDate>
+    </item>
     <item>
       <title>Canada COVID-19 data in R: creating a package</title>
       <dc:creator>Taylor Dunn</dc:creator>
@@ -24,7 +38,6 @@
       <category>package development</category>
       <guid>https://tdunn.ca/posts/2021-12-30-canada-covid-19-data-in-r-creating-a-package</guid>
       <pubDate>Thu, 30 Dec 2021 00:00:00 +0000</pubDate>
-      <media:content url="https://tdunn.ca/posts/2021-12-30-canada-covid-19-data-in-r-creating-a-package/canada-covid-19-data-in-r-creating-a-package_files/figure-html5/unnamed-chunk-33-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
       <title>Canada COVID-19 data in R: exploring the API</title>
@@ -131,7 +144,6 @@
       <category>LASSO</category>
       <guid>https://tdunn.ca/posts/2020-07-12-tidytuesday-2020-week-28</guid>
       <pubDate>Sun, 12 Jul 2020 00:00:00 +0000</pubDate>
-      <media:content url="https://tdunn.ca/posts/2020-07-12-tidytuesday-2020-week-28/tidytuesday-2020-week-28_files/figure-html5/model-performance-1.png" medium="image" type="image/png" width="1248" height="768"/>
     </item>
     <item>
       <title>Ordinal regression in R: part 2</title>

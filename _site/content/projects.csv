@@ -1,5 +1,5 @@
 title,text,image,link
 dunnr,My personal R package of commonly used functions and templates.,content/images/dunnr-logo.png,https://github.com/taylordunn/dunnr
 gasr,An R package for simulating goal attainment scaling (GAS) data.,content/images/gasr-logo.png,https://github.com/taylordunn/gasr
-canadacovid,An R package for the Canada COVID-19 tracker API.,content/images/canadacovid-logo.png,https://github.com/taylordunn/canadacovid
+canadacovid,An R package for the Canada COVID-19 tracker API.,content/images/canadacovid-logo.png,https://taylordunn.github.io/canadacovid/
 TidyTuesday,To practice my data science skills I like to participate in the TidyTuesday project .,content/images/tidytuesday-logo.jpg,https://tdunn.ca/#category:TidyTuesday
