@@ -7,7 +7,7 @@ author:
 date: 2022-01-22
 params:
   date: 2022-01-22
-  slug: "2022-01-22-canada-covid-19-data-in-r-scheduling-api-queries"
+  slug: "canada-covid-19-data-in-r-scheduling-api-queries"
 categories:
   - R
   - COVID-19
@@ -33,6 +33,9 @@ This is part 3 of working with Canadian COVID-19 data via the [tracker API](http
 In [the previous post](../2021-12-30-canada-covid-19-data-in-r-creating-a-package), I detailed the development of the [`canadacovid` package](https://taylordunn.github.io/canadacovid/) which was recently published on CRAN.
 Here, I will set up GitHub Actions to periodically download data from the API.
 Much of what I do here was learned from [Simon Couch's great tutorial on the subject](https://blog--simonpcouch.netlify.app/blog/r-github-actions-commit/) and [this bookdown project "GitHub Actions with R"](https://orchid00.github.io/actions_sandbox/).
+
+*Update 2022-02-07*: since writing this post, I've put this data pipeline to use with a Shiny dashboard reporting the latest Canadian Covid-19 numbers.
+Check out the [dashboard here](https://taylor-dunn.shinyapps.io/canadacovidshiny/), and the [source code here](https://github.com/taylordunn/canadacovidshiny).
 
 ## The goal
 

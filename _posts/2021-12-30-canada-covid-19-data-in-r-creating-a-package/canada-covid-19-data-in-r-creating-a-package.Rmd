@@ -7,7 +7,7 @@ author:
 date: 2021-12-30
 params:
   date: 2021-12-30
-  slug: "2021-12-30-canada-covid-19-data-in-r-creating-a-package"
+  slug: "canada-covid-19-data-in-r-creating-a-package"
 categories:
   - R
   - COVID-19
