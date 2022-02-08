@@ -2436,7 +2436,7 @@ d-appendix d-footnote-list a.footnote-backlink {
 <!-- <script src="https://utteranc.es/client.js" -->
 <!--         repo="sciencificity/Blog_Vebash" -->
 <!--         issue-term="title" -->
-<!--         label="comments 💬" -->
+<!--         label="comments ðŸ’¬" -->
 <!--         theme="github-light" -->
 <!--         crossorigin="anonymous" -->
 <!--         async> -->
@@ -2459,7 +2459,7 @@ gtag('config', 'UA-196523553-1');
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Canada COVID-19 data in R: scheduling API queries","description":"Scheduling data retrieval and updating with GitHub Actions and cron.","authors":[{"author":"Taylor Dunn","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-01-22T00:00:00.000+00:00","citationText":"Dunn, 2022"}
+{"title":"Canada COVID-19 data in R: scheduling API queries","description":"Scheduling data retrieval and updating with GitHub Actions and cron.","authors":[{"author":"Taylor Dunn","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-01-22T00:00:00.000-04:00","citationText":"Dunn, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2544,7 +2544,10 @@ Setup
 </div>
 <h2 id="introduction">Introduction</h2>
 <p>This is part 3 of working with Canadian COVID-19 data via the <a href="https://api.covid19tracker.ca/">tracker API</a>. In <a href="../2021-12-30-canada-covid-19-data-in-r-creating-a-package">the previous post</a>, I detailed the development of the <a href="https://taylordunn.github.io/canadacovid/"><code>canadacovid</code> package</a> which was recently published on CRAN. Here, I will set up GitHub Actions to periodically download data from the API. Much of what I do here was learned from <a href="https://blog--simonpcouch.netlify.app/blog/r-github-actions-commit/">Simon Couch’s great tutorial on the subject</a> and <a href="https://orchid00.github.io/actions_sandbox/">this bookdown project “GitHub Actions with R”</a>.</p>
-<p><em>Update 2022-02-07</em>: since writing this post, I’ve put this data pipeline to use with a Shiny dashboard reporting the latest Canadian Covid-19 numbers. Check out the <a href="https://taylor-dunn.shinyapps.io/canadacovidshiny/">dashboard here</a>, and the <a href="https://github.com/taylordunn/canadacovidshiny">source code here</a>.</p>
+<aside>
+<p><em>Update 2022-02-07:</em></p>
+<p>Since writing this post, I’ve put this data pipeline to use with a Shiny dashboard reporting and visualizing the latest Canadian COVID-19 numbers. Check out the <a href="https://taylor-dunn.shinyapps.io/canadacovidshiny/">dashboard here</a>, and the <a href="https://github.com/taylordunn/canadacovidshiny">source code here</a>.</p>
+</aside>
 <h2 id="the-goal">The goal</h2>
 <p>I want a scheduled task that periodically (every hour?) runs a script to check the API for updated COVID-19 data (overall numbers and by province). If there is updated data, then store it on GitHub. I also want to keep the API requests to a minimum if possible.</p>
 <h2 id="making-it-an-r-package">Making it an R package</h2>
@@ -2631,7 +2634,7 @@ $ density     &lt;dbl&gt; 16.15518540, 6.34489886, 18.59940380, 11.045836~</code
 </code></pre>
 </div>
 <pre><code>Pin board &lt;pins_board_folder&gt;
-Path: &#39;C:/Users/tdunn/AppData/Local/Temp/RtmpOEUtZi/pins-56fc150259f0&#39;
+Path: &#39;C:/Users/tdunn/AppData/Local/Temp/RtmpeWTC1P/pins-2ea84e707d2e&#39;
 Cache size: 0</code></pre>
 </div>
 <p>Then save <code>provinces</code> to the board:</p>
@@ -2678,14 +2681,14 @@ Cache size: 0</code></pre>
  $ type       : chr &quot;rds&quot;
  $ title      : chr &quot;provinces: a pinned 13 x 10 data frame&quot;
  $ description: NULL
- $ created    : POSIXct[1:1], format: &quot;2022-02-07 22:28:00&quot;
+ $ created    : POSIXct[1:1], format: &quot;2022-02-07 22:47:00&quot;
  $ api_version: num 1
  $ user       : list()
  $ name       : chr &quot;provinces&quot;
  $ local      :List of 3
-  ..$ dir    : &#39;fs_path&#39; chr &quot;C:/Users/tdunn/AppData/Local/Temp/RtmpOEUtZi/pins-56fc150259f0/provinces/20220208T022814Z-b1cbd&quot;
+  ..$ dir    : &#39;fs_path&#39; chr &quot;C:/Users/tdunn/AppData/Local/Temp/RtmpeWTC1P/pins-2ea84e707d2e/provinces/20220208T024729Z-b1cbd&quot;
   ..$ url    : NULL
-  ..$ version: chr &quot;20220208T022814Z-b1cbd&quot;</code></pre>
+  ..$ version: chr &quot;20220208T024729Z-b1cbd&quot;</code></pre>
 </div>
 <p><code>pins</code> has numerous options for storing boards, including RStudio Connect, Amazon S3, and Google Cloud Platform. I want to keep this package and the data in the same repository, so I’ll register a board on this GitHub repository. Unfortunately, I have to use the legacy <code>pins</code> API for this task, because <a href="https://pins.rstudio.com/articles/pins-update.html#equivalents">GitHub boards haven’t been implemented in the modern API</a> as of me writing this: <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2970,7 +2973,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [6658077] 2022-02-08: Rebuild site</code></pre>
+Head:     [1f5cc26] 2022-02-08: Rebuild site</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
