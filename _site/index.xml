@@ -116,6 +116,8 @@
       <link>https://tdunn.ca/posts/2021-05-18-tidytuesday-2021-week-21</link>
       <description>#TidyTuesday 2021-05-18: Ask a Manager Salary Survey.</description>
       <category>TidyTuesday</category>
+      <category>text mining</category>
+      <category>data visualization</category>
       <guid>https://tdunn.ca/posts/2021-05-18-tidytuesday-2021-week-21</guid>
       <pubDate>Tue, 18 May 2021 00:00:00 +0000</pubDate>
       <media:content url="https://tdunn.ca/posts/2021-05-18-tidytuesday-2021-week-21/tidytuesday-2021-week-21_files/figure-html5/unnamed-chunk-47-1.png" medium="image" type="image/png" width="1248" height="768"/>
