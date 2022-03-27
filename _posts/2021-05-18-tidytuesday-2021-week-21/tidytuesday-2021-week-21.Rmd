@@ -10,6 +10,8 @@ params:
   slug: "tidytuesday-2021-week-21"
 categories:
   - TidyTuesday
+  - text mining
+  - data visualization
 draft: false
 output:
   distill::distill_article:
@@ -753,5 +755,5 @@ git2r::repository()
 </details>
 
 ```{r echo=FALSE}
-get_distill_source(date = params$date, slug = params$slug)
+dunnr::get_distill_source(date = params$date, slug = params$slug)
 ```
