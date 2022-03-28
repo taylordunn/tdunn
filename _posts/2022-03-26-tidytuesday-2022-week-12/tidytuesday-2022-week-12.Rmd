@@ -1,0 +1,225 @@
+---
+title: "Analyzing US baby names over the years"
+description: |
+  #TidyTuesday 2022 Week 12: Baby names.
+author:
+  - name: Taylor Dunn
+date: 2022-03-26
+params:
+  date: 2022-03-26
+  slug: 
+categories:
+  - TidyTuesday
+  - data visualization
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+draft: true
+---
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidytuesdayR)
+library(gt)
+library(rmarkdown)
+library(patchwork)
+library(ggtext)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td_minimal())
+set_geom_fonts()
+
+sex_pal <- c("M" = "#8ecefd", "F" = "#f88b9d")
+```
+
+## Load the data
+
+```{r}
+tidytuesdayR::last_tuesday()
+tt <- tidytuesdayR::tt_load("2022-03-22")
+```
+There are `r length(tt)` data frames this week.
+For this post, I'll be exploring `babynames`, which, which are baby name counts by `year` and `sex` in the US:
+
+```{r}
+babynames <- tt$babynames
+glimpse(babynames)
+```
+
+## Data exploration
+
+The data span the following years:
+
+```{r}
+c(min(babynames$year), max(babynames$year))
+```
+
+The `prop` variable is presumably the proportion of babies with that `name` and `sex` in a given year:
+
+```{r}
+babynames %>%
+  group_by(sex, year) %>%
+  mutate(n_total = sum(n)) %>%
+  ungroup() %>%
+  mutate(prop_manual = n / n_total) %>%
+  select(prop, prop_manual)
+```
+
+Not quite -- my manually calculated `prop_custom` is slightly higher.
+It may be due to un-documented names not being counted in the `babynames` data frame.
+The `applicants` data has the number of social security number applications.
+Is this the denominator?
+
+```{r}
+babynames %>%
+  left_join(tt$applicants, by = c("year", "sex")) %>%
+  mutate(prop_manual = n / n_all) %>%
+  select(prop, prop_manual)
+```
+
+Yes, that looks to be correct.
+
+Not much more to do in terms of data exploration or cleaning here.
+I'll jump right into the analysis.
+
+## Name creativity over the years
+
+The number of unique names by `year` and `sex`:
+
+```{r}
+d <- babynames %>% count(year, sex, name = "n_names")
+d_max <- d %>% group_by(sex) %>% filter(n_names == max(n_names))
+
+d %>%
+  ggplot(aes(x = year, y = n_names, color = sex)) +
+  geom_line(size = 1) +
+  geom_linerange(
+    data = d_max,
+    aes(ymin = 0, ymax = n_names, xmin = year, xmax = year, color = sex),
+    lty = 2, size = 1, show.legend = FALSE
+  ) +
+  geom_text(
+    data = d_max,
+    aes(x = year, y = c(16000, 5000), label = year),
+    hjust = 0, nudge_x = 1, show.legend = FALSE
+  ) +
+  labs(title = "Number of unique names", y = NULL, color = NULL) +
+  scale_color_manual(values = sex_pal) +
+  theme(legend.position = c(0.2, 0.7))
+```
+
+There is an dip in the number of unique names after peaking in 2007 and 2008 -- I'm assuming this is related to the financial crisis.
+If we normalize by the number of births, does this trend still appear?
+
+```{r}
+d <- babynames %>%
+  group_by(year, sex) %>%
+  summarise(n_names = n(), n_births = sum(n),
+            names_per_1000_births = 1000 * n_names / n_births,
+            .groups = "drop")
+d_max <- d %>%
+  group_by(sex) %>%
+  filter(names_per_1000_births == max(names_per_1000_births))
+
+d %>%
+  ggplot(aes(x = year, y = names_per_1000_births, color = sex)) +
+  geom_line(size = 1) +
+  geom_linerange(
+    data = d_max,
+    aes(ymin = 0, ymax = names_per_1000_births,
+        xmin = year, xmax = year, color = sex),
+    lty = 2, size = 1, show.legend = FALSE
+  ) +
+  geom_text(
+    data = d_max,
+    aes(x = year, y = c(2.5, 3.5), label = year),
+    hjust = 0, nudge_x = 1, show.legend = FALSE
+  ) +
+  labs(title = "Number of unique names / 1000 births",
+       y = NULL, color = NULL) +
+  scale_color_manual(values = sex_pal) +
+  theme(legend.position = c(0.5, 0.7))
+```
+
+Creativity for male names peaked around 1900, and is on the rise again.
+Creativity for female names has been higher than male names since ~1920, and peaked in 2010.
+
+## Unisex names
+
+I'm interested to see the evolution of unisex names over time.
+Before getting into that, what names are the least unisex?
+
+```{r}
+d <- babynames %>%
+  group_by(name, sex) %>%
+  summarise(n = sum(n), .groups = "drop") %>%
+  complete(name, sex, fill = list(n = 0)) %>%
+  pivot_wider(names_from = sex, values_from = n) %>%
+  rename(female = `F`, male = M) %>%
+  mutate(total = female + male) %>%
+  arrange(desc(total)) %>%
+  filter(female == 0 | male == 0) %>%
+  select(-total) %>%
+  pivot_longer(cols = -name, names_to = "sex", values_to = "count") %>%
+  filter(count > 0) %>%
+  mutate(name = fct_reorder(name, count))
+
+d %>%
+  group_by(sex) %>%
+  slice_max(count, n = 10) %>%
+  ggplot(aes(y = name, x = count, fill = sex)) +
+  geom_col() +
+  facet_wrap(~ sex, nrow = 1, scales = "free_y") +
+  scale_fill_manual(values = c("#f88b9d", "#8ecefd")) +
+  labs(
+    y = NULL, x = NULL,
+    title = paste0("Top 10 most common ",
+                   "<span style='color:#f88b9d'>100% female</span> and ",
+                   "<span style='color:#8ecefd'>100% male</span> names"),
+    subtitle = "US baby names from 1880 to 2017",
+    caption = paste("data: {babynames} R package",
+                    "plot: Taylor Dunn", sep =  " | ")
+  ) +
+  theme(legend.position = "none", plot.title = element_markdown(),
+        panel.grid.major.y = element_blank(),
+        strip.background = element_blank(), strip.text = element_blank())
+```
+
+Next, I'd like to visualize the average 
+
+```{r}
+babynames %>%
+  select(-prop) %>%
+  pivot_wider(names_from = sex, values_from = n, values_fill = 0) %>%
+  mutate(total = `F` + M, p_female = `F` / total) %>%
+  group_by(year, name)
+```
+
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
