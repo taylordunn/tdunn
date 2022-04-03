@@ -1,5 +1,5 @@
 title,text,image,link
- tidytuesday-dashboard,A Shiny dashboard compiling tweets from the TidyTuesday project .,content/images/tidytuesday-logo.jpg,https://taylor-dunn.shinyapps.io/tidytuesday-dashboard/
+ tidytuesday-dashboard,A Shiny dashboard compiling tweets from the TidyTuesday project.,content/images/tidytuesday-logo.jpg,https://taylor-dunn.shinyapps.io/tidytuesday-dashboard/
 canadacovid,An R package for the Canada COVID-19 tracker API.,content/images/canadacovid-logo.png,https://taylordunn.github.io/canadacovid/
 canadacovidshiny,A Shiny dashboard reporting and visualizing the latest COVID-19 data in Canada.,content/images/canadacovidshiny-screenshot-vaccines.png,https://taylor-dunn.shinyapps.io/canadacovidshiny/
 dunnr,My personal R package of commonly used functions and templates.,content/images/dunnr-logo.png,https://github.com/taylordunn/dunnr
