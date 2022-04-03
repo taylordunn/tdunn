@@ -12,7 +12,18 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Sat, 22 Jan 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 26 Mar 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Analyzing US baby names over the years</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2022-03-26-tidytuesday-2022-week-12</link>
+      <description>TidyTuesday 2022 Week 12: Baby names.</description>
+      <category>TidyTuesday</category>
+      <category>data visualization</category>
+      <guid>https://tdunn.ca/posts/2022-03-26-tidytuesday-2022-week-12</guid>
+      <pubDate>Sat, 26 Mar 2022 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2022-03-26-tidytuesday-2022-week-12/tidytuesday-2022-week-12_files/figure-html5/gender-neutral-ratio-1.png" medium="image" type="image/png" width="1152" height="768"/>
+    </item>
     <item>
       <title>Canada COVID-19 data in R: scheduling API queries</title>
       <dc:creator>Taylor Dunn</dc:creator>
