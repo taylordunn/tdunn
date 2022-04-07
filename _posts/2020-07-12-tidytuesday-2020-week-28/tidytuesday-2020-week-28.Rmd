@@ -13,7 +13,7 @@ categories:
   - tidymodels
   - machine learning
   - random forest
-  - LASSO
+  - lasso
 draft: false
 output:
   distill::distill_article:
@@ -46,7 +46,7 @@ options(ggplot2.discrete.color = coffee_pal,
 tt <- tidytuesdayR::tt_load("2020-07-07")
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, include=FALSE}
 # Check out the README
 tt
 ```
@@ -621,7 +621,7 @@ Now define the recipe:
 * Impute the mode for missing categorical values
 * Lump together categorical values with <5% frequency
 * Impute the mean for missing numerical values
-* Standardize all numerical predictors (important for LASSO regularization)
+* Standardize all numerical predictors (important for lasso regularization)
 * Given its non-linear relationship, use splines in the `altitude_mean_meters_fixed` predictor
 
 ```{r}
@@ -687,7 +687,7 @@ lm_fit <- last_fit(lm_fit_train, coffee_split)
 collect_metrics(lm_fit)
 ```
 
-Show the actual vs predicted log price in the testing data:
+Show the actual vs predicted flavor in the testing data:
 
 ```{r fig.height=3, fig.width=4}
 collect_predictions(lm_fit) %>%
@@ -698,9 +698,9 @@ collect_predictions(lm_fit) %>%
 
 Linear regression does great, which makes me think that the more complicated models to follow will be overkill.
 
-### LASSO regression
+### Lasso regression
 
-We will tune (i.e. allow the penalty term $\lambda$ to vary) a LASSO regression model to see if it can outperform a basic linear regression:
+We will tune (i.e. allow the penalty term $\lambda$ to vary) a lasso regression model to see if it can outperform a basic linear regression:
 
 ```{r}
 lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>%
@@ -728,7 +728,7 @@ toc()
 show_best(lasso_tune, metric = "rmse")
 ```
 
-LASSO regression was un-needed in this case, as it did not perform differently than basic linear regression.
+Lasso regression was un-needed in this case, as it did not perform differently than basic linear regression.
 We can see this by looking at the behaviour of the metrics with $\lambda$:
 
 ```{r warning=FALSE}
@@ -831,7 +831,7 @@ ranger_fit %>%
   theme(legend.position = c(0.3, 0.3))
 ```
 
-Even fewer variables were deemed important in this model compared to LASSO.
+Even fewer variables were deemed important in this model compared to lasso.
 
 ## Conclusion
 
@@ -840,7 +840,7 @@ The random forest model was very slightly better in predicting coffee `flavor`, 
 ```{r}
 d <- bind_rows(
   mutate(collect_metrics(lm_fit), fit = "linear"),
-  mutate(collect_metrics(lasso_fit), fit = "LASSO"),
+  mutate(collect_metrics(lasso_fit), fit = "lasso"),
   mutate(collect_metrics(ranger_fit), fit = "random forest")
 ) %>%
   group_by(fit) %>%
@@ -854,12 +854,12 @@ d <- bind_rows(
   left_join(
     bind_rows(
       mutate(collect_predictions(lm_fit), fit = "linear"),
-      mutate(collect_predictions(lasso_fit), fit = "LASSO"),
+      mutate(collect_predictions(lasso_fit), fit = "lasso"),
       mutate(collect_predictions(ranger_fit), fit = "random forest")
     ),
     by = "fit"
   ) %>%
-  mutate(fit = factor(fit, levels = c("linear", "LASSO", "random forest")))
+  mutate(fit = factor(fit, levels = c("linear", "lasso", "random forest")))
 ```
 
 
