@@ -4,4 +4,4 @@ canadacovid,An R package for the Canada COVID-19 tracker API.,content/images/can
 canadacovidshiny,A Shiny dashboard reporting and visualizing the latest COVID-19 data in Canada.,content/images/canadacovidshiny-screenshot-vaccines.png,https://taylor-dunn.shinyapps.io/canadacovidshiny/
 dunnr,My personal R package of commonly used functions and templates.,content/images/dunnr-logo.png,https://github.com/taylordunn/dunnr
 gasr,An R package for simulating goal attainment scaling (GAS) data.,content/images/gasr-logo.png,https://github.com/taylordunn/gasr,
-`islr-tidy`,An Introduction to Statistical Learning translated to the `tidyverse` and `tidymodels`.content/images/islr-tidy.jpg,https://bookdown.org/taylordunn/islr-tidy/
+islr-tidy,An Introduction to Statistical Learning translated with the tidyverse and tidymodels.,content/images/islr-tidy.jpg,https://bookdown.org/taylordunn/islr-tidy/
