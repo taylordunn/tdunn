@@ -1,0 +1,374 @@
+---
+title: "Predicting bike ridership: getting the data"
+description: |
+  Part 1 of predicting bike ridership in Halifax, Nova Scotia. Getting the data
+  from public APIs.
+author:
+  - name: Taylor Dunn
+date: 2022-04-23
+params:
+  date: 2022-04-23
+  slug: "predicting-bike-ridership-getting-the-data"
+categories:
+  - R
+  - API
+  - data scraping
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+draft: true
+---
+
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(httr)
+library(lubridate)
+library(gt)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+## Introduction
+
+## Getting bicycle count data
+
+```{r}
+# A base URL for getting the data
+query_url <- "https://services2.arcgis.com/11XBiaBYA9Ep0yNJ/arcgis/rest/services/Bicycle_Counts/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json"
+resp <- httr::GET(query_url)
+resp
+```
+
+The response code (200) indicates a successful connection.
+The data comes in JSON format, which I can parse to an R list with:
+
+```{r}
+parsed_content <- content(resp, as = "parsed")
+str(parsed_content, max.level = 1)
+```
+
+This returned a list of `r length(parsed_content)` items.
+The `fields` item is a list of variables:
+
+```{r}
+fields <- map_dfr(
+  parsed_content$fields,
+  # Drop NULL elements so I can convert to a tibble
+  ~ discard(.x, is.null) %>% as_tibble()
+)
+gt(fields)
+```
+
+The data is the `features` item, which itself is a list of length `r length(parsed_content$features)`.
+Here is the first element:
+
+```{r}
+parsed_content$features[[1]]
+```
+
+Looks like there is another level of nesting with `attributes`.
+Compile all of these elements into a single data frame:
+
+```{r}
+bike_counts <- map_dfr(
+  parsed_content$features,
+  ~ as_tibble(.x$attributes)
+)
+glimpse(bike_counts)
+```
+
+Note that just 2000 records were returned.
+The `exceededTransferLimit = TRUE` value tells us that this is the limit of the API.
+I can get the total count of records by altering the original query slightly:
+
+```{r n-records, cache=TRUE}
+n_records <- httr::GET(paste0(query_url, "&returnCountOnly=true")) %>%
+  content(as = "parsed") %>%
+  unlist(use.names = FALSE)
+n_records
+```
+
+So to get all of the data at 2000 records per request, I'll have to make a minimum of `r ceiling(n_records / 2000)` calls to the API.
+The API offers a "resultOffset" argument to get records in sequence.
+Make a function to get 2000 records for a given offset:
+
+```{r}
+get_bike_data <- function(offset) {
+  # Need to prevent scientific notation, e.g. "1e+05" instead of "100000"
+  offset <- format(offset, scientific = FALSE)
+  
+  parsed_content <- httr::GET(paste0(query_url, "&resultOffset=", offset)) %>%
+    content(as = "parsed")
+  
+  map_dfr(
+    parsed_content$features,
+    ~ as_tibble(.x$attributes)
+  ) 
+}
+```
+
+And combine it all into a single data frame:
+
+```{r bike-data, cache=TRUE}
+bike_data <- map_dfr(
+  seq(0, ceiling(n_records / 2000)),
+  ~ get_bike_data(offset = .x * 2000)
+)
+```
+
+```{r}
+glimpse(bike_data)
+```
+
+This returned `r nrow(bike_data)` records, as expected.
+The `ObjectId` should be a unique sequential identifier from 1 to `r n_records`, which I'll check:
+
+```{r}
+range(bike_data$ObjectId); n_distinct(bike_data$ObjectId)
+```
+
+## EDA and cleaning
+
+First thing I usually do with a new data set is clean the column names:
+
+```{r}
+bike_data <- janitor::clean_names(bike_data)
+glimpse(bike_data)
+```
+
+Next I want to deal with the `installation_date` and `count_datetime` variables, which are very large integers.
+From `fields` above, the data type for these variables is `esriFieldTypeDate`.
+After some digging on Google, turns out this is Unix time (the number of milliseconds since January 1, 1970; also called epoch time).
+With `as.POSIXct()`, I can supply the number of seconds and set `origin = "1970-01-01"` to get back the correct datetime objects:
+
+```{r}
+bike_data <- bike_data %>%
+  mutate(
+    across(c(installation_date, count_datetime),
+           ~ as.POSIXct(.x / 1000, tz = "UTC", origin = "1970-01-01")),
+    # These are just dates, the time of day doesn't matter
+    installation_date = as.Date(installation_date),
+    # I'll also want the date without time of day
+    count_date = as.Date(count_datetime)
+  )
+```
+
+These variables are unique to the sites:
+
+```{r}
+bike_data %>%
+  count(site_name, latitude, longitude, serial_number, installation_date,
+        counter_type, name = "n_records") %>%
+  gt()
+```
+
+Drop `serial_number` and `counter_type`, which aren't useful.
+
+```{r}
+bike_data <- bike_data %>% select(-serial_number, -counter_type)
+```
+
+Sites can have multiple channels:
+
+```{r}
+bike_data %>%
+  count(site_name, channel_name, channel_id, name = "n_records") %>%
+  gt()
+```
+
+All but the Hollis St site has separate northbound and southbound channels.
+
+For each site, check the `installation_date` relative to the range of `count_date`:
+
+```{r}
+bike_data %>%
+  group_by(site_name, installation_date) %>%
+  summarise(min_count_date = min(count_date), max_count_date = max(count_date),
+            .groups = "drop") %>%
+  gt()
+```
+
+Everything is nicely aligned: the first data corresponds to the installation date, and the last data corresponds to the date the data were retrieved.
+
+Plot the position of each of the counters using the given `latitude` and `longitude`, overlaid on a map of Halifax with the `ggmap` package:
+^[Went through some trial and error to `get_googlemap()` working here. In brief, I (1) downloaded the development version of `ggmap` from GitHub (`remotes::install_github("dkahle/ggmap")`) (2) created a new project on my Google Cloud Platform (GCP) account, (3) added an API key with access to the Google Static Maps API and registered it with `register_google()`, and (4) had to add billing information and enable billing (because my free trial had been used).]
+
+```{r message=FALSE}
+library(ggmap)
+site_locs <- bike_data %>%
+  distinct(site_name, lat = latitude, lon = longitude)
+
+mean_lat <- mean(site_locs$lat)
+mean_lon <- mean(site_locs$lon)
+```
+
+```{r halifax-map, cache=TRUE}
+halifax_map <- get_googlemap(c(mean_lon, mean_lat),
+                             zoom = 14, maptype = "satellite")
+```
+
+```{r warning=FALSE}
+ggmap(halifax_map) +
+  geom_point(data = site_locs, size = 4,
+             aes(fill = site_name), shape = 21, color = "white") +
+  ggrepel::geom_label_repel(
+    data = site_locs,
+    aes(color = site_name, label = str_trunc(site_name, width = 25)),
+    box.padding = 1.0
+  ) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+For each site and channel, get the time of day from `count_datetime` to determine the frequency of collection:
+
+```{r}
+bike_data %>%
+  mutate(time_of_day = format(count_datetime, "%H:%M:%S")) %>%
+  count(site_name, time_of_day, name = "n_records") %>%
+  ggplot(aes(y = time_of_day, x = n_records)) +
+  geom_col() +
+  facet_wrap(~ str_trunc(site_name, 15), nrow = 1) +
+  scale_x_continuous(expand = c(0, 0), breaks = c(0, 500, 1000, 1500)) +
+  dunnr::add_facet_borders()
+```
+
+Each counter collects counts at the hour mark (+1 second).
+There are some slight difference in the number of records due to the time of day I retrieved the data.
+
+I made an assumption that the `count_datetime` variable was in UTC timezone.
+I can check this assumption by looking at average counts (over the entire data set).
+
+```{r}
+bike_data_tod <- bike_data %>%
+  mutate(
+    time_of_day = format(count_datetime, "%H:%M:%S"),
+    # Create a dummy variable with arbitrary date so I can plot time of day
+    time_of_day = lubridate::ymd_hms(
+      paste0("2022-04-22 ", time_of_day)
+    )
+  )
+bike_data_tod %>%
+  group_by(site_name, time_of_day) %>%
+  summarise(
+    n = n(), mean_count = mean(counter_value),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = time_of_day, y = mean_count)) +
+  geom_line() +
+  geom_area(fill = td_colors$nice$mellow_yellow) +
+  facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
+  scale_x_datetime(date_breaks = "2 hours", date_labels = "%H") +
+  dunnr::add_facet_borders()
+```
+
+These peaks at around 8AM and 5PM tell me that the data is actually recorded in the local time zone (Atlantic), not UTC like I assumed.
+If they were in UTC time, the peaks would correspond to 11AM and 8PM locally, which would be odd times for peak cyclists.
+
+Any interesting trends in different channels?
+
+```{r}
+bike_data_tod %>%
+  # Remove Hollis St, which does not have different channels
+  filter(site_name != "Hollis St") %>%
+  mutate(channel_direction = str_extract(channel_name, "(North|South)bound")) %>%
+  group_by(site_name, channel_direction, time_of_day) %>%
+  summarise(mean_count = mean(counter_value), .groups = "drop") %>%
+  ggplot(aes(x = time_of_day, y = mean_count, color = channel_direction)) +
+  geom_line() +
+  facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
+  scale_x_datetime(date_breaks = "2 hours", date_labels = "%H") +
+  theme(legend.position = "top")
+```
+
+Vernon St and Windsor St counters have higher traffic Southbound (heading downtown) at the start of the typical workday, and higher traffic Northbound (leaving downtown) at the end of the typical workday.
+
+I am less interested in counts over the course of a day or by channel, and more interested in daily counts.
+Now that I know the `count_date` is correctly converted with the local time, get the sum at each site and each 24 hour day:
+
+```{r}
+bike_data_daily_counts <- bike_data %>%
+  group_by(site_name, installation_date, count_date) %>%
+  summarise(
+    n_records = n(), n_bikes = sum(counter_value), .groups = "drop"
+  )
+```
+
+Now plot counts per day at each site:
+
+```{r}
+bike_data_daily_counts %>%
+  ggplot(aes(x = count_date, y = n_bikes)) +
+  geom_line() +
+  facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
+  dunnr::add_facet_borders()
+```
+
+The seasonal trends are quite obvious from this data.
+One thing that stood out to me is huge increase from 2020 to 2021 on South Park St.
+It may be representative of the start of the COVID pandemic, but I think it also has to do with the addition of [protected bike lanes in December 2020](https://www.halifax.ca/transportation/cycling-walking/expanding-network/south-park-protected-bicycle-lanes).
+Before 2020, there appears to be a series of 0 counts on South Park St which may be artifacts:
+
+```{r fig.height=3, fig.width=4}
+bike_data_daily_counts %>%
+  filter(site_name == "South Park St", count_date < "2020-01-01") %>%
+  ggplot(aes(x = count_date, y = n_bikes)) +
+  geom_line()
+```
+
+I'm almost certain this series of zeroes is not real, so I'll remove it from the data.
+Find the date of the first non-zero `n_bikes` at this site, and filter out data before then:
+
+```{r}
+south_park_min_date <- bike_data_daily_counts %>%
+  filter(site_name == "South Park St", n_bikes > 0) %>%
+  pull(count_date) %>%
+  min()
+south_park_min_date
+
+bike_data_daily_counts <- bike_data_daily_counts %>%
+  filter(!((site_name == "South Park St") & (count_date < south_park_min_date)))
+```
+
+Overlay counts by year for each site:
+
+```{r}
+bike_data_daily_counts %>%
+  mutate(count_year = year(count_date),
+         # Replace year with 1970 so I can plot on the same scale
+         count_date = as.Date(yday(count_date), origin = "1970-01-01")) %>%
+  count(count_year)
+```
+
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
