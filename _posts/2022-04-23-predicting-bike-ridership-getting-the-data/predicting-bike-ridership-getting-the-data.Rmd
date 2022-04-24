@@ -339,13 +339,23 @@ bike_data_daily_counts <- bike_data_daily_counts %>%
 
 Overlay counts by year for each site:
 
-```{r}
+```{r fig.height=6, fig.width=5}
 bike_data_daily_counts %>%
   mutate(count_year = year(count_date),
          # Replace year with 1970 so I can plot on the same scale
          count_date = as.Date(yday(count_date), origin = "1970-01-01")) %>%
-  count(count_year)
+  ggplot(aes(x = count_date, y = n_bikes, color = factor(count_year))) +
+  geom_line(size = 1, alpha = 0.8) +
+  facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
+  scale_x_date(date_labels = "%B") +
+  dunnr::add_facet_borders() +
+  theme(legend.position = "bottom") +
+  labs(x = NULL, color = "Year") +
+  scale_color_brewer(palette = "Set1")
 ```
+
+
+So the only year with
 
 
 ## Reproducibility {.appendix}
