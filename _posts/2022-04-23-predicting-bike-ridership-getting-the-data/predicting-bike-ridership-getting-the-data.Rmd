@@ -357,6 +357,38 @@ bike_data_daily_counts %>%
 
 So the only year with
 
+## Getting weather data
+
+Temporal data are probably the most important predictors of ridership, but I'm sure a close second is the day's weather.
+I'll get this from directly from [the Meteorological Service of Canada's API](https://api.weather.gc.ca/).
+
+```{r}
+base_url <- "https://api.weather.gc.ca/openapi?f=json"
+resp <- httr::GET(base_url)
+resp
+```
+
+```{r}
+content_parsed <- content(resp, as = "text")
+test <- jsonlite::fromJSON(content_parsed)
+str(test, max.level = 1)
+```
+
+```{r}
+str(test$components)
+```
+
+
+The README for the climate data is located here: https://eccc-msc.github.io/open-data/msc-data/climate_obs/readme_climateobs_en/.
+
+The raw data is located here: https://dd.weather.gc.ca/climate/observations/.
+
+```{r}
+climate_station_list <- read_csv("https://dd.weather.gc.ca/climate/observations/climate_station_list.csv")
+glimpse(climate_station_list)
+```
+
+
 
 ## Reproducibility {.appendix}
 
