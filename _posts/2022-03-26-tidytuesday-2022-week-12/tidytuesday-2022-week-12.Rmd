@@ -409,3 +409,6 @@ git2r::repository()
 dunnr::get_distill_source(date = params$date, slug = params$slug)
 ```
 
+## Redistribution {.appendix}
+
+[R-bloggers](https://www.r-bloggers.com/).

@@ -20,6 +20,8 @@ navbar:
       href: https://github.com/taylordunn
     - icon: fa fa-linkedin
       href: https://www.linkedin.com/in/taylor-dunn-83090843/
+    - icon: fa fa-rss
+      href: index.xml
 collections:
   posts:
     categories: true
@@ -33,3 +35,5 @@ output:
     includes:
       in_header: utterances.html
 theme: theme.css
+rss:
+  full_content: TRUE
