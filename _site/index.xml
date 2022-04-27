@@ -12,7 +12,19 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Sat, 26 Mar 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 27 Apr 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Predicting bike ridership: getting the data</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2022-04-23-predicting-bike-ridership-getting-the-data</link>
+      <description>Part 1 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+I retrieve and explore data from two open APIs.</description>
+      <category>R</category>
+      <category>API</category>
+      <guid>https://tdunn.ca/posts/2022-04-23-predicting-bike-ridership-getting-the-data</guid>
+      <pubDate>Wed, 27 Apr 2022 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2022-04-23-predicting-bike-ridership-getting-the-data/predicting-bike-ridership-getting-the-data_files/figure-html5/unnamed-chunk-35-1.png" medium="image" type="image/png" width="1248" height="768"/>
+    </item>
     <item>
       <title>Analyzing US baby names over the years</title>
       <dc:creator>Taylor Dunn</dc:creator>
