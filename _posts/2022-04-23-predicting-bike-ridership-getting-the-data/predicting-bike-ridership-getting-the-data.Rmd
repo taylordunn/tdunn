@@ -5,14 +5,13 @@ description: |
   I retrieve and explore data from two open APIs.
 author:
   - name: Taylor Dunn
-date: 2022-04-23
+date: 2022-04-27
 params:
-  date: 2022-04-23
+  date: 2022-04-27
   slug: "predicting-bike-ridership-getting-the-data"
 categories:
   - R
   - API
-  - data scraping
 output:
   distill::distill_article:
     self_contained: false

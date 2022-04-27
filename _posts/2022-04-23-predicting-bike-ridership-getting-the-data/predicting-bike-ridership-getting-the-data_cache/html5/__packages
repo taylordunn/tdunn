@@ -8,8 +8,8 @@ dplyr
 stringr
 forcats
 httr
+lubridate
 gt
+glue
 dunnr
 ggmap
-lubridate
-glue
