@@ -38,7 +38,7 @@ sex_pal <- c("M" = "#8ecefd", "F" = "#f88b9d")
 
 ## Load the data
 
-```{r}
+```{r tt-data, cache=TRUE}
 tt <- tidytuesdayR::tt_load("2022-03-22")
 ```
 
