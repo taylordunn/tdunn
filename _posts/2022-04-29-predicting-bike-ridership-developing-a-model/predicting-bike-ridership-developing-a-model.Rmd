@@ -1,0 +1,133 @@
+---
+title: "Predicting bike ridership: developing a model"
+description: |
+  Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+  I explore and tune different modeling approaches.
+author:
+  - name: Taylor Dunn
+date: 2022-04-29
+params:
+  date: 2022-04-29
+  slug: 
+categories:
+  - R
+  - machine learning
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+draft: true
+---
+
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(gt)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+## Introduction
+
+Import the data from part 1:
+
+```{r}
+bike_ridership <- read_rds("../2022-04-27-predicting-bike-ridership-getting-the-data/bike-ridership-data.rds")
+```
+
+## Exploratory data analysis
+
+```{r}
+glimpse(bike_ridership)
+```
+
+The `n_bikes` variable here is the total number of bikes counted at `site_name` over `count_date`.
+In the original data, the data is recorded every hour which is reflected by the `n_records` variable.
+
+```{r}
+bike_ridership %>%
+  count(site_name, n_records) %>%
+  gt()
+```
+
+All except the Hollis St site have two channels (northbound and southbound), which is why `n_records` = 48.
+The entries with fewer `n_records` reflect the time of day that the data was extracted:
+
+```{r}
+bike_ridership %>%
+  filter(n_records < 24) %>%
+  select(site_name, count_date, n_records) %>%
+  gt()
+```
+
+For this analysis, I will exclude this incomplete day:
+
+```{r}
+bike_ridership <- bike_ridership %>% filter(n_records > 8)
+```
+
+The date ranges for each site:
+
+```{r}
+bike_ridership %>%
+  group_by(site_name, installation_date) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_days = n(), .groups = "drop"
+  ) %>%
+  mutate(
+    site_name = fct_reorder(site_name, min_date, order)
+  ) %>%
+  filter(as.numeric(site_name) == min(as.numeric(site_name)))
+  ggplot(aes(y = site_name)) +
+  geom_linerange(aes(xmin = min_date, xmax = max_date)) +
+  geom_point(aes(x = min_date)) +
+  geom_point(aes(x = max_date)) +
+  geom_text(aes(label = str_c()))
+```
+
+
+
+```{r}
+bike_ridership %>%
+  filter(count_date != max(count_date)) %>%
+  group_by(site_name, installation_date, n_records) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_measurements = n(), n_days = max_date - min_date,
+    .groups = "drop"
+  )
+```
+
+
+
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
