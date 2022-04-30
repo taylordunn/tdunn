@@ -19,11 +19,12 @@ output:
 draft: true
 ---
 
-
 ```{r setup, include=TRUE, code_folding="Setup"}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(gt)
+library(patchwork)
+library(tidymodels)
 
 library(dunnr)
 extrafont::loadfonts(device = "win", quiet = TRUE)
@@ -37,7 +38,9 @@ set_palette()
 Import the data from part 1:
 
 ```{r}
-bike_ridership <- read_rds("../2022-04-27-predicting-bike-ridership-getting-the-data/bike-ridership-data.rds")
+bike_ridership <- read_rds(
+  "../2022-04-27-predicting-bike-ridership-getting-the-data/bike-ridership-data.rds"
+)
 ```
 
 ## Exploratory data analysis
@@ -47,7 +50,7 @@ glimpse(bike_ridership)
 ```
 
 The `n_bikes` variable here is the total number of bikes counted at `site_name` over `count_date`.
-In the original data, the data is recorded every hour which is reflected by the `n_records` variable.
+In the original data, counts are recorded every hour which is reflected by the `n_records` variable:
 
 ```{r}
 bike_ridership %>%
@@ -55,8 +58,7 @@ bike_ridership %>%
   gt()
 ```
 
-All except the Hollis St site have two channels (northbound and southbound), which is why `n_records` = 48.
-The entries with fewer `n_records` reflect the time of day that the data was extracted:
+All except the Hollis St site have two channels (northbound and southbound), which is why `n_records` = 48. The entries with fewer `n_records` reflect the time of day that the data was extracted:
 
 ```{r}
 bike_ridership %>%
@@ -73,36 +75,278 @@ bike_ridership <- bike_ridership %>% filter(n_records > 8)
 
 The date ranges for each site:
 
-```{r}
+```{r fig.height=2, fig.width=5}
 bike_ridership %>%
-  group_by(site_name, installation_date) %>%
+  group_by(site_name) %>%
   summarise(
     min_date = min(count_date), max_date = max(count_date),
     n_days = n(), .groups = "drop"
   ) %>%
   mutate(
-    site_name = fct_reorder(site_name, min_date, order)
+    site_name = fct_reorder(site_name, min_date),
+    n_days_label = ifelse(
+      site_name == levels(site_name)[1],
+      str_c("n_days = ", n_days), n_days
+    ),
+    midpoint_date = min_date + n_days / 2
   ) %>%
-  filter(as.numeric(site_name) == min(as.numeric(site_name)))
   ggplot(aes(y = site_name)) +
   geom_linerange(aes(xmin = min_date, xmax = max_date)) +
   geom_point(aes(x = min_date)) +
   geom_point(aes(x = max_date)) +
-  geom_text(aes(label = str_c()))
+  geom_text(aes(label = n_days_label, x = midpoint_date), vjust = -0.5) +
+  scale_y_discrete(labels = ~ str_wrap(., width = 15)) +
+  labs(y = NULL, x = "min_date -> max_date")
+```
+
+The weather variables have varying levels of completeness:
+
+```{r fig.height=2.5, fig.width=5}
+weather_data <- bike_ridership %>%
+  distinct(count_date, mean_temperature, total_precipitation,
+           speed_max_gust, snow_on_ground)
+
+weather_data %>%
+  mutate(across(where(is.numeric), is.na)) %>%
+  pivot_longer(cols = -count_date) %>%
+  ggplot(aes(x = count_date, y = name)) +
+  geom_tile(aes(fill = value)) +
+  labs(y = NULL, x = NULL, fill = "Missing") +
+  scale_fill_manual(values = c(td_colors$nice$indigo_blue, "gray80")) +
+  scale_x_date(expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  theme(legend.position = "top")
+```
+
+Visualize relationships with `n_bikes`:
+
+```{r}
+bike_ridership %>%
+  pivot_longer(
+    cols = c(mean_temperature, total_precipitation,
+             speed_max_gust, snow_on_ground),
+    names_to = "var", values_to = "val"
+  ) %>%
+  filter(!is.na(val)) %>%
+  ggplot(aes(x = val, y = n_bikes)) +
+  geom_point(aes(color = str_trunc(site_name, 15)), alpha = 0.4) +
+  facet_wrap(~ var, nrow = 2, scales = "free_x") +
+  dunnr::add_facet_borders() +
+  labs(x = NULL, color = NULL) +
+  theme(legend.position = "bottom")
+```
+
+In terms of predictive value, `mean_temperature` looks like it might be the most useful, and `speed_max_gust` the least.
+
+## Feature engineering
+
+
+Add some more time variables for working with the `weather_data`:
+
+```{r}
+weather_data <- weather_data %>%
+  mutate(count_year = lubridate::year(count_date),
+         # Day number relative to earliest date
+         count_day = as.numeric(count_date - min(count_date)),
+         # Day of the year, from 1 to 365
+         count_yday = lubridate::yday(count_date))
+```
+
+### Temperature
+
+The `mean_temperature` variable is missing `r scales::percent(mean(is.na(weather_data$mean_temperature)))` of values.
+
+Visualize the trend over time:
+
+```{r}
+p1 <- weather_data %>%
+  filter(!is.na(mean_temperature)) %>%
+  ggplot(aes(x = count_date, y = mean_temperature)) +
+  geom_line(aes(color = factor(count_year))) +
+  scale_color_viridis_d("year") +
+  scale_x_date("date", date_breaks = "1 year")
+p2 <- weather_data %>%
+  filter(!is.na(mean_temperature)) %>%
+  ggplot(aes(x = count_yday, y = mean_temperature)) +
+  geom_line(aes(color = factor(count_year))) +
+  scale_color_viridis_d("year") +
+  scale_x_continuous("day of year", breaks = c(0, 90, 180, 270, 365)) +
+  labs(y = NULL)
+p1 + p2 +
+  plot_layout(guides = "collect")
+```
+
+I want to impute these missing values.
+The cyclic nature makes it a good candidate for smoothing splines.
+As a starting point, try a natural cubic spline with 5 knots on the `count_yday` variable:
+
+```{r}
+library(splines)
+lm_temperature <- 
+  lm(mean_temperature ~ ns(count_yday, knots = 5),
+      data = filter(weather_data, !is.na(mean_temperature)))
+
+p1 +
+  geom_line(
+    data = augment(lm_temperature, newdata = weather_data),
+    aes(y = .fitted)
+  )
+```
+
+We can obviously do a lot better.
+I'll fit the data using a generalized additive model (GAM) with the `mgcv` package.
+^[Check out [this blog post by Gavin Simpson ](https://fromthebottomoftheheap.net/2014/05/09/modelling-seasonal-data-with-gam/) for a great walkthrough modeling seasonal data with GAMs.]
+For the `count_yday` variable (ranges from 1-365), I'll make sure that there is no discontinuity between year by using a *cyclic* cubic spline (`bs = "cc"`).
+I'll also include a smoothing term of `count_day` which will capture the trend across years.
+
+```{r}
+library(mgcv)
+
+gam_temperature <-
+  gam(mean_temperature ~ s(count_yday, bs = "cc", k = 12) + s(count_day),
+      data = filter(weather_data, !is.na(mean_temperature)))
+plot(gam_temperature, pages = 1, shade = TRUE)
+```
+
+The left plot shows the seasonal trend across the year (note the lines would connect at `count_yday` = 1 and 365), and the right plot shows the increase in average temperature throughout time after accounting for the seasonal effect.
+
+```{r}
+p1 +
+  geom_line(
+    data = augment(gam_temperature, newdata = weather_data),
+    aes(y = .fitted)
+  )
+```
+
+It doesn't capture some of the coldest temperatures, but I'm pretty happy with that.
+I'll use predictions from the GAM model to impute missing days:
+
+```{r}
+weather_data <- weather_data %>%
+  bind_cols(pred = predict(gam_temperature, newdata = weather_data)) %>%
+  mutate(mean_temperature = ifelse(is.na(mean_temperature), pred,
+                                   mean_temperature)) %>%
+  select(-pred)
+```
+
+### Precipitation and snow
+
+The `total_precipitation` variable is missing
+`r scales::percent(mean(is.na(weather_data$total_precipitation)))` of values;
+`r scales::percent(mean(is.na(weather_data$snow_on_ground)))` for `snow_on_ground`.
+
+The `total_precipitation` distribution:
+
+```{r}
+p1 <- weather_data %>%
+  mutate(total_precipitation = replace_na(total_precipitation, -5)) %>%
+  ggplot(aes(x = count_date, y = total_precipitation)) +
+  geom_point(alpha = 0.5) +
+  scale_y_continuous(breaks = c(-5, 0, 20, 40),
+                     labels = c("missing", 0, 20, 40))
+p1
+```
+
+This pattern of missing data during winter months makes me think that the `total_precipitation` is actually total rainfall, i.e. snowfall is not counted.
+I'm going to bake that assumption into the model by renaming the variable and imputing missing values with 0:
+
+```{r}
+weather_data <- weather_data %>%
+  rename(total_rainfall = total_precipitation) %>%
+  mutate(total_rainfall = replace_na(total_rainfall, 0))
+```
+
+This imputation is not a great approximation of the truth -- there are missing values in the past month that I know first-hand had `total_rainfall` > 0 -- but 
+
+The `snow_on_ground` distribution:
+
+```{r}
+p2 <- weather_data %>%
+  mutate(snow_on_ground = replace_na(snow_on_ground, -2)) %>%
+  ggplot(aes(x = count_date, y = snow_on_ground)) +
+  geom_point(alpha = 0.5) +
+  scale_y_continuous(breaks = c(-2, 0, 10, 20),
+                     labels = c("missing", 0, 10, 20))
+p2
+```
+
+I'll take the same zero imputation approach here, which I'm a lot more confident doing here because most of the missing values occur during non-winter months.
+
+```{r}
+weather_data <- weather_data %>%
+  rename(total_rainfall = total_precipitation) %>%
+  mutate(total_rainfall = replace_na(total_rainfall, 0))
 ```
 
 
 
 ```{r}
-bike_ridership %>%
-  filter(count_date != max(count_date)) %>%
-  group_by(site_name, installation_date, n_records) %>%
-  summarise(
-    min_date = min(count_date), max_date = max(count_date),
-    n_measurements = n(), n_days = max_date - min_date,
-    .groups = "drop"
+d <- weather_data %>%
+  select(count_date, total_precipitation, snow_on_ground,
+         count_year, count_yday, count_day)
+d %>%
+  count(snow_on_ground, sort = T)
+d %>%
+  count(total_precipitation, sort = T)
+d %>%
+  count(is.na(total_precipitation), is.na(snow_on_ground))
+```
+
+
+```{r}
+d %>%
+  pivot_longer(cols = c(total_precipitation, snow_on_ground)) %>%
+  filter(!is.na(value)) %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 20) +
+  facet_wrap(~ name)
+```
+
+```{r}
+gam_poisson_snow <- gam(
+  snow_on_ground ~ s(count_yday, bs = "cc", k = 4) + s(count_day),
+  data = filter(weather_data, !is.na(snow_on_ground)),
+  family = poisson
+)
+plot(gam_poisson_snow)
+```
+
+```{r}
+p2 +
+  geom_line(
+    data = augment(gam_poisson_snow, newdata = weather_data,
+                   type.predict = "response"),
+    aes(y = .fitted),
+    color = td_colors$nice$soft_orange
   )
 ```
+
+
+
+```{r}
+gam_precip <- gam(total_precipitation ~ s(total_precipitation, bs = ))
+gam_precip <-
+  #gam(total_precipitation ~ s(count_yday, bs = "cc", k = 12) + s(count_day),
+  gam(
+    list(total_precipitation ~ s(count_yday, bs = "cc", k = 12) + s(count_day),
+         ~ s(count_yday, bs = "cc", k = 12) + s(count_day)),
+    data = filter(weather_data, !is.na(total_precipitation)),
+    family = gammals
+  )
+plot(gam_temperature, pages = 1, shade = TRUE)
+```
+
+The left plot shows the seasonal trend across the year (note the lines would connect at `count_yday` = 1 and 365), and the right plot shows the increase in average temperature throughout time after accounting for the seasonal effect.
+
+```{r}
+p1 +
+  geom_line(
+    data = augment(gam_temperature, newdata = weather_data),
+    aes(y = .fitted)
+  )
+```
+
+
 
 
 
@@ -130,4 +374,3 @@ git2r::repository()
 ```{r echo=FALSE}
 dunnr::get_distill_source(date = params$date, slug = params$slug)
 ```
-
