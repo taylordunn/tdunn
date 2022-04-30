@@ -84,24 +84,61 @@ bike_ridership %>%
   ) %>%
   mutate(
     site_name = fct_reorder(site_name, min_date),
-    n_days_label = ifelse(
-      site_name == levels(site_name)[1],
-      str_c("n_days = ", n_days), n_days
-    ),
+    n_days_label = ifelse(site_name == levels(site_name)[1],
+                          str_c("n_days = ", n_days), n_days),
     midpoint_date = min_date + n_days / 2
   ) %>%
-  ggplot(aes(y = site_name)) +
+  ggplot(aes(y = site_name, color = site_name)) +
   geom_linerange(aes(xmin = min_date, xmax = max_date)) +
   geom_point(aes(x = min_date)) +
   geom_point(aes(x = max_date)) +
   geom_text(aes(label = n_days_label, x = midpoint_date), vjust = -0.5) +
   scale_y_discrete(labels = ~ str_wrap(., width = 15)) +
-  labs(y = NULL, x = "min_date -> max_date")
+  labs(y = NULL, x = "min_date -> max_date") +
+  theme(legend.position = "none")
+```
+
+For each site, the distribution of daily `n_bikes`:
+
+```{r}
+bike_ridership %>%
+  ggplot(aes(x = n_bikes, fill = site_name)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(~ str_trunc(site_name, 15)) +
+  theme(legend.position = "none")
+```
+
+The South Park St site appears bimodal, which [I noted in part 1](../2022-04-27-predicting-bike-ridership-getting-the-data) was likely due to the addition of protected bike lanes in 2021.
+This can be seen more clearly in the trend over time:
+
+```{r fig.height=5, fig.width=6}
+bike_ridership %>%
+  ggplot(aes(x = count_date, y = n_bikes, color = site_name)) +
+  geom_line() +
+  facet_wrap(~ site_name, ncol = 1) +
+  theme(legend.position = "none")
+```
+
+As you would expect for data in the same city, bike counters between sites are very highly correlated, which I can visualize:
+
+```{r}
+bike_ridership %>%
+  transmute(count_date, n_bikes1 = n_bikes,
+            site_name1 = factor(str_trunc(site_name, 10))) %>%
+  left_join(., rename(., n_bikes2 = n_bikes1, site_name2 = site_name1),
+            by = "count_date") %>%
+  filter(as.numeric(site_name1) < as.numeric(site_name2)) %>%
+  ggplot(aes(x = n_bikes1, y = n_bikes2)) +
+  geom_point(aes(color = site_name1), alpha = 0.3) +
+  facet_grid(site_name2 ~ site_name1) +
+  theme(legend.position = "none") +
+  dunnr::add_facet_borders()
 ```
 
 The weather variables have varying levels of completeness:
 
 ```{r fig.height=2.5, fig.width=5}
+# Separate out the weather data
 weather_data <- bike_ridership %>%
   distinct(count_date, mean_temperature, total_precipitation,
            speed_max_gust, snow_on_ground)
@@ -117,6 +154,38 @@ weather_data %>%
   scale_y_discrete(expand = c(0, 0)) +
   theme(legend.position = "top")
 ```
+
+The distributions:
+
+```{r fig.height=3, fig.width=6}
+weather_data %>%
+  pivot_longer(cols = -count_date) %>%
+  filter(!is.na(value)) %>%
+  ggplot(aes(x = value, fill = name)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(~ name, nrow = 1) +
+  theme(legend.position = "none")
+```
+
+For non-missing cases, plot the pairwise relationships:
+
+```{r}
+weather_data %>%
+  pivot_longer(cols = -count_date, names_to = "var1", values_to = "val1") %>%
+  mutate(var1 = factor(var1)) %>%
+  left_join(., rename(., var2 = var1, val2 = val1),
+            by = "count_date") %>%
+  filter(!is.na(val1), !is.na(val2),
+         # Use numeric factor labels to remove duplicates
+         as.numeric(var1) < as.numeric(var2)) %>%
+  ggplot(aes(x = val1, y = val2, color = var1)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(var2 ~ var1, scales = "free") +
+  theme(legend.position = "none") +
+  dunnr::add_facet_borders()
+```
+
+Unsurprisingly, the clearest relationship in these data is decreasing `snow_on_ground` with increasing `mean_temperature` (top left plot).
 
 Visualize relationships with `n_bikes`:
 
@@ -136,10 +205,13 @@ bike_ridership %>%
   theme(legend.position = "bottom")
 ```
 
+All of the weather variables seem to be associated with `n_bikes`.
 In terms of predictive value, `mean_temperature` looks like it might be the most useful, and `speed_max_gust` the least.
 
 ## Feature engineering
 
+From my EDA, I decided I want try including all 4 weather variables to predict bike ridership.
+For some of the machine learning models I plan to try (like basic linear regression), this will require imputation of missing values, which I'll attempt here.
 
 Add some more time variables for working with the `weather_data`:
 
@@ -155,7 +227,6 @@ weather_data <- weather_data %>%
 ### Temperature
 
 The `mean_temperature` variable is missing `r scales::percent(mean(is.na(weather_data$mean_temperature)))` of values.
-
 Visualize the trend over time:
 
 ```{r}
@@ -173,12 +244,12 @@ p2 <- weather_data %>%
   scale_x_continuous("day of year", breaks = c(0, 90, 180, 270, 365)) +
   labs(y = NULL)
 p1 + p2 +
-  plot_layout(guides = "collect")
+  plot_layout(guides = "collect") &
+  theme(legend.position = "top")
 ```
 
-I want to impute these missing values.
 The cyclic nature makes it a good candidate for smoothing splines.
-As a starting point, try a natural cubic spline with 5 knots on the `count_yday` variable:
+As a starting point, try a natural spline with 5 knots on the `count_yday` variable:
 
 ```{r}
 library(splines)
@@ -189,14 +260,14 @@ lm_temperature <-
 p1 +
   geom_line(
     data = augment(lm_temperature, newdata = weather_data),
-    aes(y = .fitted)
-  )
+    aes(y = .fitted), size = 1
+  ) +
+  theme(legend.position = "top")
 ```
 
 We can obviously do a lot better.
-I'll fit the data using a generalized additive model (GAM) with the `mgcv` package.
-^[Check out [this blog post by Gavin Simpson ](https://fromthebottomoftheheap.net/2014/05/09/modelling-seasonal-data-with-gam/) for a great walkthrough modeling seasonal data with GAMs.]
-For the `count_yday` variable (ranges from 1-365), I'll make sure that there is no discontinuity between year by using a *cyclic* cubic spline (`bs = "cc"`).
+I'll fit the data using a generalized additive model (GAM) with the `mgcv` package.^[Check out [this blog post by Gavin Simpson ](https://fromthebottomoftheheap.net/2014/05/09/modelling-seasonal-data-with-gam/) for a great walkthrough of modeling seasonal data with GAMs.]
+For the `count_yday` variable (ranges from 1-365), I'll make sure that there is no discontinuity between year by using a *cyclic* spline (`bs = "cc"`).
 I'll also include a smoothing term of `count_day` which will capture the trend across years.
 
 ```{r}
@@ -208,14 +279,16 @@ gam_temperature <-
 plot(gam_temperature, pages = 1, shade = TRUE)
 ```
 
-The left plot shows the seasonal trend across the year (note the lines would connect at `count_yday` = 1 and 365), and the right plot shows the increase in average temperature throughout time after accounting for the seasonal effect.
+The left plot shows the seasonal trend within a year (note the lines would connect at `count_yday` = 1 and 365), and the right plot shows the increase in average temperature throughout time (across years) after accounting for the seasonal effect.
+Overlay the fit:
 
 ```{r}
 p1 +
   geom_line(
     data = augment(gam_temperature, newdata = weather_data),
-    aes(y = .fitted)
-  )
+    aes(y = .fitted), size = 1
+  ) +
+  theme(legend.position = "top")
 ```
 
 It doesn't capture some of the coldest temperatures, but I'm pretty happy with that.
@@ -248,15 +321,7 @@ p1
 ```
 
 This pattern of missing data during winter months makes me think that the `total_precipitation` is actually total rainfall, i.e. snowfall is not counted.
-I'm going to bake that assumption into the model by renaming the variable and imputing missing values with 0:
-
-```{r}
-weather_data <- weather_data %>%
-  rename(total_rainfall = total_precipitation) %>%
-  mutate(total_rainfall = replace_na(total_rainfall, 0))
-```
-
-This imputation is not a great approximation of the truth -- there are missing values in the past month that I know first-hand had `total_rainfall` > 0 -- but 
+I'm going to impute the missing values with 0 during pre-processing, which is admittedly a poor approximation of the truth -- I know first-hand that there has been some rainy days in Halifax during April 2022, for example.
 
 The `snow_on_ground` distribution:
 
@@ -271,84 +336,28 @@ p2
 ```
 
 I'll take the same zero imputation approach here, which I'm a lot more confident doing here because most of the missing values occur during non-winter months.
+A more careful approach might involve imputing 0 during non-winter months that I'm certain would have no snow on the ground, then modeling the winter months with something like a zero-inflated Poisson model.
+
+### Wind speed
+
+The `speed_max_gust` variable is the daily maximum wind speed in km/h, and has
+`r scales::percent(mean(is.na(weather_data$speed_max_gust)))` missing values.
 
 ```{r}
-weather_data <- weather_data %>%
-  rename(total_rainfall = total_precipitation) %>%
-  mutate(total_rainfall = replace_na(total_rainfall, 0))
+weather_data %>%
+  ggplot(aes(x =))
 ```
-
 
 
 ```{r}
 d <- weather_data %>%
-  select(count_date, total_precipitation, snow_on_ground,
+  select(count_date, total_rainfall, snow_on_ground,
          count_year, count_yday, count_day)
 d %>%
   count(snow_on_ground, sort = T)
 d %>%
-  count(total_precipitation, sort = T)
-d %>%
-  count(is.na(total_precipitation), is.na(snow_on_ground))
+  count(total_rainfall, sort = T)
 ```
-
-
-```{r}
-d %>%
-  pivot_longer(cols = c(total_precipitation, snow_on_ground)) %>%
-  filter(!is.na(value)) %>%
-  ggplot(aes(x = value)) +
-  geom_histogram(bins = 20) +
-  facet_wrap(~ name)
-```
-
-```{r}
-gam_poisson_snow <- gam(
-  snow_on_ground ~ s(count_yday, bs = "cc", k = 4) + s(count_day),
-  data = filter(weather_data, !is.na(snow_on_ground)),
-  family = poisson
-)
-plot(gam_poisson_snow)
-```
-
-```{r}
-p2 +
-  geom_line(
-    data = augment(gam_poisson_snow, newdata = weather_data,
-                   type.predict = "response"),
-    aes(y = .fitted),
-    color = td_colors$nice$soft_orange
-  )
-```
-
-
-
-```{r}
-gam_precip <- gam(total_precipitation ~ s(total_precipitation, bs = ))
-gam_precip <-
-  #gam(total_precipitation ~ s(count_yday, bs = "cc", k = 12) + s(count_day),
-  gam(
-    list(total_precipitation ~ s(count_yday, bs = "cc", k = 12) + s(count_day),
-         ~ s(count_yday, bs = "cc", k = 12) + s(count_day)),
-    data = filter(weather_data, !is.na(total_precipitation)),
-    family = gammals
-  )
-plot(gam_temperature, pages = 1, shade = TRUE)
-```
-
-The left plot shows the seasonal trend across the year (note the lines would connect at `count_yday` = 1 and 365), and the right plot shows the increase in average temperature throughout time after accounting for the seasonal effect.
-
-```{r}
-p1 +
-  geom_line(
-    data = augment(gam_temperature, newdata = weather_data),
-    aes(y = .fitted)
-  )
-```
-
-
-
-
 
 
 ## Reproducibility {.appendix}
