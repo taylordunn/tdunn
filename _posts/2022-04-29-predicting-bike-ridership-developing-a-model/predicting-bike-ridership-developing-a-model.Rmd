@@ -528,39 +528,48 @@ bind_rows(
   labs(x = "date range", y = NULL, color = NULL)
 ```
 
-It might make sense to stratify by `site_name` so that there is a 70-30 split in each site (instead of splitting into the first 70% and last 30% of the full data).
+It might make more sense to stratify by `site_name` so that there is a 70-30 split in each site (instead of splitting into the first 70% and last 30% of the full data).
 ^[Since `initial_time_split()` doesn't take `strata` argument, this would require defining a custom split function with `rsample::make_splits()`. This functionality might be available in future versions of `rsample` (see [this issue](https://github.com/tidymodels/rsample/issues/207)).]
+I'll use this simpler approach for now.
 
 For re-sampling, I will use `sliding_period()` to break up the data into 3 months of data for analysis and 1 month for assessment:
 
 ```{r}
 bike_resamples <-
   sliding_period(bike_train, index = count_date,
-                 period = "month", lookback = 2, assess_stop = 1,
-                 # This allows incomplete months (partial windows) to be used
-                 complete = FALSE)
+                 period = "month", lookback = 2, assess_stop = 1)
+```
+
+Visualize the resamples:
+
+```{r}
 bind_rows(
-  analysis_set = map_dfr(bike_resamples$splits, analysis),
-  assess_set = map_dfr(bike_resamples$splits, assessment),
+  analysis_set = map_dfr(bike_resamples$splits, analysis, .id = "i"),
+  assessment_set = map_dfr(bike_resamples$splits, assessment, .id = "i"),
   .id = "data_set"
 ) %>%
-  group_by(data_set, site_name) %>%
+  mutate(i = as.integer(i)) %>%
+  group_by(i, data_set) %>%
   summarise(
     min_date = min(count_date), max_date = max(count_date),
     n_days = n(), midpoint_date = min_date + n_days / 2,
     .groups = "drop"
   ) %>%
-  ggplot(aes(y = fct_reorder(site_name, min_date), color = data_set)) +
+  ggplot(aes(y = factor(i), color = data_set)) +
   geom_linerange(aes(xmin = min_date, xmax = max_date),
-                 position = position_dodge(0.2)) +
-  geom_point(aes(x = min_date), position = position_dodge(0.2)) +
-  geom_point(aes(x = max_date), position = position_dodge(0.2)) +
-  geom_text(aes(label = n_days, x = midpoint_date), vjust = -0.5,
-            position = position_dodge(0.2)) +
+                 position = position_dodge(0.3)) +
+  geom_point(aes(x = min_date), position = position_dodge(0.3)) +
+  geom_point(aes(x = max_date), position = position_dodge(0.3)) +
   labs(x = "date range", y = NULL, color = NULL)
 ```
 
+I'll define a set of metrics to use here as well:
 
+```{r}
+bike_metrics <- metric_set(rmse, mape, rsq, poisson_log_loss)
+```
+
+The Poisson log loss is a new one to me -- it is appropriate for modeling count data, which we have here.
 
 For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
 
@@ -568,36 +577,85 @@ For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
 bike_recipe <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
-  step_naomit(n_bikes_lag_14) %>%
+  step_naomit(n_bikes_lag_14, skip = TRUE) %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
-bike_recipe_time <-
+```
+
+An extension of this model will include date variables of day of week, month, year and holidays (using the Canadian holidays I showed previously):
+
+```{r}
+bike_recipe_date <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
   step_naomit(n_bikes_lag_14) %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "month", "year"),
             label = TRUE, ordinal = FALSE) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
+```
 
-prep(bike_recipe_time, training = bike_train) %>% bake(bike_train) %>%
+To make sure everything is working as expected, run the training set through this pre-processing recipe:
+
+```{r}
+prep(bike_recipe_date) %>%
+  bake(bike_train) %>%
   glimpse()
 ```
+
+Looks right to me.
+The first models I will run these recipes through are simple linear regression and poisson regression:
 
 ```{r}
 lm_spec <- linear_reg(engine = "lm")
 poisson_spec <- poisson_reg(engine = "glm")
 
 wf_set_1 <- workflow_set(
-  preproc = list(base = bike_recipe, time = bike_recipe_time),
+  preproc = list(base = bike_recipe, dates = bike_recipe_date),
   models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
   cross = TRUE
 )
 wf_set_1
+```
+
+```{r}
+wf_set_1_fits <-
+  workflow_map(wf_set_1, "fit_resamples", verbose = TRUE,
+               resamples = bike_resamples, metrics = bike_metrics)
+```
+
+```{r}
+wf_set_1_fits$result[[1]] %>%
+  collect_notes() %>%
+  pull(note)
+```
+
+```{r}
+wf1 <- workflow() %>%
+  add_recipe(bike_recipe) %>%
+  add_model(lm_spec)
+test_fits <- fit_resamples(
+  wf1, resamples = bike_resamples,
+  control = control_resamples(save_workflow = T, save_pred = T, verbose = T)
+)
+test_fits %>%
+  collect_notes() 
+
+test_fits$
+```
+
+
+```{r}
+bike_analysis_6 <- analysis(bike_resamples$splits[[6]])
+bike_assess_6 <- assessment(bike_resamples$splits[[6]])
+
+bike_fit_6 <- fit(wf1, bike_analysis_6)
+predict(bike_fit_6, bike_assess_6)
 ```
 
 
