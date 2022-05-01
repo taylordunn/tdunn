@@ -45,6 +45,8 @@ bike_ridership <- read_rds(
 
 ## Exploratory data analysis
 
+I've already done a bit of EDA in part 1, but I'll dive deeper in this post.
+
 ```{r}
 glimpse(bike_ridership)
 ```
@@ -134,6 +136,83 @@ bike_ridership %>%
   theme(legend.position = "none") +
   dunnr::add_facet_borders()
 ```
+
+The day of the week effect looks important:
+
+```{r}
+bike_ridership %>%
+  mutate(day_of_week = lubridate::wday(count_date, label = TRUE)) %>%
+  ggplot(aes(x = day_of_week, y = n_bikes)) +
+  geom_jitter(aes(color = site_name), height = 0, width = 0.2, alpha = 0.3) +
+  stat_summary(fun = "mean", geom = "point") +
+  facet_wrap(~ site_name) +
+  theme(legend.position = "none") +
+  dunnr::add_facet_borders()
+```
+
+Another thing to consider is holidays.
+I can get Canadian holidays with the `timeDate` package (which is how `recipes::step_holiday()` works):
+
+```{r}
+# Get the 
+library(timeDate)
+canada_holidays <-
+  timeDate::listHolidays(
+    pattern = "^CA|^Christmas|^NewYears|Easter[Sun|Mon]|^GoodFriday|^CaRem"
+  )
+canada_holidays
+```
+
+Then get the dates for each across the years in the bike data:
+
+```{r}
+canada_holiday_dates <- tibble(holiday = canada_holidays) %>%
+  crossing(year = 2019:2022) %>%
+  mutate(
+    holiday_date = map2(
+      year, holiday,
+      ~ as.Date(timeDate::holiday(.x, .y)@Data)
+    )
+  ) %>%
+  unnest(holiday_date)
+
+canada_holiday_dates %>% rmarkdown::paged_table()
+```
+
+Only day I can think is missing from this list is Family Day (Heritage Day in Nova Scotia) which is the third Monday in February.
+Visualize the effect of these holidays on bike ridership by plotting `n_bikes` in a 2 week window around the holidays (only the South Park St site for this plot):
+
+```{r}
+canada_holiday_dates %>%
+  filter(holiday_date %in% unique(bike_ridership$count_date)) %>%
+  mutate(
+    date_window = map(holiday_date, ~ seq.Date(.x - 7, .x + 7, by = "1 day"))
+  ) %>%
+  unnest(date_window) %>%
+  left_join(
+    bike_ridership, by = c("date_window" = "count_date")
+  ) %>%
+  mutate(is_holiday = holiday_date == date_window) %>%
+  group_by(holiday) %>%
+  mutate(day_from_holiday = as.numeric(holiday_date - date_window)) %>%
+  ungroup() %>%
+  filter(site_name == "South Park St") %>%
+  ggplot(aes(x = day_from_holiday, y = n_bikes,
+             group = factor(year))) +
+  geom_line() +
+  geom_vline(xintercept = 0, lty = 2) +
+  geom_point(aes(color = factor(year))) +
+  scale_color_viridis_d("year") +
+  facet_wrap(~ holiday) +
+  dunnr::add_facet_borders() +
+  theme(legend.position = "top")
+```
+
+The only holiday with a clear drop in ridership is Labour Day in 2021.
+Victoria Day seems to have the opposite effect.
+The Good Friday, Easter Sunday and Easter Sunday are obviously overlapping, and the `n_bikes` trend is a bit of a mess, but I can see an indication to the left of Good Friday that there may be a drop in ridership going into that weekend.
+
+One thing to note is that the first, middle and last points correspond to the same day of the week, and the middle point in this set is usually lower than the other two, so holidays may be useful features in conjunction with day of the week.
 
 The weather variables have varying levels of completeness:
 
@@ -344,21 +423,65 @@ The `speed_max_gust` variable is the daily maximum wind speed in km/h, and has
 `r scales::percent(mean(is.na(weather_data$speed_max_gust)))` missing values.
 
 ```{r}
+mean_speed <- mean(weather_data$speed_max_gust, na.rm = TRUE)
+
 weather_data %>%
-  ggplot(aes(x =))
+  mutate(
+    speed_max_gust = replace_na(speed_max_gust, 20)
+  ) %>%
+  ggplot(aes(x = count_date, y = speed_max_gust)) +
+  geom_line(data = . %>% filter(speed_max_gust > 20)) +
+  geom_smooth(data = . %>% filter(speed_max_gust > 20), method = "loess") +
+  geom_hline(yintercept = mean_speed,
+             color = td_colors$nice$opera_mauve, size = 1, lty = 2) +
+  geom_jitter(data = . %>% filter(speed_max_gust == 20),
+              width = 0, alpha = 0.5) +
+  scale_y_continuous(breaks = c(mean_speed, 20, 40, 60, 80),
+                     labels = c("mean_speed", "missing", 40, 60, 80))
 ```
 
+Relative to the noise, the time trends are pretty minor, and the missing data looks to be missing at random.
+I'll just impute using the mean speed.
+
+### Lagged counts
+
+As a time series data set, it would be careless to not account for past data when predicting future data.
+One of the models I fit will be ARIMA, but for the other models I will include lagged `n_bikes` values.
 
 ```{r}
-d <- weather_data %>%
-  select(count_date, total_rainfall, snow_on_ground,
-         count_year, count_yday, count_day)
-d %>%
-  count(snow_on_ground, sort = T)
-d %>%
-  count(total_rainfall, sort = T)
+bike_ridership_lag <- bike_ridership %>%
+  arrange(site_name, count_date) %>%
+  group_by(site_name) %>%
+  mutate(
+    n_bikes_lag_1 = lag(n_bikes, 1),
+    n_bikes_lag_2 = lag(n_bikes, 2),
+    n_bikes_lag_3 = lag(n_bikes, 3),
+    n_bikes_lag_7 = lag(n_bikes, 7),
+    n_bikes_lag_14 = lag(n_bikes, 14)
+  )
+bike_ridership_lag %>%
+  select(site_name, count_date, starts_with("n_bikes")) %>%
+  pivot_longer(cols = matches("n_bikes_lag"),
+               names_to = "lag_days", values_to = "n_bikes_lag") %>%
+  filter(!is.na(n_bikes_lag)) %>%
+  mutate(lag_days = str_extract(lag_days, "\\d+") %>% as.integer()) %>%
+  group_by(site_name, lag_days) %>%
+  mutate(corr_coef = cor(n_bikes, n_bikes_lag)) %>%
+  ggplot(aes(x = n_bikes_lag, y = n_bikes, color = site_name)) +
+  geom_point(alpha = 0.2) +
+  geom_label(data = . %>% distinct(n_bikes_lag, site_name, corr_coef),
+             aes(label = round(corr_coef, 2), x = 500, y = 200)) +
+  geom_abline(slope = 1) +
+  facet_grid(str_trunc(site_name, 10) ~ factor(lag_days)) +
+  dunnr::add_facet_borders() +
+  theme(legend.position = "none")
 ```
 
+From this visual, I would say that the 7- and 14-day lags are just as well-correlated as the 1-, 2-, and 3-day lags.
+
+## Modeling
+
+Pre
 
 ## Reproducibility {.appendix}
 
