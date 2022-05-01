@@ -431,7 +431,8 @@ weather_data %>%
   ) %>%
   ggplot(aes(x = count_date, y = speed_max_gust)) +
   geom_line(data = . %>% filter(speed_max_gust > 20)) +
-  geom_smooth(data = . %>% filter(speed_max_gust > 20), method = "loess") +
+  geom_smooth(data = . %>% filter(speed_max_gust > 20),
+              method = "loess", formula = "y ~ x") +
   geom_hline(yintercept = mean_speed,
              color = td_colors$nice$opera_mauve, size = 1, lty = 2) +
   geom_jitter(data = . %>% filter(speed_max_gust == 20),
@@ -447,6 +448,7 @@ I'll just impute using the mean speed.
 
 As a time series data set, it would be careless to not account for past data when predicting future data.
 One of the models I fit will be ARIMA, but for the other models I will include lagged `n_bikes` values.
+Investigate the correlation in `n_bikes` for values lagged by 1, 2 and 3 days, and by 1 and 2 weeks (because they are the same day of the week):
 
 ```{r}
 bike_ridership_lag <- bike_ridership %>%
@@ -477,11 +479,166 @@ bike_ridership_lag %>%
   theme(legend.position = "none")
 ```
 
-From this visual, I would say that the 7- and 14-day lags are just as well-correlated as the 1-, 2-, and 3-day lags.
+The 7- and 14-day lagged values are correlated just as strongly (in some cases stronger) than the other options.
+This is great news because I only want to include a single lag variable, and using the 14th day lag means I can forecast 14 days ahead.
+
+In order to use 14-day lag in a `tidymodels` workflow, I need to add it to the data myself.
+The `step_lag()` function won't all the outcome `n_bikes` to be lagged, because any new data won't have an `n_bikes` variable to use.
+See [the warning in this section of the Tidy Modeling with R book](https://www.tmwr.org/recipes.html#skip-equals-true).
+Add the `n_bikes_lag_14` predictor:
+
+```{r}
+bike_ridership <- bike_ridership %>%
+  group_by(site_name) %>%
+  mutate(n_bikes_lag_14 = lag(n_bikes, 14)) %>%
+  ungroup()
+```
+
 
 ## Modeling
 
-Pre
+For splitting the data into training and testing sets, there is the `initial_time_split()` function in `rsample` to account for the time dependence.
+
+```{r fig.height=3}
+# Need to order by time to properly use time split
+bike_ridership <- bike_ridership %>% arrange(count_date, site_name)
+
+set.seed(3005)
+bike_split <- initial_time_split(bike_ridership, prop = 0.7)
+
+bike_train <- training(bike_split)
+bike_test <- testing(bike_split)
+
+bind_rows(
+  train = bike_train, test = bike_test, .id = "data_set"
+) %>%
+  group_by(data_set, site_name) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_days = n(), midpoint_date = min_date + n_days / 2,
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(y = fct_reorder(site_name, min_date), color = data_set)) +
+  geom_linerange(aes(xmin = min_date, xmax = max_date),
+                 position = position_dodge(0.2)) +
+  geom_point(aes(x = min_date), position = position_dodge(0.2)) +
+  geom_point(aes(x = max_date), position = position_dodge(0.2)) +
+  geom_text(aes(label = n_days, x = midpoint_date), vjust = -0.5,
+            position = position_dodge(0.2)) +
+  labs(x = "date range", y = NULL, color = NULL)
+```
+
+It might make sense to stratify by `site_name` so that there is a 70-30 split in each site (instead of splitting into the first 70% and last 30% of the full data).
+^[Since `initial_time_split()` doesn't take `strata` argument, this would require defining a custom split function with `rsample::make_splits()`. This functionality might be available in future versions of `rsample` (see [this issue](https://github.com/tidymodels/rsample/issues/207)).]
+
+For re-sampling, I will use `sliding_period()` to break up the data into 3 months of data for analysis and 1 month for assessment:
+
+```{r}
+bike_resamples <-
+  sliding_period(bike_train, index = count_date,
+                 period = "month", lookback = 2, assess_stop = 1,
+                 # This allows incomplete months (partial windows) to be used
+                 complete = FALSE)
+bind_rows(
+  analysis_set = map_dfr(bike_resamples$splits, analysis),
+  assess_set = map_dfr(bike_resamples$splits, assessment),
+  .id = "data_set"
+) %>%
+  group_by(data_set, site_name) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_days = n(), midpoint_date = min_date + n_days / 2,
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(y = fct_reorder(site_name, min_date), color = data_set)) +
+  geom_linerange(aes(xmin = min_date, xmax = max_date),
+                 position = position_dodge(0.2)) +
+  geom_point(aes(x = min_date), position = position_dodge(0.2)) +
+  geom_point(aes(x = max_date), position = position_dodge(0.2)) +
+  geom_text(aes(label = n_days, x = midpoint_date), vjust = -0.5,
+            position = position_dodge(0.2)) +
+  labs(x = "date range", y = NULL, color = NULL)
+```
+
+
+
+For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
+
+```{r}
+bike_recipe <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  step_naomit(n_bikes_lag_14) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+bike_recipe_time <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  step_naomit(n_bikes_lag_14) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "month", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+
+prep(bike_recipe_time, training = bike_train) %>% bake(bike_train) %>%
+  glimpse()
+```
+
+```{r}
+lm_spec <- linear_reg(engine = "lm")
+poisson_spec <- poisson_reg(engine = "glm")
+
+wf_set_1 <- workflow_set(
+  preproc = list(base = bike_recipe, time = bike_recipe_time),
+  models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
+  cross = TRUE
+)
+wf_set_1
+```
+
+
+
+```{r}
+bike_recipe_time <- bike_recipe %>%
+  step_date(count_date, features = c("dow", "month", "year"), label = TRUE)
+
+tidy(bike_recipe_time)
+prep(bike_recipe_time, training = bike_train) %>%
+  bake(new_data = bike_train)
+```
+
+```{r}
+xgboost_recipe <- 
+  recipe(formula = n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = T) %>% 
+  step_string2factor(one_of("site_name")) %>% 
+  step_novel(all_nominal_predictors()) %>% 
+  step_dummy(all_nominal_predictors(), one_hot = TRUE) %>% 
+  step_zv(all_predictors()) 
+
+xgboost_spec <- 
+  boost_tree(trees = tune(), min_n = tune(), tree_depth = tune(), learn_rate = tune(), 
+    loss_reduction = tune(), sample_size = tune()) %>% 
+  set_mode("regression") %>% 
+  set_engine("xgboost") 
+
+xgboost_workflow <- 
+  workflow() %>% 
+  add_recipe(xgboost_recipe) %>% 
+  add_model(xgboost_spec) 
+
+set.seed(6376)
+xgboost_tune <-
+  tune_grid(xgboost_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
+
+
+
+usemodels::use_xgboost(n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = TRUE, colors = FALSE)
+```
+
 
 ## Reproducibility {.appendix}
 
