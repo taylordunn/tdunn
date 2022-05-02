@@ -375,12 +375,19 @@ It doesn't capture some of the coldest temperatures, but I'm pretty happy with t
 I'll use predictions from the GAM model to impute missing days:
 
 ```{r}
-weather_data <- weather_data %>%
-  bind_cols(pred = predict(gam_temperature, newdata = weather_data)) %>%
-  mutate(mean_temperature = ifelse(is.na(mean_temperature), pred,
-                                   mean_temperature)) %>%
-  select(-pred)
+bike_ridership <- bike_ridership %>%
+  mutate(
+    count_day = as.numeric(count_date - min(count_date)),
+    count_yday = lubridate::yday(count_date),
+  ) %>%
+  bind_cols(pred = predict(gam_temperature, newdata = .)) %>%
+  mutate(
+    mean_temperature = ifelse(is.na(mean_temperature), pred,
+                              mean_temperature)
+  ) %>%
+  select(-count_day, -count_yday, -pred)
 ```
+
 
 ### Precipitation and snow
 
@@ -505,6 +512,10 @@ n_cores <- parallel::detectCores(logical = FALSE)
 library(doParallel)
 cl <- makePSOCKcluster(n_cores - 1)
 registerDoParallel(cl)
+# This extra step makes sure the parallel workers have access to the
+#  `tidyr::replace_na()` function during pre-processing, which I use later on
+# See this issue: https://github.com/tidymodels/tune/issues/364
+parallel::clusterExport(cl, c("replace_na"))
 ```
 
 
@@ -587,7 +598,7 @@ The Poisson log loss is a new one to me, that was [recently added to `yardstick`
 
 ### Pre-processing
 
-```{r}
+```{r eval=FALSE}
 bike_recipe_null <-
   recipe(n_bikes ~ n_bikes_lag_14, data = bike_train) %>%
   step_novel(all_nominal_predictors()) %>%
@@ -611,27 +622,83 @@ prep(bike_recipe) %>%
   rmarkdown::paged_table()
 ```
 
-An extension of this model will include date variables of day of week, day of year, year and holidays (using the Canadian holidays I showed previously):
+An extension of this model will include date variables.
+I'll add day of week as categorical, day of year as numerical (and tune a natural spline function), year as numerical and Canadian holidays as caegorical.
 
 ```{r}
 bike_recipe_date <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
-  #step_naomit(n_bikes_lag_14, skip = TRUE) %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
             label = TRUE, ordinal = FALSE) %>%
-  #step_bs(count_date_doy, deg_free = tune()) %>%
   step_ns(count_date_doy, deg_free = tune()) %>%
-          #options = list(Boundary.knots = c(1, 365))) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
 ```
 
+I'll consider the weather variables (with some simple imputations) separately:
+
+```{r}
+bike_recipe_weather <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_impute_mean(speed_max_gust) %>%
+  # Impute missing values with zero
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  # step_mutate(
+  #   total_precipitation = ifelse(is.na(total_precipitation), 0, total_precipitation)
+  # ) %>%
+  # step_mutate(
+  #   snow_on_ground = replace_na(snow_on_ground, 0)
+  # ) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
+And lastly, all 4 together:
+
+```{r}
+bike_recipe_date_weather <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = tune()) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_impute_mean(speed_max_gust) %>%
+  # Impute missing values with zero
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
 The first models I will run these recipes through are simple linear regression and Poisson regression.
-I would prefer to use negative binomial regression instead of Poisson to account for overdispersion, but [this model hasn't been implemented in `parsnip` yet](https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658).
+I would prefer to use negative binomial regression instead of Poisson to account for overdispersion (see aside), but [it hasn't been implemented in `parsnip` yet](https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658).
+
+<aside>
+
+Over-dispersion in `n_bikes` (variance much higher than the mean):
+
+```{r}
+bike_ridership %>%
+  group_by(site_name) %>%
+  summarise(mean_n_bikes = mean(n_bikes), var_n_bikes = var(n_bikes)) %>%
+  gt() %>%
+  fmt_number(matches("n_bikes"), decimals = 1)
+```
+
+</aside>
 
 ```{r}
 lm_spec <- linear_reg(engine = "lm")
@@ -639,22 +706,26 @@ library(poissonreg) # This wrapper package is required to use `poisson_reg()`
 poisson_spec <- poisson_reg(engine = "glm")
 
 wf_set_1 <- workflow_set(
-  #preproc = list(base = bike_recipe),
-  #preproc = list(test = bike_recipe_null, base = bike_recipe),
-  preproc = list(base = bike_recipe, dates = bike_recipe_date),
-  #models = list(linear_reg = lm_spec), #, poisson_reg = poisson_spec),
+  preproc = list(base = bike_recipe,
+                 date = bike_recipe_date, weather = bike_recipe_weather,
+                 date_weather = bike_recipe_date_weather),
   models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
   #models = list(poisson_reg = poisson_spec),
   cross = TRUE
 )
 wf_set_1
 ```
+```{r}
+rnorm(10)
+```
+
 
 ```{r}
 wf_set_1_res <- workflow_map(
   wf_set_1,
-  #"fit_resamples",
-  "tune_grid", grid = grid_regular(deg_free(range = c(3, 8)), levels = 6),
+  "tune_grid",
+  # In this early stage, I'll try just a few `deg_free` in the spline term
+  grid = grid_regular(deg_free(range = c(5, 8)), levels = 4),
   resamples = bike_resamples,
   metrics = bike_metrics, verbose = TRUE
 )
@@ -687,10 +758,68 @@ plot_wf_set_metrics <- function(wf_set_res, rank_metric = "rmse") {
 plot_wf_set_metrics(wf_set_1_res)
 ```
 
+Observations:
+
+* Poisson regression performed worse than linear regression. This isn't too surprising because of the previously mentioned over-dispersion. I'd like to re-visit this approach when the negative binomial model becomes available.
+* Linear regression generally performed better than Poisson regression.
+
 ```{r}
-wf_set_1_res$result[[4]] %>%
-  autoplot()
+plot_wf_set_metrics <- function(wf_set_res, rank_metric = "rmse") {
+  rank_results(wf_set_res, rank_metric = rank_metric) %>%
+    mutate(preproc = str_remove(wflow_id, paste0("_", model))) %>%
+    ggplot(aes(x = rank, y = mean, color = model, shape = preproc)) +
+    geom_point(size = 2) +
+    geom_errorbar(aes(ymin = mean - std_err, ymax = mean + std_err),
+                  width = 0.2) +
+    facet_wrap(~ .metric, scales = "free_y")
+  
+}
+plot_wf_set_metrics(wf_set_1_res)
 ```
+
+```{r}
+rank_results(wf_set_1_res)
+autoplot(wf_set_1_res, id = "dates_linear_reg")
+best_wf_res <- extract_workflow_set_result(wf_set_1_res, id = "dates_linear_reg")
+best_wf <- extract_workflow(wf_set_1_res, id = "dates_linear_reg")
+best_wf_final <- finalize_workflow(
+  best_wf,
+  select_best(best_wf_res, metric = "rmse")
+)
+best_wf_final_test_fit <- fit(best_wf_final, bike_train)
+
+best_wf_final_fit <- last_fit(best_wf_final, bike_split)
+collect_metrics(best_wf_final_fit)
+```
+
+```{r fig.height=5, fig.width=5}
+augment(best_wf_final_test_fit, bike_train) %>%
+  ggplot(aes(x = count_date, y = n_bikes)) +
+  geom_line(aes(y = n_bikes, color = site_name)) +
+  geom_line(aes(y = .pred)) +
+  facet_wrap(~ site_name, ncol = 1)
+```
+
+```{r}
+bike_metrics(best_wf_final_test_fit)
+augment(best_wf_final_test_fit, bike_train) %>%
+  bike_metrics(n_bikes, .pred)
+augment(best_wf_final_test_fit, bike_test) %>%
+  bike_metrics(n_bikes, .pred)
+```
+
+
+
+```{r fig.height=5, fig.width=5}
+augment(best_wf_final_test_fit, bike_test) %>%
+  ggplot(aes(x = count_date, y = n_bikes)) +
+  geom_line(aes(y = n_bikes, color = site_name)) +
+  geom_line(aes(y = .pred)) +
+  facet_wrap(~ site_name, ncol = 1)
+```
+
+
+
 
 
 It shouldn't come as a surprise that (1) the date variables improve performance, and that (2) Poisson regression did poorly, because we have significant over-dispersion in `n_bikes`:
