@@ -725,7 +725,7 @@ wf_set_1_res <- workflow_map(
   wf_set_1,
   "tune_grid",
   # In this early stage, I'll try just a few `deg_free` in the spline term
-  grid = grid_regular(deg_free(range = c(5, 8)), levels = 4),
+  grid = grid_regular(deg_free(range = c(4, 7)), levels = 4),
   resamples = bike_resamples,
   metrics = bike_metrics, verbose = TRUE
 )
@@ -762,6 +762,20 @@ Observations:
 
 * Poisson regression performed worse than linear regression. This isn't too surprising because of the previously mentioned over-dispersion. I'd like to re-visit this approach when the negative binomial model becomes available.
 * Linear regression generally performed better than Poisson regression.
+
+```{r eval=FALSE}
+extract_workflow_set_result(wf_set_1_res, "date_weather_poisson_reg") %>%
+  autoplot()
+wf <- extract_workflow(wf_set_1_res, "date_weather_poisson_reg")
+
+wf_res <- tune_grid(wf, resamples = bike_resamples, metrics = bike_metrics, 
+                    grid = grid_regular(deg_free(c(3, 7)), levels = 5),
+                    control = control_grid(extract = extract_model))
+autoplot(wf_res)
+
+wf_res
+```
+
 
 ```{r}
 plot_wf_set_metrics <- function(wf_set_res, rank_metric = "rmse") {
@@ -833,6 +847,8 @@ bike_train %>%
 ```
 
 I may re-visit this problem when the negative binomial model is implemented in `parsnip`.
+
+
 
 
 ```{r eval=FALSE}
