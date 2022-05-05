@@ -17,6 +17,7 @@ output:
     self_contained: false
     toc: true
 draft: true
+bibliography: references.bib
 ---
 
 ```{r setup, include=TRUE, code_folding="Setup"}
@@ -154,7 +155,6 @@ Another thing to consider is holidays.
 I can get Canadian holidays with the `timeDate` package (which is how `recipes::step_holiday()` works):
 
 ```{r}
-# Get the 
 library(timeDate)
 canada_holidays <-
   timeDate::listHolidays(
@@ -422,7 +422,7 @@ p2 <- weather_data %>%
 p2
 ```
 
-I'll take the same zero imputation approach here, which I'm a lot more confident doing here because most of the missing values occur during non-winter months.
+I'll also impute zero for missing `snow_on_ground`, which I'm a lot more confident doing here because most of the missing values occur during non-winter months.
 A more careful approach might involve imputing 0 during non-winter months that I'm certain would have no snow on the ground, then modeling the winter months with something like a zero-inflated Poisson model.
 
 ### Wind speed
@@ -556,12 +556,12 @@ It might make more sense to stratify by `site_name` so that there is a 70-30 spl
 ^[Since `initial_time_split()` doesn't take `strata` argument, this would require defining a custom split function with `rsample::make_splits()`. This functionality might be available in future versions of `rsample` (see [this issue](https://github.com/tidymodels/rsample/issues/207)).]
 For now, I'm using a simpler approach to split into the first 70% and 30% of the data.
 
-For re-sampling, I will use `sliding_period()` to break up the data into 12 months of data for analysis and 1 month for assessment:
+For re-sampling, I will use `sliding_period()` to break up the data into 14 months of data (chosen to give 10 resamples) for analysis and 1 month for assessment:
 
 ```{r}
 bike_resamples <-
   sliding_period(bike_train, index = count_date,
-                 period = "month", lookback = 11, assess_stop = 1)
+                 period = "month", lookback = 13, assess_stop = 1)
 ```
 
 Visualize the resamples:
@@ -590,13 +590,17 @@ bind_rows(
 I'll define a set of metrics to use here as well:
 
 ```{r}
-#bike_metrics <- metric_set(rmse, rsq, poisson_log_loss)
 bike_metrics <- metric_set(rmse, rsq, mase, poisson_log_loss)
 ```
 
 The Poisson log loss is a new one to me, that was [recently added to `yardstick`](https://yardstick.tidymodels.org/news/index.html#yardstick-0-0-9-2021-11-22).
+I'll include it just for kicks, but I will choose my final model with `mase`, the mean absolute scaled error, which was introduced by Hyndman and Koehler [@Hyndman2006].
+The MASE involves dividing the absolute forecast error ($|y_i - \hat{y}_i|$) by absolute *naive* forecast error (which involves forecasting with the last observed value).
+The main advantage of this is that it is scale invariant.
+Mean absolute percentage error (MAPE) is the typical scale-invariant choice in regression problems, but the MASE avoids dividing by `n_bikes` = 0 (of which there are some in this data set).
+It also has a straightforward interpretation: values greater than one indicate a worse forecast than the naive method, and values less indicate better.
 
-### Pre-processing
+### Generalized linear models
 
 ```{r eval=FALSE}
 bike_recipe_null <-
@@ -616,10 +620,6 @@ bike_recipe <-
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
-
-prep(bike_recipe) %>%
-  bake(bike_train) %>%
-  rmarkdown::paged_table()
 ```
 
 An extension of this model will include date variables.
@@ -651,18 +651,12 @@ bike_recipe_weather <-
   # Impute missing values with zero
   step_mutate_at(c(total_precipitation, snow_on_ground),
                  fn = ~ replace_na(., 0)) %>%
-  # step_mutate(
-  #   total_precipitation = ifelse(is.na(total_precipitation), 0, total_precipitation)
-  # ) %>%
-  # step_mutate(
-  #   snow_on_ground = replace_na(snow_on_ground, 0)
-  # ) %>%
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
 ```
 
-And lastly, all 4 together:
+And lastly, all the features:
 
 ```{r}
 bike_recipe_date_weather <-
@@ -675,7 +669,6 @@ bike_recipe_date_weather <-
   step_ns(count_date_doy, deg_free = tune()) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
   step_impute_mean(speed_max_gust) %>%
-  # Impute missing values with zero
   step_mutate_at(c(total_precipitation, snow_on_ground),
                  fn = ~ replace_na(., 0)) %>%
   step_novel(all_nominal_predictors()) %>%
@@ -710,15 +703,9 @@ wf_set_1 <- workflow_set(
                  date = bike_recipe_date, weather = bike_recipe_weather,
                  date_weather = bike_recipe_date_weather),
   models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
-  #models = list(poisson_reg = poisson_spec),
   cross = TRUE
 )
-wf_set_1
 ```
-```{r}
-rnorm(10)
-```
-
 
 ```{r}
 wf_set_1_res <- workflow_map(
@@ -742,10 +729,12 @@ Below is an example (for just the RMSE metric):
 autoplot(wf_set_1_res, metric = "rmse")
 ```
 
+Note in the legend how all results have the "recipe" preprocessor, even though we have four different pre-processors: `bike_recipe`, `bike_recipe_date`, `bike_recipe_weather`, `bike_recipe_date_weather`.
+
 </aside>
 
 ```{r}
-plot_wf_set_metrics <- function(wf_set_res, rank_metric = "rmse") {
+plot_wf_set_metrics <- function(wf_set_res, rank_metric = "mase") {
   rank_results(wf_set_res, rank_metric = rank_metric) %>%
     mutate(preproc = str_remove(wflow_id, paste0("_", model))) %>%
     ggplot(aes(x = rank, y = mean, color = model, shape = preproc)) +
@@ -758,109 +747,96 @@ plot_wf_set_metrics <- function(wf_set_res, rank_metric = "rmse") {
 plot_wf_set_metrics(wf_set_1_res)
 ```
 
-Observations:
-
-* Poisson regression performed worse than linear regression. This isn't too surprising because of the previously mentioned over-dispersion. I'd like to re-visit this approach when the negative binomial model becomes available.
-* Linear regression generally performed better than Poisson regression.
-
-```{r eval=FALSE}
-extract_workflow_set_result(wf_set_1_res, "date_weather_poisson_reg") %>%
-  autoplot()
-wf <- extract_workflow(wf_set_1_res, "date_weather_poisson_reg")
-
-wf_res <- tune_grid(wf, resamples = bike_resamples, metrics = bike_metrics, 
-                    grid = grid_regular(deg_free(c(3, 7)), levels = 5),
-                    control = control_grid(extract = extract_model))
-autoplot(wf_res)
-
-wf_res
-```
-
+Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
+Here are the models ranked by MASE:
+^[Using the `select_best = TRUE` argument means only the best model in each workflow is returned. In this case, that means the workflows with the tunable spline feature of `count_date_doy` will only have one entry.]
 
 ```{r}
-plot_wf_set_metrics <- function(wf_set_res, rank_metric = "rmse") {
-  rank_results(wf_set_res, rank_metric = rank_metric) %>%
-    mutate(preproc = str_remove(wflow_id, paste0("_", model))) %>%
-    ggplot(aes(x = rank, y = mean, color = model, shape = preproc)) +
-    geom_point(size = 2) +
-    geom_errorbar(aes(ymin = mean - std_err, ymax = mean + std_err),
-                  width = 0.2) +
-    facet_wrap(~ .metric, scales = "free_y")
-  
-}
-plot_wf_set_metrics(wf_set_1_res)
-```
-
-```{r}
-rank_results(wf_set_1_res)
-autoplot(wf_set_1_res, id = "dates_linear_reg")
-best_wf_res <- extract_workflow_set_result(wf_set_1_res, id = "dates_linear_reg")
-best_wf <- extract_workflow(wf_set_1_res, id = "dates_linear_reg")
-best_wf_final <- finalize_workflow(
-  best_wf,
-  select_best(best_wf_res, metric = "rmse")
-)
-best_wf_final_test_fit <- fit(best_wf_final, bike_train)
-
-best_wf_final_fit <- last_fit(best_wf_final, bike_split)
-collect_metrics(best_wf_final_fit)
-```
-
-```{r fig.height=5, fig.width=5}
-augment(best_wf_final_test_fit, bike_train) %>%
-  ggplot(aes(x = count_date, y = n_bikes)) +
-  geom_line(aes(y = n_bikes, color = site_name)) +
-  geom_line(aes(y = .pred)) +
-  facet_wrap(~ site_name, ncol = 1)
-```
-
-```{r}
-bike_metrics(best_wf_final_test_fit)
-augment(best_wf_final_test_fit, bike_train) %>%
-  bike_metrics(n_bikes, .pred)
-augment(best_wf_final_test_fit, bike_test) %>%
-  bike_metrics(n_bikes, .pred)
-```
-
-
-
-```{r fig.height=5, fig.width=5}
-augment(best_wf_final_test_fit, bike_test) %>%
-  ggplot(aes(x = count_date, y = n_bikes)) +
-  geom_line(aes(y = n_bikes, color = site_name)) +
-  geom_line(aes(y = .pred)) +
-  facet_wrap(~ site_name, ncol = 1)
-```
-
-
-
-
-
-It shouldn't come as a surprise that (1) the date variables improve performance, and that (2) Poisson regression did poorly, because we have significant over-dispersion in `n_bikes`:
-
-```{r}
-bike_train %>%
-  group_by(site_name) %>%
-  summarise(mean_n_bikes = mean(n_bikes), var_n_bikes = var(n_bikes)) %>%
+rank_results(wf_set_1_res, select_best = TRUE, rank_metric = "mase") %>%
+  filter(.metric == "mase") %>%
+  select(rank, wflow_id, .config, mean, std_err) %>%
   gt() %>%
-  fmt_number(matches("n_bikes"), decimals = 1)
+  fmt_number(columns = c(mean, std_err), decimals = 3)
 ```
 
-I may re-visit this problem when the negative binomial model is implemented in `parsnip`.
+So our best workflow has the id `date_weather_poisson_reg` with the `.config` "Preprocessor2_Model1" which refers to a specific spline degree from our tuning of the `count_date_doy` feature.
+Extract this workflow and checkout the results of the tuning:
+
+```{r fig.height=4, fig.width=6}
+bike_glm_workflow <-
+  extract_workflow(wf_set_1_res, id = "date_weather_poisson_reg")
+bike_glm_tune_res <-
+  extract_workflow_set_result(wf_set_1_res, id = "date_weather_poisson_reg")
+autoplot(bike_glm_tune_res)
+```
+
+The polynomial of degree 5 did best here.
+Finalize the workflow and fit to the test data:
+
+```{r}
+bike_glm_workflow_best <-
+  finalize_workflow(bike_glm_workflow,
+                    select_best(bike_glm_tune_res, metric = "mase"))
 
 
+bike_glm_fit <-
+  last_fit(bike_glm_workflow_best, split = bike_split,
+           metrics = bike_metrics)
+```
+
+The final metrics on the training and testing sets:
+
+```{r}
+bike_glm_metrics <- bike_glm_fit %>% collect_metrics()
+
+bike_glm_workflow_final <- extract_workflow(bike_glm_fit)
+bike_glm_metrics_train <- bike_glm_workflow_final %>%
+  augment(bike_train) %>%
+  bike_metrics(truth = n_bikes, estimate = .pred)
+
+bind_rows(
+  train = bike_glm_metrics_train,
+  test = bike_glm_metrics,
+  .id = "data_set"
+) %>%
+  select(.metric, data_set, .estimate) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate) %>%
+  gt() %>%
+  fmt_number(columns = -data_set, decimals = 2)
+```
+
+```{r}
+bind_rows(
+  train = augment(bike_glm_workflow_final, bike_train),
+  test = augment(bike_glm_workflow_final, bike_test),
+  .id = "data_set"
+) %>%
+  mutate(data_set = fct_inorder(data_set)) %>%
+  ggplot(aes(x = count_date)) +
+  geom_line(aes(y = n_bikes, color = site_name)) +
+  geom_line(aes(y = .pred), color = "black") +
+  facet_wrap(~ site_name, ncol = 1) +
+  #facet_grid(site_name ~ data_set, scales = "free", shrink = TRUE) +
+  theme(legend.position = "none")
+```
 
 
-```{r eval=FALSE}
-#bike_preds_1 <- test_fits$.predictions[[1]]
-bike_analysis_1 <- analysis(bike_resamples$splits[[1]])
-bike_assess_1 <- assessment(bike_resamples$splits[[1]])
+```{r fig.height=7, fig.width=7}
+library(performance)
 
-wf1_final <- finalize_workflow(wf1, parameters = list(deg_free = 3))
+bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_parsnip() %>%
+  check_model()
+```
 
-bike_fit_1 <- fit(wf1_final, bike_analysis_1)
-bike_lm_1 <- extract_fit_engine(bike_fit_1)
-summary(bike_lm_1)
+
+```{r}
+bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_engine() %>%
+  check_overdispersion()
+bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_engine() %>%
+  check_heteroscedasticity()
 ```
 
 
