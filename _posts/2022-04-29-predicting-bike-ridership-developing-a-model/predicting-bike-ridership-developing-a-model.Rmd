@@ -595,20 +595,12 @@ bike_metrics <- metric_set(rmse, rsq, mase, poisson_log_loss)
 
 The Poisson log loss is a new one to me, that was [recently added to `yardstick`](https://yardstick.tidymodels.org/news/index.html#yardstick-0-0-9-2021-11-22).
 I'll include it just for kicks, but I will choose my final model with `mase`, the mean absolute scaled error, which was introduced by Hyndman and Koehler [@Hyndman2006].
-The MASE involves dividing the absolute forecast error ($|y_i - \hat{y}_i|$) by absolute *naive* forecast error (which involves forecasting with the last observed value).
+The MASE involves dividing the absolute forecast error ($|y_i - \hat{y}_i|$) by absolute *naive* forecast error (which involves predicting with the last observed value).
 The main advantage of this is that it is scale invariant.
-Mean absolute percentage error (MAPE) is the typical scale-invariant choice in regression problems, but the MASE avoids dividing by `n_bikes` = 0 (of which there are some in this data set).
+Mean absolute percentage error (MAPE) is the typical scale-invariant choice in regression problems, but the MASE avoids dividing by `n_bikes` = 0 (of which there are about 20 in this data set).
 It also has a straightforward interpretation: values greater than one indicate a worse forecast than the naive method, and values less indicate better.
 
 ### Generalized linear models
-
-```{r eval=FALSE}
-bike_recipe_null <-
-  recipe(n_bikes ~ n_bikes_lag_14, data = bike_train) %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_dummy(all_nominal_predictors()) %>%
-  step_zv(all_predictors())
-```
 
 For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
 
@@ -778,7 +770,6 @@ bike_glm_workflow_best <-
   finalize_workflow(bike_glm_workflow,
                     select_best(bike_glm_tune_res, metric = "mase"))
 
-
 bike_glm_fit <-
   last_fit(bike_glm_workflow_best, split = bike_split,
            metrics = bike_metrics)
@@ -805,38 +796,156 @@ bind_rows(
   fmt_number(columns = -data_set, decimals = 2)
 ```
 
+Here are the predictions overlaid on the data (vertical line delineates training and testing sets):
+
 ```{r}
-bind_rows(
+bike_glm_preds <- bind_rows(
   train = augment(bike_glm_workflow_final, bike_train),
   test = augment(bike_glm_workflow_final, bike_test),
   .id = "data_set"
 ) %>%
-  mutate(data_set = fct_inorder(data_set)) %>%
+  mutate(data_set = fct_inorder(data_set))
+p <- bike_glm_preds %>%
   ggplot(aes(x = count_date)) +
   geom_line(aes(y = n_bikes, color = site_name)) +
   geom_line(aes(y = .pred), color = "black") +
-  facet_wrap(~ site_name, ncol = 1) +
-  #facet_grid(site_name ~ data_set, scales = "free", shrink = TRUE) +
+  geom_vline(xintercept = min(bike_test$count_date), lty = 2) +
+  facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
   theme(legend.position = "none")
+p
 ```
 
+Take a closer look by truncating the dates:
+
+```{r}
+p + coord_cartesian(xlim = as.Date(c("2021-07-01", "2022-05-01")))
+```
+
+That looks pretty good to me.
+To investigate the model performance further, I'll plot the biggest outliers in the training and testing set (and ±1 week on either side):
+
+```{r fig.height=6}
+worst_preds <- bike_glm_preds %>%
+  mutate(abs_error = abs(n_bikes - .pred)) %>%
+  group_by(data_set, site_name) %>%
+  slice_max(abs_error, n = 1) %>%
+  ungroup() %>%
+  select(data_set, site_name, count_date, n_bikes, .pred, abs_error)
+
+site_colors <- setNames(td_colors$pastel6[1:5], unique(worst_preds$site_name))
+
+worst_preds %>%
+  select(data_set, site_name, count_date) %>%
+  mutate(
+    worst_date = count_date,
+    count_date = map(count_date, ~ seq.Date(.x - 7, .x + 7, by = "day"))
+  ) %>%
+  unnest(count_date) %>%
+  left_join(bike_glm_preds, by = c("data_set", "site_name", "count_date")) %>%
+  filter(!is.na(n_bikes)) %>%
+  mutate(site_name = fct_inorder(site_name)) %>%
+  split(.$site_name) %>%
+  map(
+    ~ ggplot(., aes(x = count_date)) +
+      geom_line(aes(y = n_bikes, color = site_name)) +
+      geom_line(aes(y = .pred), color = "black") +
+      geom_vline(aes(xintercept = worst_date), lty = 2) +
+      facet_wrap(~ data_set, scales = "free_x", ncol = 2) +
+      dunnr::add_facet_borders() +
+      scale_color_manual(values = site_colors) +
+      scale_x_date(breaks = unique(.$worst_date)) +
+      expand_limits(y = 0) +
+      theme(legend.position = "none") +
+      labs(x = NULL, y = NULL,
+           subtitle = .$site_name[[1]])
+  ) %>%
+  reduce(`+`) +
+  plot_layout(ncol = 2)
+```
+
+Relative to the noise in the data, that doesn't look bad at all.
+The Vernon St site has a series of zeroes in a row that I'm guessing aren't real.
+The worst time period for prediction seems to be around 2022-11-23.
+Check out the weather around that day:
+
+
+```{r}
+bike_ridership %>%
+  filter(count_date > "2021-11-16", count_date < "2021-11-26") %>%
+  distinct(count_date, mean_temperature, total_precipitation,
+           speed_max_gust, snow_on_ground) %>%
+  gt()
+```
+
+This happens to be around the time of [a huge rain and wind storm in Nova Scotia](https://globalnews.ca/news/8395034/ns-storm-closures-2021/) that knocked out power for a lot of people.
+This is seen in the `total_precipitation` on 2021-11-22, but the next day is missing data so, in my pre-processing, it was imputed as 0, which is definitely a poor approximation of the truth.
+If I impute a large amount of rain (let's say 30mm) for that date, here is how the predictions change:
+
+```{r}
+augment(
+  bike_glm_workflow_final,
+  bike_glm_preds %>%
+    filter(count_date == "2021-11-23") %>%
+    rename(.pred_old = .pred) %>%
+    mutate(total_precipitation = 30)
+) %>%
+  select(site_name, n_bikes, .pred_old, .pred_new = .pred)
+```
+
+That is a much better prediction for a rainy and windy day.
+
+An advantage of using a generalized linear model is that they are easy to interpret.
+
+```{r}
+bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_engine() %>%
+  summary()
+gtsummary::tbl_regression(bike_glm_fit$.workflow[[1]]) %>%
+  gtsummary::as_gt() %>%
+  gt::tab_options(container.overflow.y = TRUE, container.height = 300)
+```
 
 ```{r fig.height=7, fig.width=7}
 library(performance)
 
 bike_glm_fit$.workflow[[1]] %>%
-  extract_fit_parsnip() %>%
+  extract_fit_engine() %>%
+  #extract_fit_parsnip() %>%
   check_model()
-```
 
-
-```{r}
 bike_glm_fit$.workflow[[1]] %>%
   extract_fit_engine() %>%
   check_overdispersion()
-bike_glm_fit$.workflow[[1]] %>%
-  extract_fit_engine() %>%
-  check_heteroscedasticity()
+```
+
+### Trees
+
+```{r}
+bike_recipe_date_weather <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = tune()) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
+```{r}
+bike_recipe <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
 ```
 
 
@@ -867,6 +976,30 @@ xgboost_tune <-
 
 usemodels::use_xgboost(n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = TRUE, colors = FALSE)
 ```
+
+```{r}
+usemodels::use_ranger(n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = T, colors = FALSE)
+ranger_recipe <- 
+  recipe(formula = n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = T) %>% 
+  step_string2factor(one_of("site_name")) 
+
+ranger_spec <- 
+  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
+  set_mode("regression") %>% 
+  set_engine("ranger") 
+
+ranger_workflow <- 
+  workflow() %>% 
+  add_recipe(ranger_recipe) %>% 
+  add_model(ranger_spec) 
+
+set.seed(83245)
+ranger_tune <-
+  tune_grid(ranger_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
+
+
+```
+
 
 
 ## Reproducibility {.appendix}
