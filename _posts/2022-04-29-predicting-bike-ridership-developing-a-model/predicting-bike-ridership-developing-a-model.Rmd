@@ -871,7 +871,7 @@ Check out the weather around that day:
 
 ```{r}
 bike_ridership %>%
-  filter(count_date > "2021-11-16", count_date < "2021-11-26") %>%
+  filter(count_date > "2021-11-15", count_date < "2021-11-26") %>%
   distinct(count_date, mean_temperature, total_precipitation,
            speed_max_gust, snow_on_ground) %>%
   gt()
