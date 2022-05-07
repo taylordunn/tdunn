@@ -26,6 +26,7 @@ library(tidyverse)
 library(gt)
 library(patchwork)
 library(tidymodels)
+library(tictoc)
 
 library(dunnr)
 extrafont::loadfonts(device = "win", quiet = TRUE)
@@ -608,7 +609,7 @@ For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
 bike_recipe <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
-  add_role(count_date, new_role = "date_variable") %>%
+  update_role(count_date, new_role = "date_variable") %>%
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
@@ -621,8 +622,10 @@ I'll add day of week as categorical, day of year as numerical (and tune a natura
 bike_recipe_date <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
+  #update_role(count_date, new_role = "date_variable") %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
+  #step_date(count_date, features = c("dow", "doy", "decimal"),
             label = TRUE, ordinal = FALSE) %>%
   step_ns(count_date_doy, deg_free = tune()) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
@@ -638,6 +641,7 @@ bike_recipe_weather <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
+  #update_role(count_date, new_role = "date_variable") %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_impute_mean(speed_max_gust) %>%
   # Impute missing values with zero
@@ -655,10 +659,14 @@ bike_recipe_date_weather <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
+  #update_role(count_date, new_role = "date_variable") %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
+  #step_date(count_date, features = c("dow", "doy", "decimal"),
             label = TRUE, ordinal = FALSE) %>%
-  step_ns(count_date_doy, deg_free = tune()) %>%
+  #step_ns(count_date_decimal) %>%
+  #step_ns(count_date_doy, deg_free = tune()) %>%
+  step_ns(count_date_doy, deg_free = 5) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
   step_impute_mean(speed_max_gust) %>%
   step_mutate_at(c(total_precipitation, snow_on_ground),
@@ -666,6 +674,69 @@ bike_recipe_date_weather <-
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
+```
+
+
+```{r}
+bike_recipe1 <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = 5) %>%
+  step_zv(all_predictors())
+bike_recipe2 <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  update_role(count_date, new_role = "date_variable") %>%
+  #add_role(count_date, new_role = "date_variable") %>%
+  #step_date(count_date, features = c("dow", "doy", "decimal", "year"),
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = 5) %>%
+  step_mutate(count_date_dec = lubridate::decimal_date(count_date)) %>%
+  #step_mutate(count_date_dec = as.numeric(count_date)) %>%
+  step_zv(all_predictors())
+```
+
+
+```{r}
+test_wf_set <- workflow_set(
+  preproc = list(rec1 = bike_recipe1, rec2 = bike_recipe2),
+  models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
+  cross = TRUE
+)
+
+test_wf_set_res <- workflow_map(
+  test_wf_set,
+  "fit_resamples",
+  resamples = bike_resamples,
+  metrics = bike_metrics
+)
+plot_wf_set_metrics(test_wf_set_res)
+
+rec1_workflow <-
+  extract_workflow(test_wf_set_res, id = "rec1_poisson_reg")
+rec2_workflow <- 
+  extract_workflow(test_wf_set_res, id = "rec2_poisson_reg")
+rec1_fit <-
+  last_fit(rec1_workflow, split = bike_split, metrics = bike_metrics)
+rec2_fit <-
+  last_fit(rec2_workflow, split = bike_split, metrics = bike_metrics)
+
+rec1_metrics <- rec1_fit %>% collect_metrics()
+rec2_metrics <- rec2_fit %>% collect_metrics()
+
+bind_rows(
+  rec1 = rec1_metrics,
+  rec2 = rec2_metrics,
+  .id = "rec"
+) %>%
+  select(.metric, rec, .estimate) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate) %>%
+  gt() %>%
+  fmt_number(columns = -rec, decimals = 2)
 ```
 
 The first models I will run these recipes through are simple linear regression and Poisson regression.
@@ -690,18 +761,19 @@ lm_spec <- linear_reg(engine = "lm")
 library(poissonreg) # This wrapper package is required to use `poisson_reg()`
 poisson_spec <- poisson_reg(engine = "glm")
 
-wf_set_1 <- workflow_set(
+glm_wf_set <- workflow_set(
   preproc = list(base = bike_recipe,
                  date = bike_recipe_date, weather = bike_recipe_weather,
-                 date_weather = bike_recipe_date_weather),
+                 date_weather = bike_recipe_date_weather, test = bike_recipe_test),
+                 #date_weather = bike_recipe_date_weather),
   models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
   cross = TRUE
 )
 ```
 
 ```{r}
-wf_set_1_res <- workflow_map(
-  wf_set_1,
+glm_wf_set_res <- workflow_map(
+  glm_wf_set,
   "tune_grid",
   # In this early stage, I'll try just a few `deg_free` in the spline term
   grid = grid_regular(deg_free(range = c(4, 7)), levels = 4),
@@ -718,7 +790,7 @@ I'm using my own function because the `workflowsets::autoplot()` function doesn'
 Below is an example (for just the RMSE metric):
 
 ```{r fig.height=4, fig.width=5}
-autoplot(wf_set_1_res, metric = "rmse")
+autoplot(glm_wf_set_res, metric = "rmse")
 ```
 
 Note in the legend how all results have the "recipe" preprocessor, even though we have four different pre-processors: `bike_recipe`, `bike_recipe_date`, `bike_recipe_weather`, `bike_recipe_date_weather`.
@@ -736,7 +808,7 @@ plot_wf_set_metrics <- function(wf_set_res, rank_metric = "mase") {
     facet_wrap(~ .metric, scales = "free_y")
   
 }
-plot_wf_set_metrics(wf_set_1_res)
+plot_wf_set_metrics(glm_wf_set_res)
 ```
 
 Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
@@ -744,22 +816,23 @@ Here are the models ranked by MASE:
 ^[Using the `select_best = TRUE` argument means only the best model in each workflow is returned. In this case, that means the workflows with the tunable spline feature of `count_date_doy` will only have one entry.]
 
 ```{r}
-rank_results(wf_set_1_res, select_best = TRUE, rank_metric = "mase") %>%
+rank_results(glm_wf_set_res, select_best = TRUE, rank_metric = "mase") %>%
   filter(.metric == "mase") %>%
   select(rank, wflow_id, .config, mean, std_err) %>%
   gt() %>%
   fmt_number(columns = c(mean, std_err), decimals = 3)
 ```
 
-So our best workflow has the id `date_weather_poisson_reg` with the `.config` "Preprocessor2_Model1" which refers to a specific spline degree from our tuning of the `count_date_doy` feature.
+So our best workflow has the id `date_weather_poisson_reg`^[You could make the argument that the improvement is so minor that it is worth choosing the simpler linear regression model instead.] with the `.config` "Preprocessor2_Model1" which refers to a specific spline degree from our tuning of the `count_date_doy` feature.
 Extract this workflow and checkout the results of the tuning:
 
 ```{r fig.height=4, fig.width=6}
 bike_glm_workflow <-
-  extract_workflow(wf_set_1_res, id = "date_weather_poisson_reg")
+  extract_workflow(glm_wf_set_res, id = "date_weather_poisson_reg")
 bike_glm_tune_res <-
-  extract_workflow_set_result(wf_set_1_res, id = "date_weather_poisson_reg")
-autoplot(bike_glm_tune_res)
+  extract_workflow_set_result(glm_wf_set_res, id = "date_weather_poisson_reg")
+autoplot(bike_glm_tune_res) +
+  facet_wrap(~ .metric, nrow = 2, scales = "free_y")
 ```
 
 The polynomial of degree 5 did best here.
@@ -868,7 +941,6 @@ The Vernon St site has a series of zeroes in a row that I'm guessing aren't real
 The worst time period for prediction seems to be around 2022-11-23.
 Check out the weather around that day:
 
-
 ```{r}
 bike_ridership %>%
   filter(count_date > "2021-11-15", count_date < "2021-11-26") %>%
@@ -898,6 +970,36 @@ An advantage of using a generalized linear model is that they are easy to interp
 
 ```{r}
 bike_glm_fit$.workflow[[1]] %>%
+  tidy() %>%
+  filter(str_detect(term, "temperature|precip|max_gust|snow"))
+
+
+library(marginaleffects)
+mod <- bike_glm_fit$.workflow[[1]] %>% extract_fit_engine()
+d <- bike_train %>%
+  mutate(
+    count_date_year = lubridate::year(count_date),
+    count_date_doy = lubridate::yday(count_date),
+    count_date_dow = lubridate::wday(count_date, label = TRUE)
+  )
+mod2 <- glm(
+  n_bikes ~ count_date + n_bikes_lag_14 + mean_temperature + total_precipitation +
+    speed_max_gust + snow_on_ground + count_date_year + count_date_doy +
+    count_date_dow + site_name,
+  data = d, family = poisson
+)
+marginalmeans(mod, variables = "mean_temperature")
+
+bike_glm_me <- bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_engine() %>%
+  marginaleffects(variables = "total_precipitation")
+  #marginaleffects()
+summary(bike_glm_me, by = "site_name")
+```
+
+
+```{r}
+bike_glm_fit$.workflow[[1]] %>%
   extract_fit_engine() %>%
   summary()
 gtsummary::tbl_regression(bike_glm_fit$.workflow[[1]]) %>%
@@ -918,31 +1020,16 @@ bike_glm_fit$.workflow[[1]] %>%
   check_overdispersion()
 ```
 
-### Trees
+### Tree-based methods
 
-For tree-based methods, I'll use the same pre-processing except I won't use a spline term, and won't use dummy variables (not needed with these methods):
+For tree-based methods, I'll use the same pre-processing except I won't use a spline term (trees partition the feature space to capture non-linearity):
 
 ```{r}
-bike_recipe_spline <-
-  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
-           total_precipitation + speed_max_gust + snow_on_ground,
-         data = bike_train) %>%
-  add_role(count_date, new_role = "date_variable") %>%
-  step_date(count_date, features = c("dow", "doy", "year"),
-            label = TRUE, ordinal = FALSE) %>%
-  step_ns(count_date_doy, deg_free = 5) %>%
-  step_holiday(count_date, holidays = canada_holidays) %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_impute_mean(speed_max_gust) %>%
-  step_mutate_at(c(total_precipitation, snow_on_ground),
-                 fn = ~ replace_na(., 0)) %>%
-  step_zv(all_predictors())
-
 bike_tree_recipe <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
-  add_role(count_date, new_role = "date_variable") %>%
+  update_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
             label = TRUE, ordinal = FALSE) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
@@ -951,7 +1038,13 @@ bike_tree_recipe <-
   step_mutate_at(c(total_precipitation, snow_on_ground),
                  fn = ~ replace_na(., 0)) %>%
   step_zv(all_predictors())
+
+# XGBoost requires dummy variables
+bike_tree_recipe_dummy <- bike_tree_recipe %>%
+  step_dummy(all_nominal_predictors())
 ```
+
+I'll try a decision tree, a random forest, and an XGBoost model.
 
 ```{r}
 decision_spec <-
@@ -964,24 +1057,64 @@ rf_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>%
   set_engine("ranger") %>%
   set_mode("regression")
 
-wf_set_2 <- workflow_set(
-  preproc = list(weather_date = bike_tree_recipe),
-  models = list(rf = rf_spec, decision = decision_spec),
-  cross = TRUE
+xgb_spec <- boost_tree(mtry = tune(), min_n = tune(), tree_depth = tune(),
+                       learn_rate = tune(), sample_size = tune(),
+                       trees = 1000) %>%
+  set_engine("xgboost") %>%
+  set_mode("regression")
+
+trees_wf_set <- workflow_set(
+  #preproc = list(tree_recipe = bike_tree_recipe),
+  preproc = list(tree_recipe = bike_tree_recipe, tree_recipe = bike_tree_recipe,
+                 tree_recipe_dummy = bike_tree_recipe_dummy),
+  models = list(rf = rf_spec, decision = decision_spec, xgb = xgb_spec),
+  cross = FALSE
 )
 ```
 
+As a first pass, I won't be very careful with my hyperparameter tuning.
+
 ```{r}
+tic()
 set.seed(225)
 wf_set_2_res <- workflow_map(
   wf_set_2,
   "tune_grid",
-  # Just try 15 candidate parameter sets for each model (for now)
-  grid = 15,
+  # Just try 10 candidate parameter sets for each model (for now)
+  grid = 10,
   resamples = bike_resamples,
   metrics = bike_metrics, verbose = TRUE
 )
+toc()
 ```
+
+```{r}
+# Don't need to use my custom function defined previously because I'm
+#  not using functionally different recipes for each model
+plot_wf_set_metrics(wf_set_2_res)
+autoplot(wf_set_2_res)
+autoplot(wf_set_2_res)
+```
+
+
+```{r}
+wf_set_2_res %>%
+  extract_workflow_set_result("tree_recipe_dummy_xgb") %>%
+  collect_notes() %>%
+  pull(note) %>%
+  .[[1]]
+  .$note[[1]]
+```
+
+```{r}
+xgb_recipe <- bike_tree_recipe_dummy %>%
+  step_rm(count_date)
+xgb_wf <- workflow() %>%
+  add_recipe(xgb_recipe) %>%
+  add_model(boost_tree(mode = "regression"))
+fit(xgb_wf, data = bike_train)
+```
+
 
 ```{r}
 autoplot(wf_set_2_res)
@@ -1012,6 +1145,35 @@ extract_workflow_set_result(wf_set_2_res, "weather_date_ranger") %>%
   collect_metrics() %>%
   filter(.metric == "mase") %>%
   arrange(mtry, min_n)
+```
+
+
+### XGB test
+
+```{r}
+data(Chicago)
+
+n <- nrow(Chicago)
+Chicago <- Chicago %>% select(ridership, Clark_Lake, Quincy_Wells)
+# Add a non-numeric ID variable
+Chicago <- Chicago %>% dplyr::mutate(id = as.character(1:n()))
+
+Chicago_train <- Chicago[1:(n - 7), ]
+Chicago_test <- Chicago[(n - 6):n, ]
+
+bt_reg_spec <- 
+  boost_tree(trees = 15) %>% 
+  # This model can be used for classification or regression, so set mode
+  set_mode("regression") %>% 
+  set_engine("xgboost")
+
+rec <- recipe(ridership ~ .) %>%
+  add_ro
+
+set.seed(1)
+set.seed(1)
+bt_reg_fit <- bt_reg_spec %>% fit(ridership ~ ., data = Chicago_train)
+bt_reg_fit
 ```
 
 
