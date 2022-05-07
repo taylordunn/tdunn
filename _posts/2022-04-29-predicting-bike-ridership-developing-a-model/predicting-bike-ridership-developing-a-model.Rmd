@@ -921,6 +921,136 @@ bike_glm_fit$.workflow[[1]] %>%
 ### Trees
 
 ```{r}
+bike_ranger_recipe <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_zv(all_predictors())
+bike_ranger_recipe_test <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  step_string2factor(site_name) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_zv(all_predictors())
+```
+
+```{r}
+rf_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>%
+  set_engine("ranger") %>%
+  set_mode("regression")
+
+wf_set_2 <- workflow_set(
+  preproc = list(weather_date = bike_ranger_recipe),
+  models = list(ranger = rf_spec),
+  cross = TRUE
+)
+```
+
+```{r}
+set.seed(225)
+wf_set_2_res <- workflow_map(
+  wf_set_2,
+  "tune_grid",
+  # The rand_forest() tuning defaults are usually sufficients,
+  #  so just try 15 candidate parameter sets
+  grid = 15,
+  resamples = bike_resamples,
+  metrics = bike_metrics, verbose = TRUE
+)
+```
+
+```{r}
+autoplot(wf_set_2_res)
+```
+
+
+Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
+Here are the models ranked by MASE:
+^[Using the `select_best = TRUE` argument means only the best model in each workflow is returned. In this case, that means the workflows with the tunable spline feature of `count_date_doy` will only have one entry.]
+
+```{r}
+rank_results(wf_set_1_res, select_best = TRUE, rank_metric = "mase") %>%
+  filter(.metric == "mase") %>%
+  select(rank, wflow_id, .config, mean, std_err) %>%
+  gt() %>%
+  fmt_number(columns = c(mean, std_err), decimals = 3)
+```
+
+
+### Delete
+
+```{r}
+step_dummy(all_nominal_predictors()) %>%
+
+ranger_recipe <- 
+  recipe(
+    formula = n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
+      total_precipitation + speed_max_gust + snow_on_ground, data = bike_train, 
+    clipboard = T) %>% 
+  step_string2factor(one_of("site_name")) 
+
+ranger_spec <- 
+  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
+  set_mode("regression") %>% 
+  set_engine("ranger") 
+
+ranger_workflow <- 
+  workflow() %>% 
+  add_recipe(ranger_recipe) %>% 
+  add_model(ranger_spec) 
+
+set.seed(29606)
+ranger_tune <-
+  tune_grid(ranger_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
+
+
+```
+
+```{r}
+kernlab_recipe <- 
+  recipe(
+    n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
+    total_precipitation + speed_max_gust + snow_on_ground, data = bike_train
+  ) %>%
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_numeric_predictors()) 
+
+kernlab_spec <- 
+  svm_rbf(cost = tune(), rbf_sigma = tune()) %>% 
+  set_mode("regression") 
+
+kernlab_workflow <- 
+  workflow() %>% 
+  add_recipe(kernlab_recipe) %>% 
+  add_model(kernlab_spec) 
+
+set.seed(41717)
+kernlab_tune <-
+  tune_grid(kernlab_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
+
+
+```
+
+
+
+
+```{r}
 bike_recipe_date_weather <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
