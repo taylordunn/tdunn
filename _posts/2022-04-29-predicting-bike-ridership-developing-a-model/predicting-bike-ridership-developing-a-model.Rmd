@@ -706,7 +706,7 @@ wf_set_1_res <- workflow_map(
   # In this early stage, I'll try just a few `deg_free` in the spline term
   grid = grid_regular(deg_free(range = c(4, 7)), levels = 4),
   resamples = bike_resamples,
-  metrics = bike_metrics, verbose = TRUE
+  metrics = bike_metrics
 )
 ```
 
@@ -920,25 +920,28 @@ bike_glm_fit$.workflow[[1]] %>%
 
 ### Trees
 
+For tree-based methods, I'll use the same pre-processing except I won't use a spline term, and won't use dummy variables (not needed with these methods):
+
 ```{r}
-bike_ranger_recipe <-
+bike_recipe_spline <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
             label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = 5) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
   step_novel(all_nominal_predictors()) %>%
   step_impute_mean(speed_max_gust) %>%
   step_mutate_at(c(total_precipitation, snow_on_ground),
                  fn = ~ replace_na(., 0)) %>%
   step_zv(all_predictors())
-bike_ranger_recipe_test <-
+
+bike_tree_recipe <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
-  step_string2factor(site_name) %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
             label = TRUE, ordinal = FALSE) %>%
@@ -951,13 +954,19 @@ bike_ranger_recipe_test <-
 ```
 
 ```{r}
+decision_spec <-
+  decision_tree(cost_complexity = tune(), tree_depth = tune(),
+                min_n = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
 rf_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>%
   set_engine("ranger") %>%
   set_mode("regression")
 
 wf_set_2 <- workflow_set(
-  preproc = list(weather_date = bike_ranger_recipe),
-  models = list(ranger = rf_spec),
+  preproc = list(weather_date = bike_tree_recipe),
+  models = list(rf = rf_spec, decision = decision_spec),
   cross = TRUE
 )
 ```
@@ -967,8 +976,7 @@ set.seed(225)
 wf_set_2_res <- workflow_map(
   wf_set_2,
   "tune_grid",
-  # The rand_forest() tuning defaults are usually sufficients,
-  #  so just try 15 candidate parameter sets
+  # Just try 15 candidate parameter sets for each model (for now)
   grid = 15,
   resamples = bike_resamples,
   metrics = bike_metrics, verbose = TRUE
@@ -979,48 +987,35 @@ wf_set_2_res <- workflow_map(
 autoplot(wf_set_2_res)
 ```
 
+```{r}
+plot_wf_set_metrics(wf_set_2_res)
+```
 
-Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
-Here are the models ranked by MASE:
-^[Using the `select_best = TRUE` argument means only the best model in each workflow is returned. In this case, that means the workflows with the tunable spline feature of `count_date_doy` will only have one entry.]
+
 
 ```{r}
-rank_results(wf_set_1_res, select_best = TRUE, rank_metric = "mase") %>%
+rank_results(wf_set_2_res, select_best = F, rank_metric = "mase") %>%
   filter(.metric == "mase") %>%
   select(rank, wflow_id, .config, mean, std_err) %>%
   gt() %>%
   fmt_number(columns = c(mean, std_err), decimals = 3)
 ```
 
-
-### Delete
+```{r}
+extract_workflow_set_result(wf_set_2_res, "weather_date_ranger") %>%
+  autoplot() +
+  dunnr::add_facet_borders()
+```
 
 ```{r}
-step_dummy(all_nominal_predictors()) %>%
-
-ranger_recipe <- 
-  recipe(
-    formula = n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
-      total_precipitation + speed_max_gust + snow_on_ground, data = bike_train, 
-    clipboard = T) %>% 
-  step_string2factor(one_of("site_name")) 
-
-ranger_spec <- 
-  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
-  set_mode("regression") %>% 
-  set_engine("ranger") 
-
-ranger_workflow <- 
-  workflow() %>% 
-  add_recipe(ranger_recipe) %>% 
-  add_model(ranger_spec) 
-
-set.seed(29606)
-ranger_tune <-
-  tune_grid(ranger_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
-
-
+extract_workflow_set_result(wf_set_2_res, "weather_date_ranger") %>%
+  collect_metrics() %>%
+  filter(.metric == "mase") %>%
+  arrange(mtry, min_n)
 ```
+
+
+### Delete
 
 ```{r}
 kernlab_recipe <- 
