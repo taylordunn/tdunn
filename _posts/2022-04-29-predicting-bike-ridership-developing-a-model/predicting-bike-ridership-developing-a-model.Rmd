@@ -609,7 +609,7 @@ For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
 bike_recipe <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
-  update_role(count_date, new_role = "date_variable") %>%
+  add_role(count_date, new_role = "date_variable") %>%
   step_novel(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_zv(all_predictors())
@@ -622,10 +622,8 @@ I'll add day of week as categorical, day of year as numerical (and tune a natura
 bike_recipe_date <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
-  #update_role(count_date, new_role = "date_variable") %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
-  #step_date(count_date, features = c("dow", "doy", "decimal"),
             label = TRUE, ordinal = FALSE) %>%
   step_ns(count_date_doy, deg_free = tune()) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
@@ -641,7 +639,6 @@ bike_recipe_weather <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
-  #update_role(count_date, new_role = "date_variable") %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_impute_mean(speed_max_gust) %>%
   # Impute missing values with zero
@@ -659,14 +656,10 @@ bike_recipe_date_weather <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
-  #update_role(count_date, new_role = "date_variable") %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
-  #step_date(count_date, features = c("dow", "doy", "decimal"),
             label = TRUE, ordinal = FALSE) %>%
-  #step_ns(count_date_decimal) %>%
-  #step_ns(count_date_doy, deg_free = tune()) %>%
-  step_ns(count_date_doy, deg_free = 5) %>%
+  step_ns(count_date_doy, deg_free = tune()) %>%
   step_holiday(count_date, holidays = canada_holidays) %>%
   step_impute_mean(speed_max_gust) %>%
   step_mutate_at(c(total_precipitation, snow_on_ground),
@@ -676,34 +669,41 @@ bike_recipe_date_weather <-
   step_zv(all_predictors())
 ```
 
-
-```{r}
+```{r eval=FALSE, include=FALSE}
+# For some reason, including `count_date` gives good performance on the test set
 bike_recipe1 <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
+  # `add_role()` keeps `count_date` as a predictor
   add_role(count_date, new_role = "date_variable") %>%
   step_date(count_date, features = c("dow", "doy", "year"),
             label = TRUE, ordinal = FALSE) %>%
   step_ns(count_date_doy, deg_free = 5) %>%
   step_zv(all_predictors())
+# ... but `count_date_decimal` gives poor performance
 bike_recipe2 <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
          data = bike_train) %>%
+  # `update_role()` removes `count_date` as a predictor
   update_role(count_date, new_role = "date_variable") %>%
-  #add_role(count_date, new_role = "date_variable") %>%
-  #step_date(count_date, features = c("dow", "doy", "decimal", "year"),
-  step_date(count_date, features = c("dow", "doy", "year"),
+  step_date(count_date, features = c("dow", "doy", "year", "decimal"),
             label = TRUE, ordinal = FALSE) %>%
   step_ns(count_date_doy, deg_free = 5) %>%
-  step_mutate(count_date_dec = lubridate::decimal_date(count_date)) %>%
-  #step_mutate(count_date_dec = as.numeric(count_date)) %>%
   step_zv(all_predictors())
-```
+# ... convert `count_date_decimal` back to date gets same good performance
+bike_recipe3 <- bike_recipe2 %>%
+  step_mutate(
+    count_date_decimal = lubridate::date_decimal(count_date_decimal)
+  )
+# ... manually calculating decimal date gives even worse performance
+bike_recipe4 <- bike_recipe1 %>%
+  step_mutate(
+    count_date = lubridate::year(count_date) + lubridate::yday(count_date)/365
+  )
 
-
-```{r}
 test_wf_set <- workflow_set(
-  preproc = list(rec1 = bike_recipe1, rec2 = bike_recipe2),
+  preproc = list(rec1 = bike_recipe1, rec2 = bike_recipe2, rec3 = bike_recipe3,
+                 rec4 = bike_recipe4),
   models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
   cross = TRUE
 )
@@ -714,23 +714,40 @@ test_wf_set_res <- workflow_map(
   resamples = bike_resamples,
   metrics = bike_metrics
 )
+# Training set performance is consistently good
 plot_wf_set_metrics(test_wf_set_res)
 
 rec1_workflow <-
   extract_workflow(test_wf_set_res, id = "rec1_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec1_linear_reg")
 rec2_workflow <- 
   extract_workflow(test_wf_set_res, id = "rec2_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec2_linear_reg")
+rec3_workflow <- 
+  extract_workflow(test_wf_set_res, id = "rec3_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec3_linear_reg")
+rec4_workflow <- 
+  extract_workflow(test_wf_set_res, id = "rec4_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec4_linear_reg")
 rec1_fit <-
   last_fit(rec1_workflow, split = bike_split, metrics = bike_metrics)
 rec2_fit <-
   last_fit(rec2_workflow, split = bike_split, metrics = bike_metrics)
+rec3_fit <-
+  last_fit(rec3_workflow, split = bike_split, metrics = bike_metrics)
+rec4_fit <-
+  last_fit(rec4_workflow, split = bike_split, metrics = bike_metrics)
 
 rec1_metrics <- rec1_fit %>% collect_metrics()
 rec2_metrics <- rec2_fit %>% collect_metrics()
+rec3_metrics <- rec3_fit %>% collect_metrics()
+rec4_metrics <- rec4_fit %>% collect_metrics()
 
 bind_rows(
   rec1 = rec1_metrics,
   rec2 = rec2_metrics,
+  rec3 = rec3_metrics,
+  rec4 = rec4_metrics,
   .id = "rec"
 ) %>%
   select(.metric, rec, .estimate) %>%
@@ -764,8 +781,7 @@ poisson_spec <- poisson_reg(engine = "glm")
 glm_wf_set <- workflow_set(
   preproc = list(base = bike_recipe,
                  date = bike_recipe_date, weather = bike_recipe_weather,
-                 date_weather = bike_recipe_date_weather, test = bike_recipe_test),
-                 #date_weather = bike_recipe_date_weather),
+                 date_weather = bike_recipe_date_weather),
   models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
   cross = TRUE
 )
@@ -1025,7 +1041,7 @@ bike_glm_fit$.workflow[[1]] %>%
 For tree-based methods, I'll use the same pre-processing except I won't use a spline term (trees partition the feature space to capture non-linearity):
 
 ```{r}
-bike_tree_recipe <-
+bike_trees_recipe <-
   recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
            total_precipitation + speed_max_gust + snow_on_ground,
          data = bike_train) %>%
@@ -1040,7 +1056,7 @@ bike_tree_recipe <-
   step_zv(all_predictors())
 
 # XGBoost requires dummy variables
-bike_tree_recipe_dummy <- bike_tree_recipe %>%
+bike_trees_recipe_dummy <- bike_trees_recipe %>%
   step_dummy(all_nominal_predictors())
 ```
 
@@ -1064,9 +1080,9 @@ xgb_spec <- boost_tree(mtry = tune(), min_n = tune(), tree_depth = tune(),
   set_mode("regression")
 
 trees_wf_set <- workflow_set(
-  #preproc = list(tree_recipe = bike_tree_recipe),
-  preproc = list(tree_recipe = bike_tree_recipe, tree_recipe = bike_tree_recipe,
-                 tree_recipe_dummy = bike_tree_recipe_dummy),
+  preproc = list(trees_recipe = bike_trees_recipe,
+                 trees_recipe = bike_trees_recipe,
+                 trees_recipe_dummy = bike_trees_recipe_dummy),
   models = list(rf = rf_spec, decision = decision_spec, xgb = xgb_spec),
   cross = FALSE
 )
@@ -1077,8 +1093,8 @@ As a first pass, I won't be very careful with my hyperparameter tuning.
 ```{r}
 tic()
 set.seed(225)
-wf_set_2_res <- workflow_map(
-  wf_set_2,
+trees_wf_set_res <- workflow_map(
+  trees_wf_set,
   "tune_grid",
   # Just try 10 candidate parameter sets for each model (for now)
   grid = 10,
@@ -1091,89 +1107,83 @@ toc()
 ```{r}
 # Don't need to use my custom function defined previously because I'm
 #  not using functionally different recipes for each model
-plot_wf_set_metrics(wf_set_2_res)
-autoplot(wf_set_2_res)
-autoplot(wf_set_2_res)
-```
-
-
-```{r}
-wf_set_2_res %>%
-  extract_workflow_set_result("tree_recipe_dummy_xgb") %>%
-  collect_notes() %>%
-  pull(note) %>%
-  .[[1]]
-  .$note[[1]]
+autoplot(trees_wf_set_res, rank_metric = "mase")
 ```
 
 ```{r}
-xgb_recipe <- bike_tree_recipe_dummy %>%
-  step_rm(count_date)
-xgb_wf <- workflow() %>%
-  add_recipe(xgb_recipe) %>%
-  add_model(boost_tree(mode = "regression"))
-fit(xgb_wf, data = bike_train)
-```
-
-
-```{r}
-autoplot(wf_set_2_res)
+extract_workflow_set_result(trees_wf_set_res, "tree_recipe_dummy_xgb") %>%
+  #autoplot(metric = "mase")
+  select_best(metric = "mase")
 ```
 
 ```{r}
-plot_wf_set_metrics(wf_set_2_res)
+bike_trees_workflow <- extract_workflow(trees_wf_set, "tree_recipe_dummy_xgb")
+bike_trees_workflow_best <-
+  extract_workflow_set_result(trees_wf_set_res, "tree_recipe_dummy_xgb") %>%
+  select_best(metric = "mase")
+
+bike_trees_workflow_final <- finalize_workflow(
+  bike_trees_workflow, bike_trees_workflow_best
+)
+bike_trees_fit <- last_fit(
+  bike_trees_workflow_final, split = bike_split, metrics = bike_metrics
+)
+collect_metrics(bike_trees_fit)
 ```
 
-
-
-```{r}
-rank_results(wf_set_2_res, select_best = F, rank_metric = "mase") %>%
-  filter(.metric == "mase") %>%
-  select(rank, wflow_id, .config, mean, std_err) %>%
-  gt() %>%
-  fmt_number(columns = c(mean, std_err), decimals = 3)
-```
+### XGBoost
 
 ```{r}
-extract_workflow_set_result(wf_set_2_res, "weather_date_ranger") %>%
-  autoplot() +
-  dunnr::add_facet_borders()
-```
+bike_train_baked <- prep(bike_trees_recipe) %>%
+  bake(bike_train)
 
-```{r}
-extract_workflow_set_result(wf_set_2_res, "weather_date_ranger") %>%
-  collect_metrics() %>%
-  filter(.metric == "mase") %>%
-  arrange(mtry, min_n)
-```
-
-
-### XGB test
-
-```{r}
-data(Chicago)
-
-n <- nrow(Chicago)
-Chicago <- Chicago %>% select(ridership, Clark_Lake, Quincy_Wells)
-# Add a non-numeric ID variable
-Chicago <- Chicago %>% dplyr::mutate(id = as.character(1:n()))
-
-Chicago_train <- Chicago[1:(n - 7), ]
-Chicago_test <- Chicago[(n - 6):n, ]
-
-bt_reg_spec <- 
-  boost_tree(trees = 15) %>% 
-  # This model can be used for classification or regression, so set mode
-  set_mode("regression") %>% 
+xgb_spec <- boost_tree(
+  trees = 1000, 
+  tree_depth = tune(), min_n = tune(), 
+  loss_reduction = tune(),                     ## first three: model complexity
+  sample_size = tune(), mtry = tune(),         ## randomness
+  learn_rate = tune(),                         ## step size
+) %>% 
   set_engine("xgboost")
+bike_xgb_workflow <- workflow() %>%
+  add_recipe(bike_trees_recipe_dummy) %>%
+  add_model(xgb_spec)
+  
+xgb_grid <- grid_latin_hypercube(
+  tree_depth(),
+  min_n(),
+  loss_reduction(),
+  sample_size = sample_prop(),
+  finalize(mtry(), bike_train_baked),
+  learn_rate(),
+  size = 30
+)
+```
 
-rec <- recipe(ridership ~ .) %>%
-  add_ro
 
-set.seed(1)
-set.seed(1)
-bt_reg_fit <- bt_reg_spec %>% fit(ridership ~ ., data = Chicago_train)
-bt_reg_fit
+```{r}
+tic()
+bike_xgb_tune <- tune_grid(
+  bike_xgb_workflow, resamples = bike_resamples,
+  grid = xgb_grid, metrics = bike_metrics
+)
+toc()
+```
+
+```{r}
+autoplot(bike_xgb_tune, metric = "mase")
+```
+
+```{r}
+show_best(bike_xgb_tune, metric = "mase")
+select_best(bike_xgb_tune, metric = "mase")
+
+bike_xgb_fit <- last_fit(
+  finalize_workflow(bike_xgb_workflow,
+                    select_best(bike_xgb_tune, metric = "mase")),
+  split = bike_splits, metrics = bike_metrics
+)
+select_best(bike_xgb_tune, metric = "mase")
 ```
 
 
