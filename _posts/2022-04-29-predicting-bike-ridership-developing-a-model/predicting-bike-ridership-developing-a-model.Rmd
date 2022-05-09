@@ -1126,7 +1126,7 @@ autoplot(trees_wf_set_res, rank_metric = "mase")
 As I would have expected, the decision tree models perform worse than random forest models (which consist of multiple decision trees).
 The boosted tree models (which also consist of multiple decision trees, but differ in how they are built and combined) slightly outperform random forests, which is also unexpected. 
 
-### Model interpretation
+#### Model interpretation
 
 ```{r}
 bike_decision_wf <- extract_workflow(trees_wf_set, "trees_recipe_decision")
@@ -1227,7 +1227,7 @@ bind_rows(
 ```
 
 
-### XGBoost
+#### XGBoost
 
 ```{r}
 
@@ -1399,6 +1399,84 @@ select_best(bike_xgb_tune, metric = "mase")
 
 
 ### Support vector machines
+
+```{r}
+bike_svm_recipe <- 
+  recipe(
+    n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
+      total_precipitation + speed_max_gust + snow_on_ground,
+    data = bike_train, 
+  ) %>% 
+  update_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_numeric_predictors())
+
+svm_linear_spec <- svm_linear(cost = tune(), margin = tune()) %>%
+  set_mode("regression") %>%
+  set_engine("kernlab")
+
+svm_poly_spec <- svm_poly(cost = tune(), margin = tune(), degree = tune()) %>%
+  set_mode("regression") %>%
+  set_engine("kernlab")
+
+svm_rbf_spec <-  svm_rbf(cost = tune(), rbf_sigma = tune()) %>% 
+  set_mode("regression") %>%
+  set_engine("kernlab")
+
+svm_wf_set <- workflow_set(
+  preproc = list(bike_svm_recipe),
+  models = list(linear = svm_linear_spec, poly = svm_poly_spec,
+                rbf = svm_rbf_spec)
+)
+```
+
+
+```{r}
+set.seed(41717)
+tic()
+svm_wf_set_res <- workflow_map(
+  svm_wf_set,
+  "tune_grid",
+  grid = 10,
+  resamples = bike_resamples, metrics = bike_metrics, verbose = TRUE
+)
+toc()
+```
+
+```{r}
+autoplot(svm_wf_set_res)
+```
+
+```{r}
+collect_metrics(svm_wf_set_res) %>%
+  filter(.metric == "mase") %>%
+  arrange(mean)
+```
+
+```{r}
+bike_svm_wf <- extract_workflow(svm_wf_set, "recipe_poly")
+bike_svm_wf_res <- extract_workflow_set_result(svm_wf_set_res, "recipe_poly")
+
+autoplot(bike_svm_wf_res)
+```
+
+```{r}
+bike_svm_fit <- last_fit(
+  finalize_workflow(bike_svm_wf, select_best(bike_svm_wf_res, "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+collect_metrics(bike_svm_fit)
+```
+
+
+### Delete
 
 ```{r}
 bike_recipe_date_weather <-
