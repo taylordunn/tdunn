@@ -1010,7 +1010,7 @@ extract_fit_parsnip(bike_glm_fit) %>%
   filter(str_detect(term, "temperature|precip|max_gust|snow"))
 ```
 
-Since this model used a Poisson model, the link function (non-linear relationship between the outcome and the predictors) is the logarithm:
+Since this is a Poisson model, the link function (non-linear relationship between the outcome and the predictors) is the logarithm:
 
 $$
 \begin{align}
@@ -1118,7 +1118,7 @@ trees_wf_set_res <- workflow_map(
 toc()
 ```
 
-Visualize the performance 30 workflows, ranked by MASE:
+Visualize the performance of the 30 workflows, ranked by MASE:
 
 ```{r}
 # Don't need to use my custom function defined previously because I'm
@@ -1199,7 +1199,7 @@ n_leaf <- sum(rpart_fit$frame$var == "<leaf>")
 
 Decision trees are the easiest of the three to interpret, but this decision tree is quite complicated.
 It has `r n_leaf` leaf nodes (i.e. terminal nodes) with a depth of `r depth`.
-The visualization (done with the `rpart.plot` package) is hidden below:
+The visualization (done with the `rpart.plot` package) is messy and hidden below:
 
 <details><summary>Decision tree plot</summary>
 
@@ -1302,7 +1302,7 @@ xgb_grid <- grid_latin_hypercube(
 xgb_grid
 ```
 
-We just have one model and one preprocessor now, so put it into a `workflow`:
+We have just one model and one preprocessor now, so put it into a `workflow`:
 
 ```{r}
 bike_xgb_workflow <- workflow() %>%
@@ -1339,6 +1339,12 @@ collect_metrics(bike_xgb_fit)
 ```
 
 All that effort and I couldn't get better performance than simple Poisson regression!
+
+```{r}
+select_best(bike_xgb_wf_res, "mase")
+select_best(bike_xgb_tune, "mase")
+```
+
 
 ### Support vector machines
 
@@ -1400,7 +1406,7 @@ autoplot(svm_wf_set_res)
 ```
 
 Those are some pretty interesting (and smooth) trends, with separation between two distinct levels of performance.
-The best model is a `svm_rbf`.
+The best model is one of the `svm_rbf` candidates (though the next 10 are the `svm_poly` models).
 Evaluate it on the test set:
 
 ```{r}
