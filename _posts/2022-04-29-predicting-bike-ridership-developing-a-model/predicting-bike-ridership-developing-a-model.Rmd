@@ -37,7 +37,8 @@ set_palette()
 
 ## Introduction
 
-In [my last post](../2022-04-27-predicting-bike-ridership-getting-the-data), I retrieved and prepared bike counter data from Halifax, Nova Scotia, and some historical weather data to go along with it.
+In [my last post](../2022-04-27-predicting-bike-ridership-getting-the-data), I retrieved and prepared bike counter data from Halifax, Nova Scotia.
+I also got some historical weather data to go along with it.
 Here, I will explore the data, engineer some features, and fit and evaluate many models to predict bike ridership at different sites around the city.
 
 ## Exploratory data analysis
@@ -63,7 +64,7 @@ bike_ridership %>%
   gt()
 ```
 
-All except the Hollis St site have two channels (northbound and southbound), which is why `n_records` = 48. The entries with fewer `n_records` reflect the time of day that the data was extracted:
+[All except the Hollis St site have two channels](../2022-04-27-predicting-bike-ridership-getting-the-data/#eda-and-cleaning) (northbound and southbound), which is why `n_records` = 48. The entries with fewer `n_records` reflect the time of day that the data was extracted:
 
 ```{r}
 bike_ridership %>%
@@ -113,7 +114,7 @@ bike_ridership %>%
   theme(legend.position = "none")
 ```
 
-The South Park St site appears bimodal, which [I noted in part 1](../2022-04-27-predicting-bike-ridership-getting-the-data) was likely due to the addition of protected bike lanes in 2021.
+The South Park St site appears bimodal, which [I noted in part 1](../2022-04-27-predicting-bike-ridership-getting-the-data#eda-and-cleaning) was likely due to the addition of protected bike lanes in 2021.
 This can be seen more clearly in the trend over time:
 
 ```{r fig.height=5, fig.width=6}
@@ -148,13 +149,13 @@ bike_ridership %>%
   ggplot(aes(x = day_of_week, y = n_bikes)) +
   geom_jitter(aes(color = site_name), height = 0, width = 0.2, alpha = 0.3) +
   stat_summary(fun = "mean", geom = "point") +
-  facet_wrap(~ site_name) +
+  facet_wrap(~ str_trunc(site_name, 30)) +
   theme(legend.position = "none") +
   dunnr::add_facet_borders()
 ```
 
 Another thing to consider is holidays.
-I can get Canadian holidays with the `timeDate` package (which is how `recipes::step_holiday()` works):
+I can get Canadian holidays with the `timeDate` package (this is how `recipes::step_holiday()` works):
 
 ```{r}
 library(timeDate)
@@ -178,11 +179,13 @@ canada_holiday_dates <- tibble(holiday = canada_holidays) %>%
   ) %>%
   unnest(holiday_date)
 
-canada_holiday_dates %>% rmarkdown::paged_table()
+canada_holiday_dates %>%
+  select(holiday, holiday_date) %>%
+  rmarkdown::paged_table()
 ```
 
 Only day I can think is missing from this list is Family Day (Heritage Day in Nova Scotia) which is the third Monday in February.
-Visualize the effect of these holidays on bike ridership by plotting `n_bikes` in a 2 week window around the holidays (only the South Park St site for this plot):
+Visualize the effect of these holidays on bike ridership by plotting `n_bikes` in a 2 week window around the holidays (showing just the South Park St site for this plot):
 
 ```{r}
 canada_holiday_dates %>%
@@ -210,7 +213,7 @@ canada_holiday_dates %>%
   theme(legend.position = "top")
 ```
 
-The only holiday with a clear drop in ridership is Labour Day in 2021.
+The only holidays with a clear drop in ridership are Labour Day and the Civic Holiday (called Natal Day in NS) in 2021.
 Victoria Day seems to have the opposite effect.
 The Good Friday, Easter Sunday and Easter Monday holidays are obviously overlapping, and the `n_bikes` trend is a bit of a mess, but I can see an indication to the left of Good Friday that there may be a drop in ridership going into that weekend.
 
@@ -245,7 +248,7 @@ weather_data %>%
   ggplot(aes(x = value, fill = name)) +
   geom_histogram(bins = 30) +
   scale_y_continuous(expand = c(0, 0)) +
-  facet_wrap(~ name, nrow = 1) +
+  facet_wrap(~ name, nrow = 1, scales = "free") +
   theme(legend.position = "none")
 ```
 
@@ -293,7 +296,7 @@ In terms of predictive value, `mean_temperature` looks like it might be the most
 ## Feature engineering
 
 From my EDA, I decided I want try including all 4 weather variables to predict bike ridership.
-For some of the machine learning models I plan to try (like basic linear regression), this will require imputation of missing values, which I'll attempt here.
+This will require imputation of missing values for all 4 variables, which I'll attempt here.
 
 Add some more time variables for working with the `weather_data`:
 
@@ -348,7 +351,7 @@ p1 +
 ```
 
 We can obviously do a lot better.
-I'll fit the data using a generalized additive model (GAM) with the `mgcv` package.^[Check out [this blog post by Gavin Simpson ](https://fromthebottomoftheheap.net/2014/05/09/modelling-seasonal-data-with-gam/) for a great walkthrough of modeling seasonal data with GAMs.]
+I'll fit the data using a generalized additive model (GAM) with the `mgcv` package.^[Check out [this blog post by Gavin Simpson](https://fromthebottomoftheheap.net/2014/05/09/modelling-seasonal-data-with-gam/) for a great walkthrough of modeling seasonal data with GAMs.]
 For the `count_yday` variable (ranges from 1-365), I'll make sure that there is no discontinuity between year by using a *cyclic* spline (`bs = "cc"`).
 I'll also include a smoothing term of `count_day` which will capture the trend across years.
 
@@ -483,7 +486,7 @@ bike_ridership_lag %>%
   geom_label(data = . %>% distinct(n_bikes_lag, site_name, corr_coef),
              aes(label = round(corr_coef, 2), x = 500, y = 200)) +
   geom_abline(slope = 1) +
-  facet_grid(str_trunc(site_name, 10) ~ factor(lag_days)) +
+  facet_grid(str_trunc(site_name, 8) ~ factor(lag_days)) +
   dunnr::add_facet_borders() +
   theme(legend.position = "none")
 ```
@@ -567,7 +570,7 @@ bike_resamples <-
 
 Visualize the resamples:
 
-```{r}
+```{r fig.height=3, fig.width=6}
 bind_rows(
   analysis_set = map_dfr(bike_resamples$splits, analysis, .id = "i"),
   assessment_set = map_dfr(bike_resamples$splits, assessment, .id = "i"),
@@ -603,7 +606,36 @@ It also has a straightforward interpretation: values greater than one indicate a
 
 ### Generalized linear models
 
-For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
+The first models I will try are simple linear regression and Poisson regression, but I will test out a few different pre-processing/feature combinations.
+I would prefer to use negative binomial regression instead of Poisson to account for overdispersion (see aside), but [it hasn't been implemented in `parsnip` yet](https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658).
+
+<aside>
+
+Over-dispersion in `n_bikes` (variance much higher than the mean):
+
+```{r}
+bike_ridership %>%
+  group_by(site_name) %>%
+  summarise(mean_n_bikes = mean(n_bikes), var_n_bikes = var(n_bikes))
+```
+
+</aside>
+
+
+Trying the aside again but with comments.
+
+<aside>
+
+```{r}
+# Over-dispersion in `n_bikes` (variance much higher than the mean):
+bike_ridership %>%
+  group_by(site_name) %>%
+  summarise(mean_n_bikes = mean(n_bikes), var_n_bikes = var(n_bikes))
+```
+
+</aside>
+
+For my base pre-processing, I'll include just `site_name` and `n_bikes_lag_14`:
 
 ```{r}
 bike_recipe <-
@@ -615,7 +647,7 @@ bike_recipe <-
   step_zv(all_predictors())
 ```
 
-An extension of this model will include date variables.
+An extension of this recipe will include date variables.
 I'll add day of week as categorical, day of year as numerical (and tune a natural spline function), year as numerical and Canadian holidays as categorical.
 
 ```{r}
@@ -641,7 +673,7 @@ bike_recipe_weather <-
          data = bike_train) %>%
   add_role(count_date, new_role = "date_variable") %>%
   step_impute_mean(speed_max_gust) %>%
-  # Impute missing values with zero
+  # Impute these missing values with zero
   step_mutate_at(c(total_precipitation, snow_on_ground),
                  fn = ~ replace_na(., 0)) %>%
   step_novel(all_nominal_predictors()) %>%
@@ -649,7 +681,7 @@ bike_recipe_weather <-
   step_zv(all_predictors())
 ```
 
-And lastly, all the features:
+And lastly, all the features together:
 
 ```{r}
 bike_recipe_date_weather <-
@@ -756,22 +788,7 @@ bind_rows(
   fmt_number(columns = -rec, decimals = 2)
 ```
 
-The first models I will run these recipes through are simple linear regression and Poisson regression.
-I would prefer to use negative binomial regression instead of Poisson to account for overdispersion (see aside), but [it hasn't been implemented in `parsnip` yet](https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658).
-
-<aside>
-
-Over-dispersion in `n_bikes` (variance much higher than the mean):
-
-```{r}
-bike_ridership %>%
-  group_by(site_name) %>%
-  summarise(mean_n_bikes = mean(n_bikes), var_n_bikes = var(n_bikes)) %>%
-  gt() %>%
-  fmt_number(matches("n_bikes"), decimals = 1)
-```
-
-</aside>
+Define the model specifications and put everything into a `workflow_set()`:
 
 ```{r}
 lm_spec <- linear_reg(engine = "lm")
@@ -787,31 +804,32 @@ bike_glm_wf_set <- workflow_set(
 )
 ```
 
+Now fit the resamples using each combination of model specification and pre-processing recipe:
+
 ```{r bike-glm-wf-set-res, cache=TRUE}
 tic()
 bike_glm_wf_set_res <- workflow_map(
   bike_glm_wf_set,
   "tune_grid",
-  # In this early stage, I'll try just a few `deg_free` in the spline term
+  # I'll try just a few `deg_free` in the spline term
   grid = grid_regular(deg_free(range = c(4, 7)), levels = 4),
-  resamples = bike_resamples,
-  metrics = bike_metrics
+  resamples = bike_resamples, metrics = bike_metrics
 )
 toc()
 ```
 
-For plotting the results of a set of workflows, I'll use a custom plotting function with `rank_results()`:
+For plotting the results this set of workflows, I'll use a custom plotting function with `rank_results()`:
 
 <aside>
 
-I'm using my own function because the `workflowsets::autoplot()` function doesn't distinguish preprocessor recipes using the names provided to the `preproc` argument.
-Below is an example (for just the RMSE metric):
+I'm using my own function because the `workflowsets::autoplot()` function doesn't distinguish preprocessor recipes using the names provided to the `preproc` argument -- everything just gets the name "recipe":
 
-```{r fig.height=4, fig.width=5}
-autoplot(bike_glm_wf_set_res, metric = "rmse")
+```{r}
+rank_results(bike_glm_wf_set_res) %>%
+  distinct(wflow_id, model, preprocessor)
 ```
 
-Note in the legend how all results have the "recipe" preprocessor, even though we have four different pre-processors: `bike_recipe`, `bike_recipe_date`, `bike_recipe_weather`, `bike_recipe_date_weather`.
+My function extracts the recipe name from `wflow_id`.
 
 </aside>
 
@@ -844,7 +862,7 @@ rank_results(bike_glm_wf_set_res, select_best = TRUE, rank_metric = "mase") %>%
 So our best workflow has the id `date_weather_poisson_reg`^[You could make the argument that the improvement is so minor that it is worth choosing the simpler linear regression model instead.] with the `.config` "Preprocessor2_Model1" which refers to a specific spline degree from our tuning of the `count_date_doy` feature.
 Extract this workflow and checkout the results of the tuning:
 
-```{r fig.height=4, fig.width=6}
+```{r fig.height=3, fig.width=6}
 bike_glm_workflow <-
   extract_workflow(bike_glm_wf_set_res, id = "date_weather_poisson_reg")
 bike_glm_tune_res <-
@@ -909,7 +927,10 @@ p <- bike_glm_preds %>%
 p
 ```
 
-Take a closer look by truncating the dates:
+The worst-performing region looks to be Hollis St in 2020.
+In contrast, I'm impressed by how well the bimodal counts were captured for South Park St.
+
+Truncate the dates to look closer at the testing set performance:
 
 ```{r}
 p + coord_cartesian(xlim = as.Date(c("2021-07-01", "2022-05-01")))
@@ -961,7 +982,7 @@ worst_preds %>%
 
 Relative to the noise in the data, that doesn't look bad at all.
 The Vernon St site has a series of zeroes in a row that I'm guessing aren't real.
-The worst time period for prediction seems to be around 2022-11-23.
+The worst time period for prediction seems to be around 2022-11-23, where I'm over-estimating `n_bikes` for 3 of the sites.
 Check out the weather around that day:
 
 ```{r}
