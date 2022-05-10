@@ -1,0 +1,1502 @@
+---
+title: "Predicting bike ridership: developing a model"
+description: |
+  Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+  I explore and tune different modeling approaches.
+author:
+  - name: Taylor Dunn
+date: 2022-04-29
+params:
+  date: 2022-04-29
+  slug: 
+categories:
+  - R
+  - machine learning
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+draft: false
+bibliography: references.bib
+---
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(gt)
+library(patchwork)
+library(tidymodels)
+library(tictoc)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+## Introduction
+
+In [my last post](../2022-04-27-predicting-bike-ridership-getting-the-data), I retrieved and prepared bike counter data from Halifax, Nova Scotia, and some historical weather data to go along with it.
+Here, I will explore the data, engineer some features, and fit and evaluate many models to predict bike ridership at different sites around the city.
+
+## Exploratory data analysis
+
+Import the data:
+
+```{r}
+bike_ridership <- read_rds("bike-ridership-data.rds")
+```
+
+I've already done a bit of EDA in part 1, but I'll dive deeper in this post.
+
+```{r}
+glimpse(bike_ridership)
+```
+
+The `n_bikes` variable here is the total number of bikes counted at `site_name` over `count_date`.
+In the original data, counts are recorded every hour which is reflected by the `n_records` variable:
+
+```{r}
+bike_ridership %>%
+  count(site_name, n_records) %>%
+  gt()
+```
+
+All except the Hollis St site have two channels (northbound and southbound), which is why `n_records` = 48. The entries with fewer `n_records` reflect the time of day that the data was extracted:
+
+```{r}
+bike_ridership %>%
+  filter(n_records < 24) %>%
+  select(site_name, count_date, n_records) %>%
+  gt()
+```
+
+For this analysis, I will exclude this incomplete day:
+
+```{r}
+bike_ridership <- bike_ridership %>% filter(n_records > 8)
+```
+
+The date ranges for each site:
+
+```{r fig.height=2, fig.width=5}
+bike_ridership %>%
+  group_by(site_name) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_days = n(), .groups = "drop"
+  ) %>%
+  mutate(
+    site_name = fct_reorder(site_name, min_date),
+    n_days_label = ifelse(site_name == levels(site_name)[1],
+                          str_c("n_days = ", n_days), n_days),
+    midpoint_date = min_date + n_days / 2
+  ) %>%
+  ggplot(aes(y = site_name, color = site_name)) +
+  geom_linerange(aes(xmin = min_date, xmax = max_date)) +
+  geom_point(aes(x = min_date)) +
+  geom_point(aes(x = max_date)) +
+  geom_text(aes(label = n_days_label, x = midpoint_date), vjust = -0.5) +
+  scale_y_discrete(labels = ~ str_wrap(., width = 15)) +
+  labs(y = NULL, x = "min_date -> max_date") +
+  theme(legend.position = "none")
+```
+
+For each site, the distribution of daily `n_bikes`:
+
+```{r}
+bike_ridership %>%
+  ggplot(aes(x = n_bikes, fill = site_name)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(~ str_trunc(site_name, 15)) +
+  theme(legend.position = "none")
+```
+
+The South Park St site appears bimodal, which [I noted in part 1](../2022-04-27-predicting-bike-ridership-getting-the-data) was likely due to the addition of protected bike lanes in 2021.
+This can be seen more clearly in the trend over time:
+
+```{r fig.height=5, fig.width=6}
+bike_ridership %>%
+  ggplot(aes(x = count_date, y = n_bikes, color = site_name)) +
+  geom_line() +
+  facet_wrap(~ site_name, ncol = 1) +
+  theme(legend.position = "none")
+```
+
+As you would expect for data in the same city, bike counters between sites are very highly correlated, which I can visualize:
+
+```{r}
+bike_ridership %>%
+  transmute(count_date, n_bikes1 = n_bikes,
+            site_name1 = factor(str_trunc(site_name, 10))) %>%
+  left_join(., rename(., n_bikes2 = n_bikes1, site_name2 = site_name1),
+            by = "count_date") %>%
+  filter(as.numeric(site_name1) < as.numeric(site_name2)) %>%
+  ggplot(aes(x = n_bikes1, y = n_bikes2)) +
+  geom_point(aes(color = site_name1), alpha = 0.3) +
+  facet_grid(site_name2 ~ site_name1) +
+  theme(legend.position = "none") +
+  dunnr::add_facet_borders()
+```
+
+The day of the week effect looks important:
+
+```{r}
+bike_ridership %>%
+  mutate(day_of_week = lubridate::wday(count_date, label = TRUE)) %>%
+  ggplot(aes(x = day_of_week, y = n_bikes)) +
+  geom_jitter(aes(color = site_name), height = 0, width = 0.2, alpha = 0.3) +
+  stat_summary(fun = "mean", geom = "point") +
+  facet_wrap(~ site_name) +
+  theme(legend.position = "none") +
+  dunnr::add_facet_borders()
+```
+
+Another thing to consider is holidays.
+I can get Canadian holidays with the `timeDate` package (which is how `recipes::step_holiday()` works):
+
+```{r}
+library(timeDate)
+canada_holidays <-
+  timeDate::listHolidays(
+    pattern = "^CA|^Christmas|^NewYears|Easter[Sun|Mon]|^GoodFriday|^CaRem"
+  )
+canada_holidays
+```
+
+Then get the dates for each across the years in the bike data:
+
+```{r}
+canada_holiday_dates <- tibble(holiday = canada_holidays) %>%
+  crossing(year = 2019:2022) %>%
+  mutate(
+    holiday_date = map2(
+      year, holiday,
+      ~ as.Date(timeDate::holiday(.x, .y)@Data)
+    )
+  ) %>%
+  unnest(holiday_date)
+
+canada_holiday_dates %>% rmarkdown::paged_table()
+```
+
+Only day I can think is missing from this list is Family Day (Heritage Day in Nova Scotia) which is the third Monday in February.
+Visualize the effect of these holidays on bike ridership by plotting `n_bikes` in a 2 week window around the holidays (only the South Park St site for this plot):
+
+```{r}
+canada_holiday_dates %>%
+  filter(holiday_date %in% unique(bike_ridership$count_date)) %>%
+  mutate(
+    date_window = map(holiday_date, ~ seq.Date(.x - 7, .x + 7, by = "1 day"))
+  ) %>%
+  unnest(date_window) %>%
+  left_join(
+    bike_ridership, by = c("date_window" = "count_date")
+  ) %>%
+  mutate(is_holiday = holiday_date == date_window) %>%
+  group_by(holiday) %>%
+  mutate(day_from_holiday = as.numeric(holiday_date - date_window)) %>%
+  ungroup() %>%
+  filter(site_name == "South Park St") %>%
+  ggplot(aes(x = day_from_holiday, y = n_bikes,
+             group = factor(year))) +
+  geom_line() +
+  geom_vline(xintercept = 0, lty = 2) +
+  geom_point(aes(color = factor(year))) +
+  scale_color_viridis_d("year") +
+  facet_wrap(~ holiday) +
+  dunnr::add_facet_borders() +
+  theme(legend.position = "top")
+```
+
+The only holiday with a clear drop in ridership is Labour Day in 2021.
+Victoria Day seems to have the opposite effect.
+The Good Friday, Easter Sunday and Easter Monday holidays are obviously overlapping, and the `n_bikes` trend is a bit of a mess, but I can see an indication to the left of Good Friday that there may be a drop in ridership going into that weekend.
+
+One thing to note is that the first, middle and last points correspond to the same day of the week, and the middle point in this set is usually lower than the other two, so holidays may be useful features in conjunction with day of the week.
+
+The weather variables have varying levels of completeness:
+
+```{r fig.height=2.5, fig.width=5}
+# Separate out the weather data
+weather_data <- bike_ridership %>%
+  distinct(count_date, mean_temperature, total_precipitation,
+           speed_max_gust, snow_on_ground)
+
+weather_data %>%
+  mutate(across(where(is.numeric), is.na)) %>%
+  pivot_longer(cols = -count_date) %>%
+  ggplot(aes(x = count_date, y = name)) +
+  geom_tile(aes(fill = value)) +
+  labs(y = NULL, x = NULL, fill = "Missing") +
+  scale_fill_manual(values = c(td_colors$nice$indigo_blue, "gray80")) +
+  scale_x_date(expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  theme(legend.position = "top")
+```
+
+The distributions:
+
+```{r fig.height=2.5, fig.width=6}
+weather_data %>%
+  pivot_longer(cols = -count_date) %>%
+  filter(!is.na(value)) %>%
+  ggplot(aes(x = value, fill = name)) +
+  geom_histogram(bins = 30) +
+  scale_y_continuous(expand = c(0, 0)) +
+  facet_wrap(~ name, nrow = 1) +
+  theme(legend.position = "none")
+```
+
+For non-missing cases, plot the pairwise relationships:
+
+```{r}
+weather_data %>%
+  pivot_longer(cols = -count_date, names_to = "var1", values_to = "val1") %>%
+  mutate(var1 = factor(var1)) %>%
+  left_join(., rename(., var2 = var1, val2 = val1),
+            by = "count_date") %>%
+  filter(!is.na(val1), !is.na(val2),
+         # Use numeric factor labels to remove duplicates
+         as.numeric(var1) < as.numeric(var2)) %>%
+  ggplot(aes(x = val1, y = val2, color = var1)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(var2 ~ var1, scales = "free") +
+  theme(legend.position = "none") +
+  dunnr::add_facet_borders()
+```
+
+The clearest relationship to me is unsurprising: increasing `mean_temperature` is associated with decreasing `snow_on_ground` (top left plot).
+
+Visualize relationships with `n_bikes`:
+
+```{r}
+bike_ridership %>%
+  pivot_longer(
+    cols = c(mean_temperature, total_precipitation,
+             speed_max_gust, snow_on_ground),
+    names_to = "var", values_to = "val"
+  ) %>%
+  filter(!is.na(val)) %>%
+  ggplot(aes(x = val, y = n_bikes)) +
+  geom_point(aes(color = str_trunc(site_name, 15)), alpha = 0.4) +
+  facet_wrap(~ var, nrow = 2, scales = "free_x") +
+  dunnr::add_facet_borders() +
+  labs(x = NULL, color = NULL) +
+  theme(legend.position = "bottom")
+```
+
+All of the weather variables seem to be associated with `n_bikes`.
+In terms of predictive value, `mean_temperature` looks like it might be the most useful, and `speed_max_gust` the least.
+
+## Feature engineering
+
+From my EDA, I decided I want try including all 4 weather variables to predict bike ridership.
+For some of the machine learning models I plan to try (like basic linear regression), this will require imputation of missing values, which I'll attempt here.
+
+Add some more time variables for working with the `weather_data`:
+
+```{r}
+weather_data <- weather_data %>%
+  mutate(count_year = lubridate::year(count_date),
+         # Day number relative to earliest date
+         count_day = as.numeric(count_date - min(count_date)),
+         # Day of the year, from 1 to 365
+         count_yday = lubridate::yday(count_date))
+```
+
+### Temperature
+
+The `mean_temperature` variable is missing `r scales::percent(mean(is.na(weather_data$mean_temperature)))` of values.
+Visualize the trend over time:
+
+```{r}
+p1 <- weather_data %>%
+  filter(!is.na(mean_temperature)) %>%
+  ggplot(aes(x = count_date, y = mean_temperature)) +
+  geom_line(aes(color = factor(count_year))) +
+  scale_color_viridis_d("year") +
+  scale_x_date("date", date_breaks = "1 year")
+p2 <- weather_data %>%
+  filter(!is.na(mean_temperature)) %>%
+  ggplot(aes(x = count_yday, y = mean_temperature)) +
+  geom_line(aes(color = factor(count_year))) +
+  scale_color_viridis_d("year") +
+  scale_x_continuous("day of year", breaks = c(0, 90, 180, 270, 365)) +
+  labs(y = NULL)
+p1 + p2 +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "top")
+```
+
+The cyclic nature makes it a good candidate for smoothing splines.
+As a starting point, try a natural spline with 5 knots on the `count_yday` variable:
+
+```{r}
+library(splines)
+lm_temperature <- 
+  lm(mean_temperature ~ ns(count_yday, knots = 5),
+      data = filter(weather_data, !is.na(mean_temperature)))
+
+p1 +
+  geom_line(
+    data = augment(lm_temperature, newdata = weather_data),
+    aes(y = .fitted), size = 1
+  ) +
+  theme(legend.position = "top")
+```
+
+We can obviously do a lot better.
+I'll fit the data using a generalized additive model (GAM) with the `mgcv` package.^[Check out [this blog post by Gavin Simpson ](https://fromthebottomoftheheap.net/2014/05/09/modelling-seasonal-data-with-gam/) for a great walkthrough of modeling seasonal data with GAMs.]
+For the `count_yday` variable (ranges from 1-365), I'll make sure that there is no discontinuity between year by using a *cyclic* spline (`bs = "cc"`).
+I'll also include a smoothing term of `count_day` which will capture the trend across years.
+
+```{r}
+library(mgcv)
+
+gam_temperature <-
+  gam(mean_temperature ~ s(count_yday, bs = "cc", k = 12) + s(count_day),
+      data = filter(weather_data, !is.na(mean_temperature)))
+plot(gam_temperature, pages = 1, shade = TRUE)
+```
+
+The left plot shows the seasonal trend within a year (note the lines would connect at `count_yday` = 1 and 365), and the right plot shows the increase in average temperature throughout time (across years) after accounting for the seasonal effect.
+Overlay the fit:
+
+```{r}
+p1 +
+  geom_line(
+    data = augment(gam_temperature, newdata = weather_data),
+    aes(y = .fitted), size = 1
+  ) +
+  theme(legend.position = "top")
+```
+
+It doesn't capture some of the coldest temperatures, but I'm pretty happy with that.
+I'll use predictions from the GAM model to impute missing days:
+
+```{r}
+bike_ridership <- bike_ridership %>%
+  mutate(
+    count_day = as.numeric(count_date - min(count_date)),
+    count_yday = lubridate::yday(count_date),
+  ) %>%
+  bind_cols(pred = predict(gam_temperature, newdata = .)) %>%
+  mutate(
+    mean_temperature = ifelse(is.na(mean_temperature), pred,
+                              mean_temperature)
+  ) %>%
+  select(-count_day, -count_yday, -pred)
+```
+
+
+### Precipitation and snow
+
+The `total_precipitation` variable is missing
+`r scales::percent(mean(is.na(weather_data$total_precipitation)))` of values;
+`r scales::percent(mean(is.na(weather_data$snow_on_ground)))` for `snow_on_ground`.
+
+The `total_precipitation` distribution:
+
+```{r}
+p1 <- weather_data %>%
+  mutate(total_precipitation = replace_na(total_precipitation, -5)) %>%
+  ggplot(aes(x = count_date, y = total_precipitation)) +
+  geom_point(alpha = 0.5) +
+  scale_y_continuous(breaks = c(-5, 0, 20, 40),
+                     labels = c("missing", 0, 20, 40))
+p1
+```
+
+This pattern of missing data during winter months makes me think that the `total_precipitation` is actually total rainfall, i.e. snowfall is not counted.
+I'm going to impute the missing values with 0 during pre-processing, which is admittedly a poor approximation of the truth -- I know first-hand that there has been some rainy days in Halifax during April 2022, for example.
+
+The `snow_on_ground` distribution:
+
+```{r}
+p2 <- weather_data %>%
+  mutate(snow_on_ground = replace_na(snow_on_ground, -2)) %>%
+  ggplot(aes(x = count_date, y = snow_on_ground)) +
+  geom_point(alpha = 0.5) +
+  scale_y_continuous(breaks = c(-2, 0, 10, 20),
+                     labels = c("missing", 0, 10, 20))
+p2
+```
+
+I'll also impute zero for missing `snow_on_ground`, which I'm a lot more confident doing here because most of the missing values occur during non-winter months.
+A more careful approach might involve imputing 0 during non-winter months that I'm certain would have no snow on the ground, then modeling the winter months with something like a zero-inflated Poisson model.
+
+### Wind speed
+
+The `speed_max_gust` variable is the daily maximum wind speed in km/h, and has
+`r scales::percent(mean(is.na(weather_data$speed_max_gust)))` missing values.
+
+```{r}
+mean_speed <- mean(weather_data$speed_max_gust, na.rm = TRUE)
+
+weather_data %>%
+  mutate(
+    speed_max_gust = replace_na(speed_max_gust, 20)
+  ) %>%
+  ggplot(aes(x = count_date, y = speed_max_gust)) +
+  geom_line(data = . %>% filter(speed_max_gust > 20)) +
+  geom_smooth(data = . %>% filter(speed_max_gust > 20),
+              method = "loess", formula = "y ~ x") +
+  geom_hline(yintercept = mean_speed,
+             color = td_colors$nice$opera_mauve, size = 1, lty = 2) +
+  geom_jitter(data = . %>% filter(speed_max_gust == 20),
+              width = 0, alpha = 0.5) +
+  scale_y_continuous(breaks = c(mean_speed, 20, 40, 60, 80),
+                     labels = c("mean_speed", "missing", 40, 60, 80))
+```
+
+Relative to the noise, the time trends are pretty minor, and the missing data looks to be missing at random.
+I'll just impute using the mean speed.
+
+### Lagged counts
+
+As a time series data set, it would be careless to not account for past data when predicting future data, so I'll include lagged `n_bikes` values.
+Investigate the correlation in `n_bikes` for values lagged by 1, 2 and 3 days, and by 1 and 2 weeks (because they are the same day of the week):
+
+```{r}
+bike_ridership_lag <- bike_ridership %>%
+  arrange(site_name, count_date) %>%
+  group_by(site_name) %>%
+  mutate(
+    n_bikes_lag_1 = lag(n_bikes, 1),
+    n_bikes_lag_2 = lag(n_bikes, 2),
+    n_bikes_lag_3 = lag(n_bikes, 3),
+    n_bikes_lag_7 = lag(n_bikes, 7),
+    n_bikes_lag_14 = lag(n_bikes, 14)
+  )
+bike_ridership_lag %>%
+  select(site_name, count_date, starts_with("n_bikes")) %>%
+  pivot_longer(cols = matches("n_bikes_lag"),
+               names_to = "lag_days", values_to = "n_bikes_lag") %>%
+  filter(!is.na(n_bikes_lag)) %>%
+  mutate(lag_days = str_extract(lag_days, "\\d+") %>% as.integer()) %>%
+  group_by(site_name, lag_days) %>%
+  mutate(corr_coef = cor(n_bikes, n_bikes_lag)) %>%
+  ggplot(aes(x = n_bikes_lag, y = n_bikes, color = site_name)) +
+  geom_point(alpha = 0.2) +
+  geom_label(data = . %>% distinct(n_bikes_lag, site_name, corr_coef),
+             aes(label = round(corr_coef, 2), x = 500, y = 200)) +
+  geom_abline(slope = 1) +
+  facet_grid(str_trunc(site_name, 10) ~ factor(lag_days)) +
+  dunnr::add_facet_borders() +
+  theme(legend.position = "none")
+```
+
+The 7- and 14-day lagged values are correlated just as strongly (in some cases stronger) than the other options.
+This is great news because I only want to include a single lag variable, and using the 14th day lag means I can forecast 14 days ahead.
+
+In order to use 14-day lag in a `tidymodels` workflow, I need to add it to the data myself.
+The `step_lag()` function won't allow the outcome `n_bikes` to be lagged, because any new data won't have an `n_bikes` variable to use.
+See [the warning in this section of the Tidy Modeling with R book](https://www.tmwr.org/recipes.html#skip-equals-true).
+Add the `n_bikes_lag_14` predictor, and exclude any values without it:
+
+```{r}
+bike_ridership <- bike_ridership %>%
+  group_by(site_name) %>%
+  mutate(n_bikes_lag_14 = lag(n_bikes, 14)) %>%
+  ungroup() %>%
+  filter(!is.na(n_bikes_lag_14))
+```
+
+## Modeling
+
+Register parallel computing:
+
+```{r}
+n_cores <- parallel::detectCores(logical = FALSE)
+library(doParallel)
+cl <- makePSOCKcluster(n_cores - 1)
+registerDoParallel(cl)
+# This extra step makes sure the parallel workers have access to the
+#  `tidyr::replace_na()` function during pre-processing, which I use later on
+# See this issue: https://github.com/tidymodels/tune/issues/364
+parallel::clusterExport(cl, c("replace_na"))
+```
+
+
+### Splitting, resampling and metrics
+
+For splitting the data into training and testing sets, there is the `initial_time_split()` function in `rsample` to account for the time dependence.
+
+```{r fig.height=3}
+# Need to order by time to properly use time split
+bike_ridership <- bike_ridership %>% arrange(count_date, site_name)
+
+set.seed(3005)
+bike_split <- initial_time_split(bike_ridership, prop = 0.7)
+
+bike_train <- training(bike_split)
+bike_test <- testing(bike_split)
+
+bind_rows(
+  train = bike_train, test = bike_test, .id = "data_set"
+) %>%
+  group_by(data_set, site_name) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_days = n(), midpoint_date = min_date + n_days / 2,
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(y = fct_reorder(site_name, min_date), color = data_set)) +
+  geom_linerange(aes(xmin = min_date, xmax = max_date),
+                 position = position_dodge(0.2)) +
+  geom_point(aes(x = min_date), position = position_dodge(0.2)) +
+  geom_point(aes(x = max_date), position = position_dodge(0.2)) +
+  geom_text(aes(label = n_days, x = midpoint_date), vjust = -0.5,
+            position = position_dodge(0.2), show.legend = FALSE) +
+  labs(x = "date range", y = NULL, color = NULL)
+```
+
+It might make more sense to stratify by `site_name` so that there is a 70-30 split in each site.
+^[Since `initial_time_split()` doesn't take `strata` argument, this would require defining a custom split function with `rsample::make_splits()`. This functionality might be available in future versions of `rsample` (see [this issue](https://github.com/tidymodels/rsample/issues/207)).]
+For now, I'm using a simpler approach to split into the first 70% and 30% of the data.
+
+For re-sampling, I will use `sliding_period()` to break up the data into 14 months of data (chosen to give 10 resamples) for analysis and 1 month for assessment:
+
+```{r}
+bike_resamples <-
+  sliding_period(bike_train, index = count_date,
+                 period = "month", lookback = 13, assess_stop = 1)
+```
+
+Visualize the resamples:
+
+```{r}
+bind_rows(
+  analysis_set = map_dfr(bike_resamples$splits, analysis, .id = "i"),
+  assessment_set = map_dfr(bike_resamples$splits, assessment, .id = "i"),
+  .id = "data_set"
+) %>%
+  mutate(i = as.integer(i)) %>%
+  group_by(i, data_set) %>%
+  summarise(
+    min_date = min(count_date), max_date = max(count_date),
+    n_days = n(), midpoint_date = min_date + n_days / 2,
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(y = factor(i), color = data_set)) +
+  geom_linerange(aes(xmin = min_date, xmax = max_date),
+                 position = position_dodge(0.3)) +
+  geom_point(aes(x = min_date), position = position_dodge(0.3)) +
+  geom_point(aes(x = max_date), position = position_dodge(0.3)) +
+  labs(x = "date range", y = NULL, color = NULL)
+```
+
+I'll define a set of metrics to use here as well:
+
+```{r}
+bike_metrics <- metric_set(rmse, rsq, mase, poisson_log_loss)
+```
+
+The Poisson log loss is a new one to me, that was [recently added to `yardstick`](https://yardstick.tidymodels.org/news/index.html#yardstick-0-0-9-2021-11-22).
+I'll include it just for kicks, but I will choose my final model with `mase`, the mean absolute scaled error, which was introduced by Hyndman and Koehler [@Hyndman2006].
+The MASE involves dividing the absolute forecast error ($|y_i - \hat{y}_i|$) by absolute *naive* forecast error (which involves predicting with the last observed value).
+The main advantage of this is that it is scale invariant.
+Mean absolute percentage error (MAPE) is the typical scale-invariant choice in regression problems, but the MASE avoids dividing by `n_bikes` = 0 (of which there are about 20 in this data set).
+It also has a straightforward interpretation: values greater than one indicate a worse forecast than the naive method, and values less indicate better.
+
+### Generalized linear models
+
+For my base model, I'll include just `site_name` and `n_bikes_lag_14`:
+
+```{r}
+bike_recipe <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
+An extension of this model will include date variables.
+I'll add day of week as categorical, day of year as numerical (and tune a natural spline function), year as numerical and Canadian holidays as categorical.
+
+```{r}
+bike_recipe_date <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = tune()) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
+I'll consider the weather variables (with some simple imputations) separately:
+
+```{r}
+bike_recipe_weather <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_impute_mean(speed_max_gust) %>%
+  # Impute missing values with zero
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
+And lastly, all the features:
+
+```{r}
+bike_recipe_date_weather <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = tune()) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
+
+```{r eval=FALSE, include=FALSE}
+# For some reason, including `count_date` gives good performance on the test set
+bike_recipe1 <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  # `add_role()` keeps `count_date` as a predictor
+  add_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = 5) %>%
+  step_zv(all_predictors())
+# ... but `count_date_decimal` gives poor performance
+bike_recipe2 <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  # `update_role()` removes `count_date` as a predictor
+  update_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year", "decimal"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_ns(count_date_doy, deg_free = 5) %>%
+  step_zv(all_predictors())
+# ... convert `count_date_decimal` back to date gets same good performance
+bike_recipe3 <- bike_recipe2 %>%
+  step_mutate(
+    count_date_decimal = lubridate::date_decimal(count_date_decimal)
+  )
+# ... manually calculating decimal date gives even worse performance
+bike_recipe4 <- bike_recipe1 %>%
+  step_mutate(
+    count_date = lubridate::year(count_date) + lubridate::yday(count_date)/365
+  )
+
+test_wf_set <- workflow_set(
+  preproc = list(rec1 = bike_recipe1, rec2 = bike_recipe2, rec3 = bike_recipe3,
+                 rec4 = bike_recipe4),
+  models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
+  cross = TRUE
+)
+
+test_wf_set_res <- workflow_map(
+  test_wf_set,
+  "fit_resamples",
+  resamples = bike_resamples,
+  metrics = bike_metrics
+)
+# Training set performance is consistently good
+plot_wf_set_metrics(test_wf_set_res)
+
+rec1_workflow <-
+  extract_workflow(test_wf_set_res, id = "rec1_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec1_linear_reg")
+rec2_workflow <- 
+  extract_workflow(test_wf_set_res, id = "rec2_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec2_linear_reg")
+rec3_workflow <- 
+  extract_workflow(test_wf_set_res, id = "rec3_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec3_linear_reg")
+rec4_workflow <- 
+  extract_workflow(test_wf_set_res, id = "rec4_poisson_reg")
+  #extract_workflow(test_wf_set_res, id = "rec4_linear_reg")
+rec1_fit <-
+  last_fit(rec1_workflow, split = bike_split, metrics = bike_metrics)
+rec2_fit <-
+  last_fit(rec2_workflow, split = bike_split, metrics = bike_metrics)
+rec3_fit <-
+  last_fit(rec3_workflow, split = bike_split, metrics = bike_metrics)
+rec4_fit <-
+  last_fit(rec4_workflow, split = bike_split, metrics = bike_metrics)
+
+rec1_metrics <- rec1_fit %>% collect_metrics()
+rec2_metrics <- rec2_fit %>% collect_metrics()
+rec3_metrics <- rec3_fit %>% collect_metrics()
+rec4_metrics <- rec4_fit %>% collect_metrics()
+
+bind_rows(
+  rec1 = rec1_metrics,
+  rec2 = rec2_metrics,
+  rec3 = rec3_metrics,
+  rec4 = rec4_metrics,
+  .id = "rec"
+) %>%
+  select(.metric, rec, .estimate) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate) %>%
+  gt() %>%
+  fmt_number(columns = -rec, decimals = 2)
+```
+
+The first models I will run these recipes through are simple linear regression and Poisson regression.
+I would prefer to use negative binomial regression instead of Poisson to account for overdispersion (see aside), but [it hasn't been implemented in `parsnip` yet](https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658).
+
+<aside>
+
+Over-dispersion in `n_bikes` (variance much higher than the mean):
+
+```{r}
+bike_ridership %>%
+  group_by(site_name) %>%
+  summarise(mean_n_bikes = mean(n_bikes), var_n_bikes = var(n_bikes)) %>%
+  gt() %>%
+  fmt_number(matches("n_bikes"), decimals = 1)
+```
+
+</aside>
+
+```{r}
+lm_spec <- linear_reg(engine = "lm")
+library(poissonreg) # This wrapper package is required to use `poisson_reg()`
+poisson_spec <- poisson_reg(engine = "glm")
+
+bike_glm_wf_set <- workflow_set(
+  preproc = list(base = bike_recipe,
+                 date = bike_recipe_date, weather = bike_recipe_weather,
+                 date_weather = bike_recipe_date_weather),
+  models = list(linear_reg = lm_spec, poisson_reg = poisson_spec),
+  cross = TRUE
+)
+```
+
+```{r bike-glm-wf-set-res, cache=TRUE}
+tic()
+bike_glm_wf_set_res <- workflow_map(
+  bike_glm_wf_set,
+  "tune_grid",
+  # In this early stage, I'll try just a few `deg_free` in the spline term
+  grid = grid_regular(deg_free(range = c(4, 7)), levels = 4),
+  resamples = bike_resamples,
+  metrics = bike_metrics
+)
+toc()
+```
+
+For plotting the results of a set of workflows, I'll use a custom plotting function with `rank_results()`:
+
+<aside>
+
+I'm using my own function because the `workflowsets::autoplot()` function doesn't distinguish preprocessor recipes using the names provided to the `preproc` argument.
+Below is an example (for just the RMSE metric):
+
+```{r fig.height=4, fig.width=5}
+autoplot(bike_glm_wf_set_res, metric = "rmse")
+```
+
+Note in the legend how all results have the "recipe" preprocessor, even though we have four different pre-processors: `bike_recipe`, `bike_recipe_date`, `bike_recipe_weather`, `bike_recipe_date_weather`.
+
+</aside>
+
+```{r}
+plot_wf_set_metrics <- function(wf_set_res, rank_metric = "mase") {
+  rank_results(wf_set_res, rank_metric = rank_metric) %>%
+    mutate(preproc = str_remove(wflow_id, paste0("_", model))) %>%
+    ggplot(aes(x = rank, y = mean, color = model, shape = preproc)) +
+    geom_point(size = 2) +
+    geom_errorbar(aes(ymin = mean - std_err, ymax = mean + std_err),
+                  width = 0.2) +
+    facet_wrap(~ .metric, scales = "free_y")
+  
+}
+plot_wf_set_metrics(bike_glm_wf_set_res)
+```
+
+Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
+Here are the models ranked by MASE:
+^[Using the `select_best = TRUE` argument means only the best model in each workflow is returned. In this case, that means the workflows with the tunable spline feature of `count_date_doy` will only have one entry.]
+
+```{r}
+rank_results(bike_glm_wf_set_res, select_best = TRUE, rank_metric = "mase") %>%
+  filter(.metric == "mase") %>%
+  select(rank, wflow_id, .config, mean, std_err) %>%
+  gt() %>%
+  fmt_number(columns = c(mean, std_err), decimals = 3)
+```
+
+So our best workflow has the id `date_weather_poisson_reg`^[You could make the argument that the improvement is so minor that it is worth choosing the simpler linear regression model instead.] with the `.config` "Preprocessor2_Model1" which refers to a specific spline degree from our tuning of the `count_date_doy` feature.
+Extract this workflow and checkout the results of the tuning:
+
+```{r fig.height=4, fig.width=6}
+bike_glm_workflow <-
+  extract_workflow(bike_glm_wf_set_res, id = "date_weather_poisson_reg")
+bike_glm_tune_res <-
+  extract_workflow_set_result(bike_glm_wf_set_res,
+                              id = "date_weather_poisson_reg")
+autoplot(bike_glm_tune_res) +
+  facet_wrap(~ .metric, nrow = 2, scales = "free_y")
+```
+
+The polynomial of degree 5 did best here.
+Finalize the workflow and fit to the test data:
+
+```{r}
+bike_glm_workflow_best <-
+  finalize_workflow(bike_glm_workflow,
+                    select_best(bike_glm_tune_res, metric = "mase"))
+
+bike_glm_fit <-
+  last_fit(bike_glm_workflow_best, split = bike_split,
+           metrics = bike_metrics)
+```
+
+The final metrics on the training and testing sets:
+
+```{r}
+bike_glm_metrics <- bike_glm_fit %>% collect_metrics()
+
+bike_glm_workflow_final <- extract_workflow(bike_glm_fit)
+bike_glm_metrics_train <- bike_glm_workflow_final %>%
+  augment(bike_train) %>%
+  bike_metrics(truth = n_bikes, estimate = .pred)
+
+bind_rows(
+  train = bike_glm_metrics_train,
+  test = bike_glm_metrics,
+  .id = "data_set"
+) %>%
+  select(.metric, data_set, .estimate) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate) %>%
+  gt() %>%
+  fmt_number(columns = -data_set, decimals = 2)
+```
+
+#### Exploring predictions
+
+Here are the predictions overlaid on the data (vertical line delineates training and testing sets):
+
+```{r}
+bike_glm_preds <- bind_rows(
+  train = augment(bike_glm_workflow_final, bike_train),
+  test = augment(bike_glm_workflow_final, bike_test),
+  .id = "data_set"
+) %>%
+  mutate(data_set = fct_inorder(data_set))
+p <- bike_glm_preds %>%
+  ggplot(aes(x = count_date)) +
+  geom_line(aes(y = n_bikes, color = site_name)) +
+  geom_line(aes(y = .pred), color = "black") +
+  geom_vline(xintercept = min(bike_test$count_date), lty = 2) +
+  facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
+  theme(legend.position = "none")
+p
+```
+
+Take a closer look by truncating the dates:
+
+```{r}
+p + coord_cartesian(xlim = as.Date(c("2021-07-01", "2022-05-01")))
+```
+
+That looks pretty good to me, though it's a shame to not have more data to test a full year -- most of the test set covers winter and spring.
+^[This is my reminder to myself to come back in fall 2022 to see how the model performs on a full summer season.]
+
+To investigate the model performance further, I'll plot the biggest outliers in the training and testing set (and ±1 week on either side):
+
+```{r fig.height=6}
+worst_preds <- bike_glm_preds %>%
+  mutate(abs_error = abs(n_bikes - .pred)) %>%
+  group_by(data_set, site_name) %>%
+  slice_max(abs_error, n = 1) %>%
+  ungroup() %>%
+  select(data_set, site_name, count_date, n_bikes, .pred, abs_error)
+
+site_colors <- setNames(td_colors$pastel6[1:5], unique(worst_preds$site_name))
+
+worst_preds %>%
+  select(data_set, site_name, count_date) %>%
+  mutate(
+    worst_date = count_date,
+    count_date = map(count_date, ~ seq.Date(.x - 7, .x + 7, by = "day"))
+  ) %>%
+  unnest(count_date) %>%
+  left_join(bike_glm_preds, by = c("data_set", "site_name", "count_date")) %>%
+  filter(!is.na(n_bikes)) %>%
+  mutate(site_name = fct_inorder(site_name)) %>%
+  split(.$site_name) %>%
+  map(
+    ~ ggplot(., aes(x = count_date)) +
+      geom_line(aes(y = n_bikes, color = site_name)) +
+      geom_line(aes(y = .pred), color = "black") +
+      geom_vline(aes(xintercept = worst_date), lty = 2) +
+      facet_wrap(~ data_set, scales = "free_x", ncol = 2) +
+      dunnr::add_facet_borders() +
+      scale_color_manual(values = site_colors) +
+      scale_x_date(breaks = unique(.$worst_date)) +
+      expand_limits(y = 0) +
+      theme(legend.position = "none") +
+      labs(x = NULL, y = NULL,
+           subtitle = .$site_name[[1]])
+  ) %>%
+  reduce(`+`) +
+  plot_layout(ncol = 2)
+```
+
+Relative to the noise in the data, that doesn't look bad at all.
+The Vernon St site has a series of zeroes in a row that I'm guessing aren't real.
+The worst time period for prediction seems to be around 2022-11-23.
+Check out the weather around that day:
+
+```{r}
+bike_ridership %>%
+  filter(count_date > "2021-11-15", count_date < "2021-11-26") %>%
+  distinct(count_date, mean_temperature, total_precipitation,
+           speed_max_gust, snow_on_ground) %>%
+  gt()
+```
+
+This happens to be around the time of [a huge rain and wind storm in Nova Scotia](https://globalnews.ca/news/8395034/ns-storm-closures-2021/) that knocked out power for a lot of people.
+This is seen in the `total_precipitation` on 2021-11-22, but the next day is missing data so, in my pre-processing, it was imputed as 0, which is definitely a poor approximation of the truth.
+If I impute a large amount of rain (let's say 30mm) for that date, here is how the predictions change:
+
+```{r}
+augment(
+  bike_glm_workflow_final,
+  bike_glm_preds %>%
+    filter(count_date == "2021-11-23") %>%
+    rename(.pred_old = .pred) %>%
+    mutate(total_precipitation = 30)
+) %>%
+  select(site_name, n_bikes, .pred_old, .pred_new = .pred)
+```
+
+That is a much better prediction for a rainy and windy day.
+
+#### Model interpretation
+
+An advantage of using a generalized linear model is that they are easy to interpret.
+A simple way to estimate variable important in a GLM is to look at the absolute value of the $t$-statistic (`statistic` in the below table) -- here are the top 5:
+
+```{r}
+extract_fit_parsnip(bike_glm_fit) %>%
+  tidy() %>%
+  arrange(desc(abs(statistic))) %>%
+  head(5)
+```
+
+A couple of the weather variables are among the most influential in predicting `n_bikes`.
+Here are all the weather coefficients:
+
+```{r}
+extract_fit_parsnip(bike_glm_fit) %>%
+  tidy() %>%
+  filter(str_detect(term, "temperature|precip|max_gust|snow"))
+```
+
+Since this is a Poisson model, the link function (non-linear relationship between the outcome and the predictors) is the logarithm:
+
+$$
+\begin{align}
+\log{n}_{\text{bikes}} &= \beta_0 + \beta_1 x_1 + \dots + \beta_p x_p \\
+n_{\text{bikes}} &= \text{exp}(\beta_0 + \beta_1 x_1 + \dots + \beta_p x_p) \\
+&= \text{exp}(\beta_0) \text{exp}(\beta_1 x_1) \dots \text{exp}(\beta_p x_p) \\
+\end{align}
+$$
+
+So the coefficients are interpreted as: for every one unit increase in $x_i$, the expected value of $n_{\text{bikes}}$ changes by multiplicative factor of $\text{exp}(\beta_i)$, holding all other predictors constant.
+Here are some plain-language interpretations of the weather coefficients:
+
+```{r include=FALSE}
+weather_example <- extract_fit_parsnip(bike_glm_fit) %>%
+  tidy() %>%
+  filter(str_detect(term, "temperature|precip|max_gust|snow")) %>%
+  mutate(x = c(5, 10, 10, 5),
+         perc_change = scales::percent(exp(x * estimate), accuracy = 1)) %>%
+  pull(perc_change, name = term)
+```
+
+* For every 5°C increase in daily average temperature (`mean_temperature`), the expected value of `n_bikes` increases by `r weather_example["mean_temperature"]`.
+* For every 10mm increase in daily rain (`total_precipitation`), the expected value of `n_bikes` decreases by `r weather_example["total_precipitation"]`.
+* For every 10km/h increase in maximum wind speed (`speed_max_gust`), the expected value of `n_bikes` decreases by `r weather_example["speed_max_gust"]`.
+* For every 5cm of snow (`snow_on_ground`), the expected value of `n_bikes` decreases by `r weather_example["snow_on_ground"]`.
+
+A more thorough and formal analysis of these types of relationships should involve exploration of marginal effects (with a package like `marginaleffects` for example), but I'll move on to other models.
+
+```{r eval=FALSE, include=FALSE}
+# Model diagnostics
+library(performance)
+
+bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_engine() %>%
+  check_model()
+
+bike_glm_fit$.workflow[[1]] %>%
+  extract_fit_engine() %>%
+  check_overdispersion()
+```
+
+### Tree-based methods
+
+For tree-based methods, I'll use similar pre-processing as with GLM, except I won't use a spline term (trees partition the feature space to capture non-linearity):
+
+```{r}
+bike_trees_recipe <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
+           total_precipitation + speed_max_gust + snow_on_ground,
+         data = bike_train) %>%
+  update_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_zv(all_predictors())
+
+# XGBoost requires dummy variables
+bike_trees_recipe_dummy <- bike_trees_recipe %>%
+  step_dummy(all_nominal_predictors())
+```
+
+I'll try a decision tree, a random forest, and an XGBoost model, each with hyperparameters indicated for tuning:
+
+```{r}
+decision_spec <-
+  decision_tree(cost_complexity = tune(), tree_depth = tune(),
+                min_n = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+rf_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>%
+  set_engine("ranger") %>%
+  set_mode("regression")
+
+xgb_spec <- boost_tree(mtry = tune(), min_n = tune(), tree_depth = tune(),
+                       learn_rate = tune(), sample_size = tune(),
+                       trees = 1000) %>%
+  set_engine("xgboost") %>%
+  set_mode("regression")
+
+trees_wf_set <- workflow_set(
+  preproc = list(trees_recipe = bike_trees_recipe,
+                 trees_recipe = bike_trees_recipe,
+                 trees_recipe_dummy = bike_trees_recipe_dummy),
+  models = list(rf = rf_spec, decision = decision_spec, xgb = xgb_spec),
+  cross = FALSE
+)
+```
+
+As a first pass, I'll let `tune_grid()` choose 10 parameter combinations automatically for each model (`grid = 10`):
+
+```{r trees-wf-set-res, cache=TRUE}
+set.seed(225)
+tic()
+trees_wf_set_res <- workflow_map(
+  trees_wf_set,
+  "tune_grid",
+  grid = 10,
+  resamples = bike_resamples, metrics = bike_metrics, verbose = TRUE
+)
+toc()
+```
+
+Visualize the performance of the 30 workflows, ranked by MASE:
+
+```{r}
+# Don't need to use my custom function defined previously because I'm
+#  not using functionally different recipes for each model
+autoplot(trees_wf_set_res, rank_metric = "mase")
+```
+
+As I would have expected, the decision tree models perform worse than random forest models (which consist of multiple decision trees).
+The boosted tree models (which also consist of multiple decision trees, but differ in how they are built and combined) slightly outperform random forests, which is also expected. 
+
+For the three different tree-based model types, I'll extract the best-performing workflow from each and fit to the test set:
+
+```{r}
+bike_decision_wf <- extract_workflow(trees_wf_set, "trees_recipe_decision")
+bike_decision_wf_res <-
+  extract_workflow_set_result(trees_wf_set_res, "trees_recipe_decision")
+
+bike_decision_fit <- last_fit(
+  finalize_workflow(bike_decision_wf,
+                    select_best(bike_decision_wf_res, "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+
+bike_rf_wf <- extract_workflow(trees_wf_set, "trees_recipe_rf")
+bike_rf_wf_res <-
+  extract_workflow_set_result(trees_wf_set_res, "trees_recipe_rf")
+
+# I forgot to add the `importance` argument in the original spec,
+#  but I can update the model spec for the `last_fit()`
+# This will be needed for computing variable importance
+bike_rf_wf <- bike_rf_wf %>%
+  update_model(set_engine(rf_spec, "ranger", importance = "permutation"))
+bike_rf_fit <- last_fit(
+  finalize_workflow(bike_rf_wf, select_best(bike_rf_wf_res, "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+bike_rf_fit <- last_fit(
+  finalize_workflow(bike_rf_wf, select_best(bike_rf_wf_res, "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+
+bike_xgb_wf <- extract_workflow(trees_wf_set, "trees_recipe_dummy_xgb")
+bike_xgb_wf_res <-
+  extract_workflow_set_result(trees_wf_set_res, "trees_recipe_dummy_xgb")
+
+bike_xgb_fit <- last_fit(
+  finalize_workflow(bike_xgb_wf,
+                    select_best(bike_xgb_wf_res, "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+```
+
+And compile the metrics on the test set:
+
+```{r}
+bind_rows(
+  decision_tree = collect_metrics(bike_decision_fit),
+  rand_forest = collect_metrics(bike_rf_fit),
+  xgb = collect_metrics(bike_xgb_fit),
+  .id = "model"
+) %>%
+  select(model, .metric, .estimate) %>%
+  pivot_wider(names_from = .metric, values_from = .estimate) %>%
+  gt() %>%
+  fmt_number(columns = -model, decimals = 2)
+```
+
+The random forest actually outperformed the XGBoost model here, but I'll see later if I can improve on this with more thorough tuning.
+
+#### Model interpretation
+
+```{r include=FALSE}
+# Get some statistics for the decision tree
+rpart_fit <- extract_fit_engine(bike_decision_fit)
+depth <- max(rpart:::tree.depth(as.numeric(rownames(rpart_fit$frame))))
+n_leaf <- sum(rpart_fit$frame$var == "<leaf>")
+```
+
+Decision trees are the easiest of the three to interpret, but this decision tree is quite complicated.
+It has `r n_leaf` leaf nodes (i.e. terminal nodes) with a depth of `r depth`.
+The visualization (done with the `rpart.plot` package) is messy and hidden below:
+
+<details><summary>Decision tree plot</summary>
+
+```{r fig.height=15, fig.width=8}
+bike_decision_fit %>%
+  extract_fit_engine() %>%
+  rpart.plot::rpart.plot(
+    # Using some options to try and make the tree more readable
+    fallen.leaves = FALSE, roundint = FALSE,
+    tweak = 5, type = 0, faclen = 10, clip.facs = TRUE, compress = FALSE
+  )
+```
+
+</details>
+
+The nodes at the top of the tree are a good indicator of feature importance.
+Here, that was `n_bikes_lag_14`, followed by `mean_temperature` and `total_precipitation`.
+
+To quantify the contribution of each feature in a tree-based model, we can calculate variable importance with the `vip` package.
+Plot the top 5 variables for all 3 models:
+
+```{r message=FALSE}
+library(vip)
+
+p1 <- bike_decision_fit %>%
+  extract_fit_engine() %>%
+  vip(num_features = 5) +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  labs(subtitle = "Decision tree")
+p2 <- bike_rf_fit %>%
+  extract_fit_engine() %>%
+  vip(num_features = 5) +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  labs(subtitle = "Random forest")
+p3 <- bike_xgb_fit %>%
+  extract_fit_engine() %>%
+  vip(num_features = 5) +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  labs(subtitle = "XGBoost")
+p1 + p2 + p3 +
+  plot_layout(ncol = 1)
+```
+
+We see that `n_bikes_lag_14`, `mean_temperature` and `total_precipitation` are important with all three.
+Measures of time within (`count_date_doy`) and across (`count_date_year`) years are also important
+
+Investigate the distribution of predictions:
+
+```{r fig.height=3, fig.width=6}
+bind_rows(
+  decision_tree = collect_predictions(bike_decision_fit),
+  rand_forest = collect_predictions(bike_rf_fit),
+  xgb = collect_predictions(bike_xgb_fit),
+  .id = "model"
+) %>%
+  ggplot(aes(x = .pred)) +
+  geom_histogram(bins = 20) +
+  facet_wrap(~ model) +
+  scale_y_continuous(expand = c(0, 0)) 
+```
+
+The distribution of predictions is much smoother in the ensemble methods (random forest and XGBoost) which isn't surprising.
+Plot the relationship between actual `n_bikes` and predicted:
+
+```{r fig.height=3, fig.width=6}
+bind_rows(
+  decision_tree = collect_predictions(bike_decision_fit),
+  rand_forest = collect_predictions(bike_rf_fit),
+  xgb = collect_predictions(bike_xgb_fit),
+  .id = "model"
+) %>%
+  ggplot(aes(x = n_bikes, y = .pred)) +
+  geom_point() +
+  geom_abline(slope = 1, size = 1, color = td_colors$nice$emerald) +
+  facet_wrap(~ model)
+```
+
+#### XGBoost tuning
+
+So far, I've only considered 10 candidate sets of hyperparameters for tuning the XGBoost model.
+Let's try 100:
+
+```{r}
+# Re-define the XGB spec with trees = tune()
+xgb_spec <- boost_tree(
+  mtry = tune(), trees = tune(), min_n = tune(),
+  tree_depth = tune(), learn_rate = tune()
+)
+
+# Get the number of predictors so I can set max number of predictors in `mtry()`
+bike_train_baked <- prep(bike_trees_recipe) %>% bake(bike_train)
+
+# `grid_latin_hypercube()` is a space-filling parameter grid design that will
+#  efficiently cover the parameter space for me
+xgb_grid <- grid_latin_hypercube(
+  finalize(mtry(), select(bike_train_baked, -n_bikes)),
+  trees(), min_n(), tree_depth(), learn_rate(),
+  size = 100
+)
+xgb_grid
+```
+
+We have just one model and one preprocessor now, so put it into a `workflow`:
+
+```{r}
+bike_xgb_workflow <- workflow() %>%
+  add_recipe(bike_trees_recipe_dummy) %>%
+  add_model(xgb_spec)
+```
+
+And tune:
+
+```{r bike-xgb-tune, cache=TRUE}
+set.seed(2081)
+tic()
+bike_xgb_tune <- tune_grid(
+  bike_xgb_workflow, resamples = bike_resamples,
+  grid = xgb_grid, metrics = bike_metrics
+)
+toc()
+```
+Here is the `mase` for the different candidate models:
+
+```{r}
+autoplot(bike_xgb_tune, metric = "mase")
+```
+
+Take the best model and fit to the test set:
+
+```{r}
+bike_xgb_fit <- last_fit(
+  finalize_workflow(bike_xgb_workflow,
+                    select_best(bike_xgb_tune, metric = "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+collect_metrics(bike_xgb_fit)
+```
+
+All that effort and I couldn't get better performance than simple Poisson regression!
+
+```{r}
+select_best(bike_xgb_wf_res, "mase")
+select_best(bike_xgb_tune, "mase")
+```
+
+
+### Support vector machines
+
+Lastly, I will try some support vector machine regressions with linear, polynomial and radial basis function (RBF) kernels:
+
+```{r}
+# New recipe for the SVMs which require a `step_normalize()`
+bike_svm_recipe <- 
+  recipe(
+    n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
+      total_precipitation + speed_max_gust + snow_on_ground,
+    data = bike_train, 
+  ) %>% 
+  update_role(count_date, new_role = "date_variable") %>%
+  step_date(count_date, features = c("dow", "doy", "year"),
+            label = TRUE, ordinal = FALSE) %>%
+  step_holiday(count_date, holidays = canada_holidays) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_numeric_predictors())
+
+svm_linear_spec <- svm_linear(cost = tune(), margin = tune()) %>%
+  set_mode("regression") %>%
+  set_engine("kernlab")
+
+svm_poly_spec <- svm_poly(cost = tune(), margin = tune(),
+                          scale_factor = tune(), degree = tune()) %>%
+  set_mode("regression") %>%
+  set_engine("kernlab")
+
+svm_rbf_spec <-  svm_rbf(cost = tune(), rbf_sigma = tune()) %>% 
+  set_mode("regression") %>%
+  set_engine("kernlab")
+
+svm_wf_set <- workflow_set(
+  preproc = list(bike_svm_recipe),
+  models = list(linear = svm_linear_spec, poly = svm_poly_spec,
+                rbf = svm_rbf_spec)
+)
+```
+
+```{r svm-wf-set-res, cache=TRUE}
+set.seed(4217)
+tic()
+svm_wf_set_res <- workflow_map(
+  svm_wf_set,
+  "tune_grid",
+  grid = 10,
+  resamples = bike_resamples, metrics = bike_metrics, verbose = TRUE
+)
+toc()
+```
+
+```{r}
+autoplot(svm_wf_set_res)
+```
+
+Those are some pretty interesting (and smooth) trends, with separation between two distinct levels of performance.
+The best model is one of the `svm_rbf` candidates (though the next 10 are the `svm_poly` models).
+Evaluate it on the test set:
+
+```{r}
+bike_svm_wf <- extract_workflow(svm_wf_set, "recipe_rbf")
+bike_svm_wf_res <- extract_workflow_set_result(svm_wf_set_res, "recipe_rbf")
+
+bike_svm_fit <- last_fit(
+  finalize_workflow(bike_svm_wf, select_best(bike_svm_wf_res, "mase")),
+  split = bike_split, metrics = bike_metrics
+)
+collect_metrics(bike_svm_fit)
+```
+
+
+## Conclusions
+
+```{r include=FALSE, eval=FALSE}
+# A quick ARIMA fit for posterity
+library(modeltime)
+
+bike_arima_recipe <-
+  recipe(
+    n_bikes ~ count_date + site_name + mean_temperature + 
+      total_precipitation + speed_max_gust + snow_on_ground,
+    data = bike_train, 
+  ) %>% 
+  step_impute_mean(speed_max_gust) %>%
+  step_mutate_at(c(total_precipitation, snow_on_ground),
+                 fn = ~ replace_na(., 0)) %>%
+  step_dummy(all_nominal())
+
+arima_spec <- arima_reg() %>%
+  set_engine("auto_arima")
+
+
+bike_arima_workflow <- workflow() %>%
+  add_model(arima_spec) %>%
+  add_recipe(bike_arima_recipe)
+
+bike_arima_res <- fit_resamples(
+  bike_arima_workflow, resamples = bike_resamples, metrics = bike_metrics
+)
+
+collect_metrics(bike_arima_res)
+
+last_fit(
+  bike_arima_workflow, split = bike_split, metrics = bike_metrics
+) %>%
+  collect_metrics()
+```
+
+```{r}
+bind_rows(
+  rank_results(bike_glm_wf_set_res, rank_metric = "mase",
+                     select_best = TRUE) %>%
+    filter(str_detect(wflow_id, "date_weather")),
+  rank_results(trees_wf_set_res, rank_metric = "mase", select_best = TRUE),
+  rank_results(svm_wf_set_res, rank_metric = "mase", select_best = TRUE),
+  collect_metrics(bike_xgb_wf_res) %>%
+    mutate(model = "xgb_tuned") %>%
+    filter(.metric == "mase") %>%
+    slice_min(mean, n = 1)
+) %>%
+  filter(.metric == "mase") %>%
+  select(model, mase = mean, std_err) %>%
+  arrange(mase) %>%
+  gt() %>%
+  fmt_number(c(mase, std_err), decimals = 3)
+```
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
