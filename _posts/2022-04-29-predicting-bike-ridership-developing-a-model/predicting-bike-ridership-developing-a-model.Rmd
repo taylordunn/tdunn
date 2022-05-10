@@ -37,7 +37,7 @@ set_palette()
 
 ## Introduction
 
-In my [last post](../2022-04-27-predicting-bike-ridership-getting-the-data), I retrieved and prepared bike counter data from Halifax, Nova Scotia, and some historical weather data to go along with it.
+In [my last post](../2022-04-27-predicting-bike-ridership-getting-the-data), I retrieved and prepared bike counter data from Halifax, Nova Scotia, and some historical weather data to go along with it.
 Here, I will explore the data, engineer some features, and fit and evaluate many models to predict bike ridership at different sites around the city.
 
 ## Exploratory data analysis
@@ -45,9 +45,7 @@ Here, I will explore the data, engineer some features, and fit and evaluate many
 Import the data:
 
 ```{r}
-bike_ridership <- read_rds(
-  "../2022-04-27-predicting-bike-ridership-getting-the-data/bike-ridership-data.rds"
-)
+bike_ridership <- read_rds("bike-ridership-data.rds")
 ```
 
 I've already done a bit of EDA in part 1, but I'll dive deeper in this post.
@@ -458,8 +456,7 @@ I'll just impute using the mean speed.
 
 ### Lagged counts
 
-As a time series data set, it would be careless to not account for past data when predicting future data.
-One of the models I fit will be ARIMA, but for the other models I will include lagged `n_bikes` values.
+As a time series data set, it would be careless to not account for past data when predicting future data, so I'll include lagged `n_bikes` values.
 Investigate the correlation in `n_bikes` for values lagged by 1, 2 and 3 days, and by 1 and 2 weeks (because they are the same day of the week):
 
 ```{r}
@@ -1023,7 +1020,7 @@ n_{\text{bikes}} &= \text{exp}(\beta_0 + \beta_1 x_1 + \dots + \beta_p x_p) \\
 \end{align}
 $$
 
-So the coefficients are interpreted as: for every one unit increase in $x_i$, the expected value of $n_{\text{bikes}}$ changes by multiplicative factor of $\text{exp}(\beta_i})$, holding all other predictors constant.
+So the coefficients are interpreted as: for every one unit increase in $x_i$, the expected value of $n_{\text{bikes}}$ changes by multiplicative factor of $\text{exp}(\beta_i)$, holding all other predictors constant.
 Here are some plain-language interpretations of the weather coefficients:
 
 ```{r include=FALSE}
@@ -1457,7 +1454,7 @@ last_fit(
 
 ```{r}
 bind_rows(
-  rank_results(glm_wf_set_res, rank_metric = "mase",
+  rank_results(bike_glm_wf_set_res, rank_metric = "mase",
                      select_best = TRUE) %>%
     filter(str_detect(wflow_id, "date_weather")),
   rank_results(trees_wf_set_res, rank_metric = "mase", select_best = TRUE),
