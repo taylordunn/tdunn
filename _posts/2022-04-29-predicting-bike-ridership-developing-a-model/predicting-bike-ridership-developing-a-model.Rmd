@@ -16,7 +16,7 @@ output:
   distill::distill_article:
     self_contained: false
     toc: true
-draft: true
+draft: false
 bibliography: references.bib
 ---
 
@@ -37,15 +37,18 @@ set_palette()
 
 ## Introduction
 
-Import the data from part 1:
+In my [last post](../2022-04-27-predicting-bike-ridership-getting-the-data), I retrieved and prepared bike counter data from Halifax, Nova Scotia, and some historical weather data to go along with it.
+Here, I will explore the data, engineer some features, and fit and evaluate many models to predict bike ridership at different sites around the city.
+
+## Exploratory data analysis
+
+Import the data:
 
 ```{r}
 bike_ridership <- read_rds(
   "../2022-04-27-predicting-bike-ridership-getting-the-data/bike-ridership-data.rds"
 )
 ```
-
-## Exploratory data analysis
 
 I've already done a bit of EDA in part 1, but I'll dive deeper in this post.
 
@@ -520,7 +523,7 @@ parallel::clusterExport(cl, c("replace_na"))
 ```
 
 
-### Splitting and resampling
+### Splitting, resampling and metrics
 
 For splitting the data into training and testing sets, there is the `initial_time_split()` function in `rsample` to account for the time dependence.
 
@@ -778,7 +781,7 @@ lm_spec <- linear_reg(engine = "lm")
 library(poissonreg) # This wrapper package is required to use `poisson_reg()`
 poisson_spec <- poisson_reg(engine = "glm")
 
-glm_wf_set <- workflow_set(
+bike_glm_wf_set <- workflow_set(
   preproc = list(base = bike_recipe,
                  date = bike_recipe_date, weather = bike_recipe_weather,
                  date_weather = bike_recipe_date_weather),
@@ -787,15 +790,17 @@ glm_wf_set <- workflow_set(
 )
 ```
 
-```{r}
-glm_wf_set_res <- workflow_map(
-  glm_wf_set,
+```{r bike-glm-wf-set-res, cache=TRUE}
+tic()
+bike_glm_wf_set_res <- workflow_map(
+  bike_glm_wf_set,
   "tune_grid",
   # In this early stage, I'll try just a few `deg_free` in the spline term
   grid = grid_regular(deg_free(range = c(4, 7)), levels = 4),
   resamples = bike_resamples,
   metrics = bike_metrics
 )
+toc()
 ```
 
 For plotting the results of a set of workflows, I'll use a custom plotting function with `rank_results()`:
@@ -806,7 +811,7 @@ I'm using my own function because the `workflowsets::autoplot()` function doesn'
 Below is an example (for just the RMSE metric):
 
 ```{r fig.height=4, fig.width=5}
-autoplot(glm_wf_set_res, metric = "rmse")
+autoplot(bike_glm_wf_set_res, metric = "rmse")
 ```
 
 Note in the legend how all results have the "recipe" preprocessor, even though we have four different pre-processors: `bike_recipe`, `bike_recipe_date`, `bike_recipe_weather`, `bike_recipe_date_weather`.
@@ -824,7 +829,7 @@ plot_wf_set_metrics <- function(wf_set_res, rank_metric = "mase") {
     facet_wrap(~ .metric, scales = "free_y")
   
 }
-plot_wf_set_metrics(glm_wf_set_res)
+plot_wf_set_metrics(bike_glm_wf_set_res)
 ```
 
 Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
@@ -832,7 +837,7 @@ Here are the models ranked by MASE:
 ^[Using the `select_best = TRUE` argument means only the best model in each workflow is returned. In this case, that means the workflows with the tunable spline feature of `count_date_doy` will only have one entry.]
 
 ```{r}
-rank_results(glm_wf_set_res, select_best = TRUE, rank_metric = "mase") %>%
+rank_results(bike_glm_wf_set_res, select_best = TRUE, rank_metric = "mase") %>%
   filter(.metric == "mase") %>%
   select(rank, wflow_id, .config, mean, std_err) %>%
   gt() %>%
@@ -844,9 +849,10 @@ Extract this workflow and checkout the results of the tuning:
 
 ```{r fig.height=4, fig.width=6}
 bike_glm_workflow <-
-  extract_workflow(glm_wf_set_res, id = "date_weather_poisson_reg")
+  extract_workflow(bike_glm_wf_set_res, id = "date_weather_poisson_reg")
 bike_glm_tune_res <-
-  extract_workflow_set_result(glm_wf_set_res, id = "date_weather_poisson_reg")
+  extract_workflow_set_result(bike_glm_wf_set_res,
+                              id = "date_weather_poisson_reg")
 autoplot(bike_glm_tune_res) +
   facet_wrap(~ .metric, nrow = 2, scales = "free_y")
 ```
@@ -992,7 +998,7 @@ An advantage of using a generalized linear model is that they are easy to interp
 A simple way to estimate variable important in a GLM is to look at the absolute value of the $t$-statistic (`statistic` in the below table) -- here are the top 5:
 
 ```{r}
-bike_glm_fit$.workflow[[1]] %>%
+extract_fit_parsnip(bike_glm_fit) %>%
   tidy() %>%
   arrange(desc(abs(statistic))) %>%
   head(5)
@@ -1002,7 +1008,7 @@ A couple of the weather variables are among the most influential in predicting `
 Here are all the weather coefficients:
 
 ```{r}
-bike_glm_fit$.workflow[[1]] %>%
+extract_fit_parsnip(bike_glm_fit) %>%
   tidy() %>%
   filter(str_detect(term, "temperature|precip|max_gust|snow"))
 ```
@@ -1021,7 +1027,7 @@ So the coefficients are interpreted as: for every one unit increase in $x_i$, th
 Here are some plain-language interpretations of the weather coefficients:
 
 ```{r include=FALSE}
-weather_example <- bike_glm_fit$.workflow[[1]] %>%
+weather_example <- extract_fit_parsnip(bike_glm_fit) %>%
   tidy() %>%
   filter(str_detect(term, "temperature|precip|max_gust|snow")) %>%
   mutate(x = c(5, 10, 10, 5),
@@ -1073,7 +1079,7 @@ bike_trees_recipe_dummy <- bike_trees_recipe %>%
   step_dummy(all_nominal_predictors())
 ```
 
-I'll try a decision tree, a random forest, and an XGBoost model, each with a number of hyperparameters indicated for tuning:
+I'll try a decision tree, a random forest, and an XGBoost model, each with hyperparameters indicated for tuning:
 
 ```{r}
 decision_spec <-
@@ -1103,9 +1109,9 @@ trees_wf_set <- workflow_set(
 
 As a first pass, I'll let `tune_grid()` choose 10 parameter combinations automatically for each model (`grid = 10`):
 
-```{r}
-tic()
+```{r trees-wf-set-res, cache=TRUE}
 set.seed(225)
+tic()
 trees_wf_set_res <- workflow_map(
   trees_wf_set,
   "tune_grid",
@@ -1124,9 +1130,9 @@ autoplot(trees_wf_set_res, rank_metric = "mase")
 ```
 
 As I would have expected, the decision tree models perform worse than random forest models (which consist of multiple decision trees).
-The boosted tree models (which also consist of multiple decision trees, but differ in how they are built and combined) slightly outperform random forests, which is also unexpected. 
+The boosted tree models (which also consist of multiple decision trees, but differ in how they are built and combined) slightly outperform random forests, which is also expected. 
 
-#### Model interpretation
+For the three different tree-based model types, I'll extract the best-performing workflow from each and fit to the test set:
 
 ```{r}
 bike_decision_wf <- extract_workflow(trees_wf_set, "trees_recipe_decision")
@@ -1145,15 +1151,15 @@ bike_rf_wf_res <-
 
 # I forgot to add the `importance` argument in the original spec,
 #  but I can update the model spec for the `last_fit()`
-rf_spec <- ref_spec %>%
+# This will be needed for computing variable importance
+bike_rf_wf <- bike_rf_wf %>%
   update_model(set_engine(rf_spec, "ranger", importance = "permutation"))
 bike_rf_fit <- last_fit(
-  finalize_workflow(rf_spec, select_best(bike_rf_wf_res, "mase")),
+  finalize_workflow(bike_rf_wf, select_best(bike_rf_wf_res, "mase")),
   split = bike_split, metrics = bike_metrics
 )
 bike_rf_fit <- last_fit(
-  finalize_workflow(set_engine(bike_rf_wf, "ranger", importance = "permutation"),
-                    select_best(bike_rf_wf_res, "mase")),
+  finalize_workflow(bike_rf_wf, select_best(bike_rf_wf_res, "mase")),
   split = bike_split, metrics = bike_metrics
 )
 
@@ -1168,24 +1174,7 @@ bike_xgb_fit <- last_fit(
 )
 ```
 
-```{r}
-autoplot(bike_decision_wf_res) + geom_line()
-autoplot(bike_rf_wf_res) + geom_line()
-autoplot(bike_xgb_wf_res) + geom_line()
-```
-
-```{r}
-library(vip)
-p1 <- bike_decision_fit %>%
-  extract_fit_engine() %>%
-  vip(num_features = 10)
-p2 <- bike_rf_fit %>%
-  extract_fit_engine() %>%
-  vip(num_features = 10)
-p1 + p2
-```
-
-The holiday features are negligible in this model.
+And compile the metrics on the test set:
 
 ```{r}
 bind_rows(
@@ -1200,7 +1189,69 @@ bind_rows(
   fmt_number(columns = -model, decimals = 2)
 ```
 
-```{r}
+The random forest actually outperformed the XGBoost model here, but I'll see later if I can improve on this with more thorough tuning.
+
+#### Model interpretation
+
+```{r include=FALSE}
+# Get some statistics for the decision tree
+rpart_fit <- extract_fit_engine(bike_decision_fit)
+depth <- max(rpart:::tree.depth(as.numeric(rownames(rpart_fit$frame))))
+n_leaf <- sum(rpart_fit$frame$var == "<leaf>")
+```
+
+Decision trees are the easiest of the three to interpret, but this decision tree is quite complicated.
+It has `r n_leaf` leaf nodes (i.e. terminal nodes) with a depth of `r depth`.
+The visualization (done with the `rpart.plot` package) is hidden below:
+
+<details><summary>Decision tree plot</summary>
+
+```{r fig.height=15, fig.width=8}
+bike_decision_fit %>%
+  extract_fit_engine() %>%
+  rpart.plot::rpart.plot(
+    # Using some options to try and make the tree more readable
+    fallen.leaves = FALSE, roundint = FALSE,
+    tweak = 5, type = 0, faclen = 10, clip.facs = TRUE, compress = FALSE
+  )
+```
+
+</details>
+
+The nodes at the top of the tree are a good indicator of feature importance.
+Here, that was `n_bikes_lag_14`, followed by `mean_temperature` and `total_precipitation`.
+
+To quantify the contribution of each feature in a tree-based model, we can calculate variable importance with the `vip` package.
+Plot the top 5 variables for all 3 models:
+
+```{r message=FALSE}
+library(vip)
+
+p1 <- bike_decision_fit %>%
+  extract_fit_engine() %>%
+  vip(num_features = 5) +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  labs(subtitle = "Decision tree")
+p2 <- bike_rf_fit %>%
+  extract_fit_engine() %>%
+  vip(num_features = 5) +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  labs(subtitle = "Random forest")
+p3 <- bike_xgb_fit %>%
+  extract_fit_engine() %>%
+  vip(num_features = 5) +
+  scale_y_continuous(NULL, expand = c(0, 0)) +
+  labs(subtitle = "XGBoost")
+p1 + p2 + p3 +
+  plot_layout(ncol = 1)
+```
+
+We see that `n_bikes_lag_14`, `mean_temperature` and `total_precipitation` are important with all three.
+Measures of time within (`count_date_doy`) and across (`count_date_year`) years are also important
+
+Investigate the distribution of predictions:
+
+```{r fig.height=3, fig.width=6}
 bind_rows(
   decision_tree = collect_predictions(bike_decision_fit),
   rand_forest = collect_predictions(bike_rf_fit),
@@ -1208,13 +1259,15 @@ bind_rows(
   .id = "model"
 ) %>%
   ggplot(aes(x = .pred)) +
-  geom_histogram(bins = 30) +
-  facet_wrap(~ model)
+  geom_histogram(bins = 20) +
+  facet_wrap(~ model) +
+  scale_y_continuous(expand = c(0, 0)) 
 ```
 
-The makes me think
+The distribution of predictions is much smoother in the ensemble methods (random forest and XGBoost) which isn't surprising.
+Plot the relationship between actual `n_bikes` and predicted:
 
-```{r}
+```{r fig.height=3, fig.width=6}
 bind_rows(
   decision_tree = collect_predictions(bike_decision_fit),
   rand_forest = collect_predictions(bike_rf_fit),
@@ -1223,156 +1276,47 @@ bind_rows(
 ) %>%
   ggplot(aes(x = n_bikes, y = .pred)) +
   geom_point() +
+  geom_abline(slope = 1, size = 1, color = td_colors$nice$emerald) +
   facet_wrap(~ model)
 ```
 
+#### XGBoost tuning
 
-#### XGBoost
+So far, I've only considered 10 candidate sets of hyperparameters for tuning the XGBoost model.
+Let's try 100:
 
 ```{r}
-
+# Re-define the XGB spec with trees = tune()
 xgb_spec <- boost_tree(
-  trees = 1000,
-  tree_depth = tune(), min_n = tune(),
-  loss_reduction = tune(),                     ## first three: model complexity
-  sample_size = tune(), mtry = tune(),         ## randomness
-  learn_rate = tune(),                         ## step size
-) %>%
-  set_engine("xgboost") %>%
-  set_mode("regression")
+  mtry = tune(), trees = tune(), min_n = tune(),
+  tree_depth = tune(), learn_rate = tune()
+)
 
+# Get the number of predictors so I can set max number of predictors in `mtry()`
+bike_train_baked <- prep(bike_trees_recipe) %>% bake(bike_train)
+
+# `grid_latin_hypercube()` is a space-filling parameter grid design that will
+#  efficiently cover the parameter space for me
+xgb_grid <- grid_latin_hypercube(
+  finalize(mtry(), select(bike_train_baked, -n_bikes)),
+  trees(), min_n(), tree_depth(), learn_rate(),
+  size = 100
+)
+xgb_grid
+```
+
+We just have one model and one preprocessor now, so put it into a `workflow`:
+
+```{r}
 bike_xgb_workflow <- workflow() %>%
   add_recipe(bike_trees_recipe_dummy) %>%
   add_model(xgb_spec)
-
-# Get the number of predictors so I can set number of predictors in `mtry()`
-#bike_train_baked <- prep(bike_trees_recipe_dummy) %>%
-bike_train_baked <- prep(bike_trees_recipe) %>%
-  bake(bike_train)
-xgb_grid <- grid_latin_hypercube(
-  tree_depth(),
-  min_n(),
-  loss_reduction(),
-  sample_size = sample_prop(),
-  finalize(mtry(), select(bike_train_baked, -n_bikes)),
-  learn_rate(),
-  size = 100
-)
 ```
 
-```{r}
-bike_xgb_recipe1 <-
-  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
-           total_precipitation + speed_max_gust + snow_on_ground,
-         data = bike_train) %>%
-  update_role(count_date, new_role = "date_variable") %>%
-  step_date(count_date, features = c("dow", "doy", "year"),
-            label = TRUE, ordinal = FALSE) %>%
-  step_holiday(count_date, holidays = canada_holidays) %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_impute_mean(speed_max_gust) %>%
-  step_mutate_at(c(total_precipitation, snow_on_ground),
-                 fn = ~ replace_na(., 0)) %>%
-  step_dummy(all_nominal_predictors()) %>%
-  step_zv(all_predictors())
-bike_xgb_recipe2 <-
-  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
-           total_precipitation + speed_max_gust + snow_on_ground,
-         data = bike_train) %>%
-  #add_role(count_date, new_role = "date_variable") %>%
-  update_role(count_date, new_role = "date_variable") %>%
-  step_date(count_date, features = c("dow", "doy", "year"),
-            label = TRUE, ordinal = FALSE) %>%
-  step_holiday(count_date, holidays = canada_holidays) %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_indicate_na(speed_max_gust, total_precipitation, snow_on_ground) %>%
-  step_impute_mean(speed_max_gust) %>%
-  step_mutate_at(c(total_precipitation, snow_on_ground),
-                 fn = ~ replace_na(., 0)) %>%
-  step_mutate(count_date = as.numeric(count_date)) %>%
-  step_dummy(all_nominal_predictors()) %>%
-  step_zv(all_predictors())
-bike_xgb_recipe3 <-
-  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
-           total_precipitation + speed_max_gust + snow_on_ground,
-         data = bike_train) %>%
-  update_role(count_date, new_role = "date_variable") %>%
-  step_date(count_date, features = c("dow", "doy", "year", "decimal"),
-            label = TRUE, ordinal = FALSE) %>%
-  step_holiday(count_date, holidays = canada_holidays) %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_impute_mean(speed_max_gust) %>%
-  step_mutate_at(c(total_precipitation, snow_on_ground),
-                 fn = ~ replace_na(., 0)) %>%
-  step_dummy(all_nominal_predictors()) %>%
-  step_zv(all_predictors())
+And tune:
 
-bike_xgb_wf_set <- workflow_set(
-  preproc = list(rec1 = bike_xgb_recipe1, rec2 = bike_xgb_recipe2),
-                 #rec3 = bike_xgb_recipe3),
-  models = list(xgb_spec)
-)
-```
-
-
-```{r}
-set.seed(8990)
-tic()
-bike_xgb_wf_set_res <- workflow_map(
-  bike_xgb_wf_set,
-  "tune_grid",
-  grid = xgb_grid, resamples = bike_resamples, metrics = bike_metrics,
-  verbose = TRUE
-)
-toc()
-```
-
-```{r}
-workflowsets::collect_metrics(bike_xgb_wf_set_res) %>%
-  filter(.metric == "mase") %>%
-  group_by(wflow_id) %>%
-  slice_min(mean, n = 5)
-```
-
-
-
-```{r}
-wf_1 <- extract_workflow(bike_xgb_wf_set_res, "rec1_boost_tree")
-wf_2 <- extract_workflow(bike_xgb_wf_set_res, "rec2_boost_tree")
-#wf_3 <- extract_workflow(bike_xgb_wf_set_res, "rec3_boost_tree")
-wf_res_1 <- extract_workflow_set_result(bike_xgb_wf_set_res, "rec1_boost_tree")
-wf_res_2 <- extract_workflow_set_result(bike_xgb_wf_set_res, "rec2_boost_tree")
-#wf_res_3 <- extract_workflow_set_result(bike_xgb_wf_set_res, "rec3_boost_tree")
-wf_fit_1 <- last_fit(
-  finalize_workflow(wf_1, select_best(wf_res_1, metric = "mase")),
-  split = bike_split, metrics = bike_metrics
-)
-wf_fit_2 <- last_fit(
-  finalize_workflow(wf_2, select_best(wf_res_2, metric = "mase")),
-  split = bike_split, metrics = bike_metrics
-)
-# wf_fit_3 <- last_fit(
-#   finalize_workflow(wf_3, select_best(wf_res_3, metric = "mase")),
-#   split = bike_split, metrics = bike_metrics
-# )
-
-collect_metrics(wf_fit_1)
-collect_metrics(wf_fit_2)
-#collect_metrics(wf_fit_3)
-```
-
-
-```{r}
-plot_wf_set_metrics(bike_xgb_wf_set_res)
-autoplot(bike_xgb_wf_set_res) +
-  geom_point(aes(color = preprocessor))
-```
-
-
-We can "peer into the black box" so-to-speak with `autoplot()`
-
-
-```{r}
+```{r bike-xgb-tune, cache=TRUE}
+set.seed(2081)
 tic()
 bike_xgb_tune <- tune_grid(
   bike_xgb_workflow, resamples = bike_resamples,
@@ -1380,27 +1324,31 @@ bike_xgb_tune <- tune_grid(
 )
 toc()
 ```
+Here is the `mase` for the different candidate models:
 
 ```{r}
 autoplot(bike_xgb_tune, metric = "mase")
 ```
 
-```{r}
-show_best(bike_xgb_tune, metric = "mase")
-select_best(bike_xgb_tune, metric = "mase")
+Take the best model and fit to the test set:
 
+```{r}
 bike_xgb_fit <- last_fit(
   finalize_workflow(bike_xgb_workflow,
                     select_best(bike_xgb_tune, metric = "mase")),
-  split = bike_splits, metrics = bike_metrics
+  split = bike_split, metrics = bike_metrics
 )
-select_best(bike_xgb_tune, metric = "mase")
+collect_metrics(bike_xgb_fit)
 ```
 
+All that effort and I couldn't get better performance than simple Poisson regression!
 
 ### Support vector machines
 
+Lastly, I will try some support vector machine regressions with linear, polynomial and radial basis function (RBF) kernels:
+
 ```{r}
+# New recipe for the SVMs which require a `step_normalize()`
 bike_svm_recipe <- 
   recipe(
     n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
@@ -1422,7 +1370,8 @@ svm_linear_spec <- svm_linear(cost = tune(), margin = tune()) %>%
   set_mode("regression") %>%
   set_engine("kernlab")
 
-svm_poly_spec <- svm_poly(cost = tune(), margin = tune(), degree = tune()) %>%
+svm_poly_spec <- svm_poly(cost = tune(), margin = tune(),
+                          scale_factor = tune(), degree = tune()) %>%
   set_mode("regression") %>%
   set_engine("kernlab")
 
@@ -1437,9 +1386,8 @@ svm_wf_set <- workflow_set(
 )
 ```
 
-
-```{r}
-set.seed(41717)
+```{r svm-wf-set-res, cache=TRUE}
+set.seed(4217)
 tic()
 svm_wf_set_res <- workflow_map(
   svm_wf_set,
@@ -1454,20 +1402,14 @@ toc()
 autoplot(svm_wf_set_res)
 ```
 
-```{r}
-collect_metrics(svm_wf_set_res) %>%
-  filter(.metric == "mase") %>%
-  arrange(mean)
-```
+Those are some pretty interesting (and smooth) trends, with separation between two distinct levels of performance.
+The best model is a `svm_rbf`.
+Evaluate it on the test set:
 
 ```{r}
-bike_svm_wf <- extract_workflow(svm_wf_set, "recipe_poly")
-bike_svm_wf_res <- extract_workflow_set_result(svm_wf_set_res, "recipe_poly")
+bike_svm_wf <- extract_workflow(svm_wf_set, "recipe_rbf")
+bike_svm_wf_res <- extract_workflow_set_result(svm_wf_set_res, "recipe_rbf")
 
-autoplot(bike_svm_wf_res)
-```
-
-```{r}
 bike_svm_fit <- last_fit(
   finalize_workflow(bike_svm_wf, select_best(bike_svm_wf_res, "mase")),
   split = bike_split, metrics = bike_metrics
@@ -1476,72 +1418,60 @@ collect_metrics(bike_svm_fit)
 ```
 
 
-### Delete
+## Conclusions
 
-```{r}
-bike_recipe_date_weather <-
-  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature +
-           total_precipitation + speed_max_gust + snow_on_ground,
-         data = bike_train) %>%
-  add_role(count_date, new_role = "date_variable") %>%
-  step_date(count_date, features = c("dow", "doy", "year"),
-            label = TRUE, ordinal = FALSE) %>%
-  step_ns(count_date_doy, deg_free = tune()) %>%
-  step_holiday(count_date, holidays = canada_holidays) %>%
+```{r include=FALSE, eval=FALSE}
+# A quick ARIMA fit for posterity
+library(modeltime)
+
+bike_arima_recipe <-
+  recipe(
+    n_bikes ~ count_date + site_name + mean_temperature + 
+      total_precipitation + speed_max_gust + snow_on_ground,
+    data = bike_train, 
+  ) %>% 
   step_impute_mean(speed_max_gust) %>%
   step_mutate_at(c(total_precipitation, snow_on_ground),
                  fn = ~ replace_na(., 0)) %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_dummy(all_nominal_predictors()) %>%
-  step_zv(all_predictors())
+  step_dummy(all_nominal())
+
+arima_spec <- arima_reg() %>%
+  set_engine("auto_arima")
+
+
+bike_arima_workflow <- workflow() %>%
+  add_model(arima_spec) %>%
+  add_recipe(bike_arima_recipe)
+
+bike_arima_res <- fit_resamples(
+  bike_arima_workflow, resamples = bike_resamples, metrics = bike_metrics
+)
+
+collect_metrics(bike_arima_res)
+
+last_fit(
+  bike_arima_workflow, split = bike_split, metrics = bike_metrics
+) %>%
+  collect_metrics()
 ```
 
 ```{r}
-kernlab_recipe <- 
-  recipe(
-    n_bikes ~ count_date + site_name + n_bikes_lag_14 + mean_temperature + 
-    total_precipitation + speed_max_gust + snow_on_ground, data = bike_train
-  ) %>%
-  step_zv(all_predictors()) %>% 
-  step_normalize(all_numeric_predictors()) 
-
-kernlab_spec <- 
-  svm_rbf(cost = tune(), rbf_sigma = tune()) %>% 
-  set_mode("regression") 
-
-kernlab_workflow <- 
-  workflow() %>% 
-  add_recipe(kernlab_recipe) %>% 
-  add_model(kernlab_spec) 
-
-set.seed(41717)
-kernlab_tune <-
-  tune_grid(kernlab_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
-
-
-```
-
-```{r}
-usemodels::use_ranger(n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = T, colors = FALSE)
-ranger_recipe <- 
-  recipe(formula = n_bikes ~ site_name + n_bikes_lag_14, data = bike_train, clipboard = T) %>% 
-  step_string2factor(one_of("site_name")) 
-
-ranger_spec <- 
-  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
-  set_mode("regression") %>% 
-  set_engine("ranger") 
-
-ranger_workflow <- 
-  workflow() %>% 
-  add_recipe(ranger_recipe) %>% 
-  add_model(ranger_spec) 
-
-set.seed(83245)
-ranger_tune <-
-  tune_grid(ranger_workflow, resamples = stop("add your rsample object"), grid = stop("add number of candidate points"))
-
-
+bind_rows(
+  rank_results(glm_wf_set_res, rank_metric = "mase",
+                     select_best = TRUE) %>%
+    filter(str_detect(wflow_id, "date_weather")),
+  rank_results(trees_wf_set_res, rank_metric = "mase", select_best = TRUE),
+  rank_results(svm_wf_set_res, rank_metric = "mase", select_best = TRUE),
+  collect_metrics(bike_xgb_wf_res) %>%
+    mutate(model = "xgb_tuned") %>%
+    filter(.metric == "mase") %>%
+    slice_min(mean, n = 1)
+) %>%
+  filter(.metric == "mase") %>%
+  select(model, mase = mean, std_err) %>%
+  arrange(mase) %>%
+  gt() %>%
+  fmt_number(c(mase, std_err), decimals = 3)
 ```
 
 ## Reproducibility {.appendix}
