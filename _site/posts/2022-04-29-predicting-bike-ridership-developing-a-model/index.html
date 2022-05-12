@@ -154,7 +154,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","params","categories","output","draft","bibliography","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Predicting bike ridership: developing a model"]},{"type":"character","attributes":{},"value":["Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post,\nI explore and tune different modeling approaches."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Taylor Dunn"]}]}]},{"type":"character","attributes":{},"value":["2022-04-29"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["date","slug"]}},"value":[{"type":"character","attributes":{},"value":["2022-04-29"]},{"type":"NULL"}]},{"type":"character","attributes":{},"value":["R","machine learning"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc"]}},"value":[{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]}]}]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["references.bib"]},{"type":"character","attributes":{},"value":["https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model/"]},{"type":"character","attributes":{},"value":["https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model/"]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","params","categories","output","draft","bibliography","citation_url","canonical_url"]}},"value":[{"type":"character","attributes":{},"value":["Predicting bike ridership: developing a model"]},{"type":"character","attributes":{},"value":["Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post,\nI explore and tune different modeling approaches."]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Taylor Dunn"]}]}]},{"type":"character","attributes":{},"value":["2022-04-29"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["date","slug"]}},"value":[{"type":"character","attributes":{},"value":["2022-04-29"]},{"type":"NULL"}]},{"type":"character","attributes":{},"value":["R","machine learning","tidymodels","random forest","XGBoost","support-vector machine","forecasting"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc"]}},"value":[{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]}]}]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["references.bib"]},{"type":"character","attributes":{},"value":["https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model/"]},{"type":"character","attributes":{},"value":["https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model/"]}]}
 </script>
 <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2534,6 +2534,11 @@ gtag('config', 'UA-196523553-1');
 <div class="dt-tags">
   <a href="../../index.html#category:R" class="dt-tag">R</a>
   <a href="../../index.html#category:machine_learning" class="dt-tag">machine learning</a>
+  <a href="../../index.html#category:tidymodels" class="dt-tag">tidymodels</a>
+  <a href="../../index.html#category:random_forest" class="dt-tag">random forest</a>
+  <a href="../../index.html#category:XGBoost" class="dt-tag">XGBoost</a>
+  <a href="../../index.html#category:support-vector_machine" class="dt-tag">support-vector machine</a>
+  <a href="../../index.html#category:forecasting" class="dt-tag">forecasting</a>
 </div>
 <!--/radix_placeholder_categories-->
 <p><p>Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post, I explore and tune different modeling approaches.</p></p>
@@ -2566,8 +2571,11 @@ gtag('config', 'UA-196523553-1');
 <li><a href="#tree-based-methods">Tree-based methods</a></li>
 <li><a href="#support-vector-machines">Support vector machines</a></li>
 </ul></li>
-<li><a href="#choosing-a-final-model">Choosing a final model</a></li>
+<li><a href="#choosing-a-final-model">Choosing a final model</a>
+<ul>
 <li><a href="#exploring-the-predictions">Exploring the predictions</a></li>
+</ul></li>
+<li><a href="#conclusions">Conclusions</a></li>
 <li><a href="#reproducibility">Reproducibility</a></li>
 </ul>
 </nav>
@@ -2629,12 +2637,12 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="tkyhqdxkss" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="xlfcbcgdbg" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#tkyhqdxkss .gt_table {
+#xlfcbcgdbg .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2659,7 +2667,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-left-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_heading {
+#xlfcbcgdbg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2671,7 +2679,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_title {
+#xlfcbcgdbg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2683,7 +2691,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-bottom-width: 0;
 }
 
-#tkyhqdxkss .gt_subtitle {
+#xlfcbcgdbg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2695,13 +2703,13 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-top-width: 0;
 }
 
-#tkyhqdxkss .gt_bottom_border {
+#xlfcbcgdbg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_col_headings {
+#xlfcbcgdbg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2716,7 +2724,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_col_heading {
+#xlfcbcgdbg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2736,7 +2744,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   overflow-x: hidden;
 }
 
-#tkyhqdxkss .gt_column_spanner_outer {
+#xlfcbcgdbg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2748,15 +2756,15 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 4px;
 }
 
-#tkyhqdxkss .gt_column_spanner_outer:first-child {
+#xlfcbcgdbg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#tkyhqdxkss .gt_column_spanner_outer:last-child {
+#xlfcbcgdbg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#tkyhqdxkss .gt_column_spanner {
+#xlfcbcgdbg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2768,7 +2776,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   width: 100%;
 }
 
-#tkyhqdxkss .gt_group_heading {
+#xlfcbcgdbg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2793,7 +2801,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   vertical-align: middle;
 }
 
-#tkyhqdxkss .gt_empty_group_heading {
+#xlfcbcgdbg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2808,15 +2816,15 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   vertical-align: middle;
 }
 
-#tkyhqdxkss .gt_from_md > :first-child {
+#xlfcbcgdbg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#tkyhqdxkss .gt_from_md > :last-child {
+#xlfcbcgdbg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#tkyhqdxkss .gt_row {
+#xlfcbcgdbg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2835,7 +2843,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   overflow-x: hidden;
 }
 
-#tkyhqdxkss .gt_stub {
+#xlfcbcgdbg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2848,7 +2856,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#tkyhqdxkss .gt_stub_row_group {
+#xlfcbcgdbg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2862,11 +2870,11 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   vertical-align: top;
 }
 
-#tkyhqdxkss .gt_row_group_first td {
+#xlfcbcgdbg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#tkyhqdxkss .gt_summary_row {
+#xlfcbcgdbg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2876,16 +2884,16 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#tkyhqdxkss .gt_first_summary_row {
+#xlfcbcgdbg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_first_summary_row.thick {
+#xlfcbcgdbg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#tkyhqdxkss .gt_last_summary_row {
+#xlfcbcgdbg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2895,7 +2903,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_grand_summary_row {
+#xlfcbcgdbg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2905,7 +2913,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#tkyhqdxkss .gt_first_grand_summary_row {
+#xlfcbcgdbg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2915,11 +2923,11 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_striped {
+#xlfcbcgdbg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#tkyhqdxkss .gt_table_body {
+#xlfcbcgdbg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2928,7 +2936,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_footnotes {
+#xlfcbcgdbg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2942,7 +2950,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_footnote {
+#xlfcbcgdbg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -2951,7 +2959,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#tkyhqdxkss .gt_sourcenotes {
+#xlfcbcgdbg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2965,7 +2973,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#tkyhqdxkss .gt_sourcenote {
+#xlfcbcgdbg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2973,36 +2981,36 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#tkyhqdxkss .gt_left {
+#xlfcbcgdbg .gt_left {
   text-align: left;
 }
 
-#tkyhqdxkss .gt_center {
+#xlfcbcgdbg .gt_center {
   text-align: center;
 }
 
-#tkyhqdxkss .gt_right {
+#xlfcbcgdbg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#tkyhqdxkss .gt_font_normal {
+#xlfcbcgdbg .gt_font_normal {
   font-weight: normal;
 }
 
-#tkyhqdxkss .gt_font_bold {
+#xlfcbcgdbg .gt_font_bold {
   font-weight: bold;
 }
 
-#tkyhqdxkss .gt_font_italic {
+#xlfcbcgdbg .gt_font_italic {
   font-style: italic;
 }
 
-#tkyhqdxkss .gt_super {
+#xlfcbcgdbg .gt_super {
   font-size: 65%;
 }
 
-#tkyhqdxkss .gt_two_val_uncert {
+#xlfcbcgdbg .gt_two_val_uncert {
   display: inline-block;
   line-height: 1em;
   text-align: right;
@@ -3011,31 +3019,31 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   margin-left: 0.1em;
 }
 
-#tkyhqdxkss .gt_footnote_marks {
+#xlfcbcgdbg .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#tkyhqdxkss .gt_asterisk {
+#xlfcbcgdbg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#tkyhqdxkss .gt_slash_mark {
+#xlfcbcgdbg .gt_slash_mark {
   font-size: 0.7em;
   line-height: 0.7em;
   vertical-align: 0.15em;
 }
 
-#tkyhqdxkss .gt_fraction_numerator {
+#xlfcbcgdbg .gt_fraction_numerator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: 0.45em;
 }
 
-#tkyhqdxkss .gt_fraction_denominator {
+#xlfcbcgdbg .gt_fraction_denominator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: -0.05em;
@@ -3096,12 +3104,12 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   <span class='fu'><a href='https://gt.rstudio.com/reference/gt.html'>gt</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
-<div id="rinvytents" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="qqhcbpzibv" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#rinvytents .gt_table {
+#qqhcbpzibv .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3126,7 +3134,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-left-color: #D3D3D3;
 }
 
-#rinvytents .gt_heading {
+#qqhcbpzibv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3138,7 +3146,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#rinvytents .gt_title {
+#qqhcbpzibv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3150,7 +3158,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-bottom-width: 0;
 }
 
-#rinvytents .gt_subtitle {
+#qqhcbpzibv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3162,13 +3170,13 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-top-width: 0;
 }
 
-#rinvytents .gt_bottom_border {
+#qqhcbpzibv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rinvytents .gt_col_headings {
+#qqhcbpzibv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3183,7 +3191,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#rinvytents .gt_col_heading {
+#qqhcbpzibv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3203,7 +3211,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   overflow-x: hidden;
 }
 
-#rinvytents .gt_column_spanner_outer {
+#qqhcbpzibv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3215,15 +3223,15 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 4px;
 }
 
-#rinvytents .gt_column_spanner_outer:first-child {
+#qqhcbpzibv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rinvytents .gt_column_spanner_outer:last-child {
+#qqhcbpzibv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rinvytents .gt_column_spanner {
+#qqhcbpzibv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3235,7 +3243,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   width: 100%;
 }
 
-#rinvytents .gt_group_heading {
+#qqhcbpzibv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3260,7 +3268,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   vertical-align: middle;
 }
 
-#rinvytents .gt_empty_group_heading {
+#qqhcbpzibv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3275,15 +3283,15 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   vertical-align: middle;
 }
 
-#rinvytents .gt_from_md > :first-child {
+#qqhcbpzibv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rinvytents .gt_from_md > :last-child {
+#qqhcbpzibv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rinvytents .gt_row {
+#qqhcbpzibv .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3302,7 +3310,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   overflow-x: hidden;
 }
 
-#rinvytents .gt_stub {
+#qqhcbpzibv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3315,7 +3323,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#rinvytents .gt_stub_row_group {
+#qqhcbpzibv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3329,11 +3337,11 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   vertical-align: top;
 }
 
-#rinvytents .gt_row_group_first td {
+#qqhcbpzibv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#rinvytents .gt_summary_row {
+#qqhcbpzibv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3343,16 +3351,16 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#rinvytents .gt_first_summary_row {
+#qqhcbpzibv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#rinvytents .gt_first_summary_row.thick {
+#qqhcbpzibv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#rinvytents .gt_last_summary_row {
+#qqhcbpzibv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3362,7 +3370,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#rinvytents .gt_grand_summary_row {
+#qqhcbpzibv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3372,7 +3380,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#rinvytents .gt_first_grand_summary_row {
+#qqhcbpzibv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3382,11 +3390,11 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-top-color: #D3D3D3;
 }
 
-#rinvytents .gt_striped {
+#qqhcbpzibv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rinvytents .gt_table_body {
+#qqhcbpzibv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3395,7 +3403,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-bottom-color: #D3D3D3;
 }
 
-#rinvytents .gt_footnotes {
+#qqhcbpzibv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3409,7 +3417,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#rinvytents .gt_footnote {
+#qqhcbpzibv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -3418,7 +3426,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#rinvytents .gt_sourcenotes {
+#qqhcbpzibv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3432,7 +3440,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   border-right-color: #D3D3D3;
 }
 
-#rinvytents .gt_sourcenote {
+#qqhcbpzibv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -3440,36 +3448,36 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   padding-right: 5px;
 }
 
-#rinvytents .gt_left {
+#qqhcbpzibv .gt_left {
   text-align: left;
 }
 
-#rinvytents .gt_center {
+#qqhcbpzibv .gt_center {
   text-align: center;
 }
 
-#rinvytents .gt_right {
+#qqhcbpzibv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rinvytents .gt_font_normal {
+#qqhcbpzibv .gt_font_normal {
   font-weight: normal;
 }
 
-#rinvytents .gt_font_bold {
+#qqhcbpzibv .gt_font_bold {
   font-weight: bold;
 }
 
-#rinvytents .gt_font_italic {
+#qqhcbpzibv .gt_font_italic {
   font-style: italic;
 }
 
-#rinvytents .gt_super {
+#qqhcbpzibv .gt_super {
   font-size: 65%;
 }
 
-#rinvytents .gt_two_val_uncert {
+#qqhcbpzibv .gt_two_val_uncert {
   display: inline-block;
   line-height: 1em;
   text-align: right;
@@ -3478,31 +3486,31 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   margin-left: 0.1em;
 }
 
-#rinvytents .gt_footnote_marks {
+#qqhcbpzibv .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#rinvytents .gt_asterisk {
+#qqhcbpzibv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#rinvytents .gt_slash_mark {
+#qqhcbpzibv .gt_slash_mark {
   font-size: 0.7em;
   line-height: 0.7em;
   vertical-align: 0.15em;
 }
 
-#rinvytents .gt_fraction_numerator {
+#qqhcbpzibv .gt_fraction_numerator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: 0.45em;
 }
 
-#rinvytents .gt_fraction_denominator {
+#qqhcbpzibv .gt_fraction_denominator {
   font-size: 0.6em;
   line-height: 0.6em;
   vertical-align: -0.05em;
@@ -4092,16 +4100,11 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
 <p>The Poisson log loss is a new one to me, that was <a href="https://yardstick.tidymodels.org/news/index.html#yardstick-0-0-9-2021-11-22">recently added to <code>yardstick</code></a>. I’ll include it just for kicks, but I will choose my final model with <code>mase</code>, the mean absolute scaled error, which was introduced by Hyndman and Koehler <span class="citation" data-cites="Hyndman2006">(<a href="#ref-Hyndman2006" role="doc-biblioref">Hyndman and Koehler 2006</a>)</span>. The MASE involves dividing the absolute forecast error (<span class="math inline">\(|y_i - \hat{y}_i|\)</span>) by absolute <em>naive</em> forecast error (which involves predicting with the last observed value). The main advantage of this is that it is scale invariant. Mean absolute percentage error (MAPE) is the typical scale-invariant choice in regression problems, but the MASE avoids dividing by <code>n_bikes</code> = 0 (of which there are about 20 in this data set). It also has a straightforward interpretation: values greater than one indicate a worse forecast than the naive method, and values less indicate better.</p>
 <h3 id="generalized-linear-models">Generalized linear models</h3>
 <p>The first models I will try are simple linear regression and Poisson regression, but I will test out a few different pre-processing/feature combinations. I would prefer to use negative binomial regression instead of Poisson to account for overdispersion (see aside), but <a href="https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658">it hasn’t been implemented in <code>parsnip</code> yet</a>.</p>
-<p>For my base pre-processing, I’ll include just <code>site_name</code> and <code>n_bikes_lag_14</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glm_recipe</span> <span class='op'>&lt;-</span>
-  <span class='fu'>recipe</span><span class='op'>(</span><span class='va'>n_bikes</span> <span class='op'>~</span> <span class='va'>count_date</span> <span class='op'>+</span> <span class='va'>site_name</span> <span class='op'>+</span> <span class='va'>n_bikes_lag_14</span>,
-         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_zv</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>lm_spec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://parsnip.tidymodels.org/reference/linear_reg.html'>linear_reg</a></span><span class='op'>(</span>engine <span class='op'>=</span> <span class='st'>"lm"</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/tidymodels/poissonreg'>poissonreg</a></span><span class='op'>)</span> <span class='co'># This wrapper package is required to use `poisson_reg()`</span>
+<span class='va'>poisson_spec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://parsnip.tidymodels.org/reference/poisson_reg.html'>poisson_reg</a></span><span class='op'>(</span>engine <span class='op'>=</span> <span class='st'>"glm"</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
@@ -4109,8 +4112,8 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
 <p>Over-dispersion in <code>n_bikes</code> (variance much higher than the mean):</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>bike_train</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>site_name</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>bike_train</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>site_name</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='op'>(</span>mean_n_bikes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>n_bikes</span><span class='op'>)</span>, var_n_bikes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>var</a></span><span class='op'>(</span><span class='va'>n_bikes</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
@@ -4124,37 +4127,51 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
 5 Windsor St                              96.3       3413.</code></pre>
 </div>
 </aside>
+<p>For my base pre-processing, I’ll include just <code>site_name</code> and <code>n_bikes_lag_14</code>:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glm_recipe</span> <span class='op'>&lt;-</span>
+  <span class='fu'>recipe</span><span class='op'>(</span><span class='va'>n_bikes</span> <span class='op'>~</span> <span class='va'>count_date</span> <span class='op'>+</span> <span class='va'>site_name</span> <span class='op'>+</span> <span class='va'>n_bikes_lag_14</span>,
+         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_zv</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
 <p>The first extension of this recipe will include date variables. I’ll add day of week as categorical, day of year as numerical (and tune a natural spline function), year as numerical and Canadian holidays as categorical.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glm_recipe_date</span> <span class='op'>&lt;-</span>
   <span class='fu'>recipe</span><span class='op'>(</span><span class='va'>n_bikes</span> <span class='op'>~</span> <span class='va'>count_date</span> <span class='op'>+</span> <span class='va'>site_name</span> <span class='op'>+</span> <span class='va'>n_bikes_lag_14</span>,
-         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'>step_date</span><span class='op'>(</span><span class='va'>count_date</span>, features <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/timeDate/man/base-c.html'>c</a></span><span class='op'>(</span><span class='st'>"dow"</span>, <span class='st'>"doy"</span>, <span class='st'>"year"</span><span class='op'>)</span>,
-            label <span class='op'>=</span> <span class='cn'>TRUE</span>, ordinal <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_ns</span><span class='op'>(</span><span class='va'>count_date_doy</span>, deg_free <span class='op'>=</span> <span class='fu'>tune</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_holiday</span><span class='op'>(</span><span class='va'>count_date</span>, holidays <span class='op'>=</span> <span class='va'>canada_holidays</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+            label <span class='op'>=</span> <span class='cn'>TRUE</span>, ordinal <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_ns</span><span class='op'>(</span><span class='va'>count_date_doy</span>, deg_free <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/hardhat/man/tune.html'>tune</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_holiday</span><span class='op'>(</span><span class='va'>count_date</span>, holidays <span class='op'>=</span> <span class='va'>canada_holidays</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'>step_zv</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
-<p>I’ll consider the weather variables, with the imputations discussed in the feature engineering section, separately:</p>
+<!-- I'll consider the weather variables, with the imputations discussed in the feature engineering section, separately: -->
+<p>I’ll consider the weather variables, with the imputations discussed in the <a href="#feature-engineering">feature engineering section</a>, separately:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glm_recipe_weather</span> <span class='op'>&lt;-</span>
   <span class='fu'>recipe</span><span class='op'>(</span><span class='va'>n_bikes</span> <span class='op'>~</span> <span class='va'>count_date</span> <span class='op'>+</span> <span class='va'>site_name</span> <span class='op'>+</span> <span class='va'>n_bikes_lag_14</span> <span class='op'>+</span> <span class='va'>mean_temperature</span> <span class='op'>+</span>
            <span class='va'>total_precipitation</span> <span class='op'>+</span> <span class='va'>speed_max_gust</span> <span class='op'>+</span> <span class='va'>snow_on_ground</span>,
-         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_impute_mean</span><span class='op'>(</span><span class='va'>speed_max_gust</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_impute_mean</span><span class='op'>(</span><span class='va'>speed_max_gust</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='co'># Impute these missing values with zero</span>
   <span class='fu'>step_mutate_at</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/timeDate/man/base-c.html'>c</a></span><span class='op'>(</span><span class='va'>total_precipitation</span>, <span class='va'>snow_on_ground</span><span class='op'>)</span>,
-                 fn <span class='op'>=</span> <span class='op'>~</span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/replace_na.html'>replace_na</a></span><span class='op'>(</span><span class='va'>.</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+                 fn <span class='op'>=</span> <span class='op'>~</span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/replace_na.html'>replace_na</a></span><span class='op'>(</span><span class='va'>.</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'>step_zv</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
@@ -4165,29 +4182,25 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glm_recipe_date_weather</span> <span class='op'>&lt;-</span>
   <span class='fu'>recipe</span><span class='op'>(</span><span class='va'>n_bikes</span> <span class='op'>~</span> <span class='va'>count_date</span> <span class='op'>+</span> <span class='va'>site_name</span> <span class='op'>+</span> <span class='va'>n_bikes_lag_14</span> <span class='op'>+</span> <span class='va'>mean_temperature</span> <span class='op'>+</span>
            <span class='va'>total_precipitation</span> <span class='op'>+</span> <span class='va'>speed_max_gust</span> <span class='op'>+</span> <span class='va'>snow_on_ground</span>,
-         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+         data <span class='op'>=</span> <span class='va'>bike_train</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>add_role</span><span class='op'>(</span><span class='va'>count_date</span>, new_role <span class='op'>=</span> <span class='st'>"date_variable"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'>step_date</span><span class='op'>(</span><span class='va'>count_date</span>, features <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/timeDate/man/base-c.html'>c</a></span><span class='op'>(</span><span class='st'>"dow"</span>, <span class='st'>"doy"</span>, <span class='st'>"year"</span><span class='op'>)</span>,
-            label <span class='op'>=</span> <span class='cn'>TRUE</span>, ordinal <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_ns</span><span class='op'>(</span><span class='va'>count_date_doy</span>, deg_free <span class='op'>=</span> <span class='fu'>tune</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_holiday</span><span class='op'>(</span><span class='va'>count_date</span>, holidays <span class='op'>=</span> <span class='va'>canada_holidays</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_impute_mean</span><span class='op'>(</span><span class='va'>speed_max_gust</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+            label <span class='op'>=</span> <span class='cn'>TRUE</span>, ordinal <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_ns</span><span class='op'>(</span><span class='va'>count_date_doy</span>, deg_free <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/hardhat/man/tune.html'>tune</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_holiday</span><span class='op'>(</span><span class='va'>count_date</span>, holidays <span class='op'>=</span> <span class='va'>canada_holidays</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_impute_mean</span><span class='op'>(</span><span class='va'>speed_max_gust</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'>step_mutate_at</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/timeDate/man/base-c.html'>c</a></span><span class='op'>(</span><span class='va'>total_precipitation</span>, <span class='va'>snow_on_ground</span><span class='op'>)</span>,
-                 fn <span class='op'>=</span> <span class='op'>~</span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/replace_na.html'>replace_na</a></span><span class='op'>(</span><span class='va'>.</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
-  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://gt.rstudio.com/reference/pipe.html'>%&gt;%</a></span>
+                 fn <span class='op'>=</span> <span class='op'>~</span> <span class='fu'><a href='https://tidyr.tidyverse.org/reference/replace_na.html'>replace_na</a></span><span class='op'>(</span><span class='va'>.</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_novel</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'>step_dummy</span><span class='op'>(</span><span class='fu'>all_nominal_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
   <span class='fu'>step_zv</span><span class='op'>(</span><span class='fu'>all_predictors</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </div>
-<p>Define the model specifications and put everything into a <code>workflow_set()</code>:</p>
+<p>Put these pre-processing recipes and the model specifications into a <code>workflow_set()</code>:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>lm_spec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://parsnip.tidymodels.org/reference/linear_reg.html'>linear_reg</a></span><span class='op'>(</span>engine <span class='op'>=</span> <span class='st'>"lm"</span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/tidymodels/poissonreg'>poissonreg</a></span><span class='op'>)</span> <span class='co'># This wrapper package is required to use `poisson_reg()`</span>
-<span class='va'>poisson_spec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://parsnip.tidymodels.org/reference/poisson_reg.html'>poisson_reg</a></span><span class='op'>(</span>engine <span class='op'>=</span> <span class='st'>"glm"</span><span class='op'>)</span>
-
-<span class='va'>glm_wf_set</span> <span class='op'>&lt;-</span> <span class='fu'>workflow_set</span><span class='op'>(</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>glm_wf_set</span> <span class='op'>&lt;-</span> <span class='fu'>workflow_set</span><span class='op'>(</span>
   preproc <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>base <span class='op'>=</span> <span class='va'>glm_recipe</span>,
                  date <span class='op'>=</span> <span class='va'>glm_recipe_date</span>, weather <span class='op'>=</span> <span class='va'>glm_recipe_weather</span>,
                  date_weather <span class='op'>=</span> <span class='va'>glm_recipe_date_weather</span><span class='op'>)</span>,
@@ -4229,7 +4242,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
 <span class='fu'>plot_wf_set_metrics</span><span class='op'>(</span><span class='va'>glm_wf_set_res</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-42-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-43-1.png" width="624" /></p>
 </div>
 <aside>
 <p>I’m using my own function because the <code>workflowsets::autoplot()</code> function doesn’t distinguish preprocessor recipes using the names provided to the <code>preproc</code> argument – everything just gets the name “recipe”:</p>
@@ -4740,7 +4753,7 @@ $ snow_on_ground      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~</cod
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>.metric</span>, nrow <span class='op'>=</span> <span class='fl'>2</span>, scales <span class='op'>=</span> <span class='st'>"free_y"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-45-1.png" width="576" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-46-1.png" width="576" /></p>
 </div>
 <p>The polynomial of degree 5 did best here, which I’ll use to finalize the workflow and fit to the full training set:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -4881,7 +4894,7 @@ n_{\text{bikes}} &amp;= \text{exp}(\beta_0 + \beta_1 x_1 + \dots + \beta_p x_p) 
 <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>trees_wf_set_res</span>, rank_metric <span class='op'>=</span> <span class='st'>"mase"</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-53-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-54-1.png" width="624" /></p>
 </div>
 <p>As I would have expected, the decision tree models generally perform worse than random forest models (which consist of multiple decision trees). The boosted tree models (which also consist of multiple decision trees, but differ in how they are built and combined) slightly outperform random forests, which is also expected.</p>
 <p>For the three different tree-based model types, I’ll extract the best-performing workflows (by MASE) and fit to the full training set:</p>
@@ -4925,7 +4938,7 @@ Decision tree plot
   <span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-56-1.png" width="768" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-57-1.png" width="768" /></p>
 </div>
 </details>
 <p>The nodes at the top of the tree are a good indicator of feature importance. Here, that was <code>n_bikes_lag_14</code>, followed by <code>mean_temperature</code> and <code>total_precipitation</code>.</p>
@@ -4950,7 +4963,7 @@ Decision tree plot
   <span class='fu'><a href='https://patchwork.data-imaginist.com/reference/plot_layout.html'>plot_layout</a></span><span class='op'>(</span>ncol <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-57-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-58-1.png" width="624" /></p>
 </div>
 <p>We see that <code>n_bikes_lag_14</code>, <code>mean_temperature</code>, <code>total_precipitation</code> and <code>site_name</code> are important with all three models. Measures of time within (<code>count_date_doy</code>) and across (<code>count_date_year</code>) years are also important</p>
 <h4 id="xgboost-tuning">XGBoost tuning</h4>
@@ -5014,7 +5027,7 @@ Decision tree plot
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>xgb_tune</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-60-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-61-1.png" width="624" /></p>
 </div>
 <p>Finalize the workflow with the best hyperparameters and fit the full training set:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -5086,7 +5099,7 @@ Decision tree plot
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>svm_wf_set_res</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-63-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-64-1.png" width="624" /></p>
 </div>
 <p>Those are some pretty interesting (and smooth) trends. The best model is one of the <code>svm_rbf</code> candidates (though the next 10 are the <code>svm_linear</code> models). Finalize the workflows and fit:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -5099,11 +5112,8 @@ Decision tree plot
     <span class='fu'>select_best</span><span class='op'>(</span><span class='va'>svm_linear_wf_res</span>, <span class='st'>"mase"</span><span class='op'>)</span>
   <span class='op'>)</span>
 <span class='va'>svm_linear_fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://generics.r-lib.org/reference/fit.html'>fit</a></span><span class='op'>(</span><span class='va'>svm_linear_wf</span>, <span class='va'>bike_train</span><span class='op'>)</span>
-</code></pre>
-</div>
-<pre><code> Setting default kernel parameters  </code></pre>
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>svm_poly_wf_res</span> <span class='op'>&lt;-</span>
+
+<span class='va'>svm_poly_wf_res</span> <span class='op'>&lt;-</span>
   <span class='fu'>extract_workflow_set_result</span><span class='op'>(</span><span class='va'>svm_wf_set_res</span>, <span class='st'>"recipe_poly"</span><span class='op'>)</span>
 <span class='va'>svm_poly_wf</span> <span class='op'>&lt;-</span>
   <span class='fu'>finalize_workflow</span><span class='op'>(</span>
@@ -5124,7 +5134,7 @@ Decision tree plot
 </div>
 </div>
 <h2 id="choosing-a-final-model">Choosing a final model</h2>
-<p>I’ll choose a model by the best MASE:</p>
+<p>I’ll choose a model by the best cross-validated MASE:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span>
@@ -5599,6 +5609,7 @@ Decision tree plot
 </table>
 </div>
 </div>
+<p>XGBoost takes the top two spots, with <code>boost_tree_2</code> (the more thorough tuning) being the slight winner. Perform a <code>last_fit()</code> and get the performance on the held-out test set:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>xgb_final_fit</span> <span class='op'>&lt;-</span> <span class='fu'>last_fit</span><span class='op'>(</span>
@@ -5610,12 +5621,13 @@ Decision tree plot
 <pre><code># A tibble: 4 x 4
   .metric          .estimator .estimate .config             
   &lt;chr&gt;            &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-1 rmse             standard      40.6   Preprocessor1_Model1
-2 rsq              standard       0.574 Preprocessor1_Model1
-3 mase             standard       0.602 Preprocessor1_Model1
-4 poisson_log_loss standard     NaN     Preprocessor1_Model1</code></pre>
+1 rmse             standard      41.7   Preprocessor1_Model1
+2 rsq              standard       0.563 Preprocessor1_Model1
+3 mase             standard       0.623 Preprocessor1_Model1
+4 poisson_log_loss standard      12.3   Preprocessor1_Model1</code></pre>
 </div>
-<h2 id="exploring-the-predictions">Exploring the predictions</h2>
+<p>There’s a bit of a drop-off in performance from the training metrics. Let’s dig into the predictions.</p>
+<h3 id="exploring-the-predictions">Exploring the predictions</h3>
 <p>Plot the relationship between actual <code>n_bikes</code> and predicted:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -5633,9 +5645,9 @@ Decision tree plot
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>data_set</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-68-1.png" width="576" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-69-1.png" width="576" /></p>
 </div>
-<p>Here are the predictions overlaid on the data (vertical line delineates training and testing sets):</p>
+<p>And here are the predictions overlaid on the data (vertical line delineates training and testing sets):</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>p</span> <span class='op'>&lt;-</span> <span class='va'>xgb_final_preds</span> <span class='op'><a href='https://business-science.github.io/modeltime/reference/pipe.html'>%&gt;%</a></span>
@@ -5648,7 +5660,7 @@ Decision tree plot
 <span class='va'>p</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-69-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-70-1.png" width="624" /></p>
 </div>
 <p>Truncate the dates to look closer at the testing set performance:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -5656,9 +5668,9 @@ Decision tree plot
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>p</span> <span class='op'>+</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_cartesian.html'>coord_cartesian</a></span><span class='op'>(</span>xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/timeDate/man/base-c.html'>c</a></span><span class='op'>(</span><span class='st'>"2021-07-01"</span>, <span class='st'>"2022-05-01"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-70-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-71-1.png" width="624" /></p>
 </div>
-<p>That looks pretty good to me, though it’s a shame to not have more data to test a full year – most of the test set covers winter and spring.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+<p>This looks okay to my eye, though it does look to be overfitting the training set. It’s a shame to not have more data to test a full year – most of the test set covers winter and spring.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
 <p>To investigate the model performance further, I’ll plot the biggest outliers in the training and testing set (and ±1 week on either side):</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -5701,10 +5713,10 @@ Decision tree plot
   <span class='fu'><a href='https://patchwork.data-imaginist.com/reference/plot_layout.html'>plot_layout</a></span><span class='op'>(</span>ncol <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 </code></pre>
 </div>
-<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-71-1.png" width="624" /></p>
+<p><img src="predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-72-1.png" width="624" /></p>
 </div>
 <aside>
-<p>The Vernon St has 6 dates with <code>n_bikes = 0</code>, all in a row:</p>
+<p>The Vernon St site has 6 dates with <code>n_bikes = 0</code> all in a row:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>bike_ridership</span> <span class='op'><a href='https://business-science.github.io/modeltime/reference/pipe.html'>%&gt;%</a></span>
@@ -5716,8 +5728,8 @@ Decision tree plot
 [6] &quot;2021-11-18&quot;</code></pre>
 </div>
 </aside>
-<p>Relative to the noise in the data, that doesn’t look bad at all. The Vernon St site has a series of zeroes in a row that I’m guessing aren’t real (see aside).</p>
-<p>I also think some of the poor predictions can be explained by missing data. For instance, there are a few days of poor predictions around 2022-11-23, where the model is over-estimating <code>n_bikes</code> at a few sites. Check out the weather around that day:</p>
+<p>Relative to the noise in the data, that doesn’t look too bad. The Vernon St site has a series of <code>n_bikes</code> = 0 in a row that I’m guessing aren’t real (see aside). It was probably an issue with the counter, or maybe some construction on the street halting traffic for that period.</p>
+<p>I also think some of the poor predictions can be explained by missing data. For instance, there are some poor predictions around 2021-11-23, where the model is over-estimating <code>n_bikes</code> at a few sites. Check out the weather around that day:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>bike_ridership</span> <span class='op'><a href='https://business-science.github.io/modeltime/reference/pipe.html'>%&gt;%</a></span>
@@ -6198,13 +6210,15 @@ Decision tree plot
 <pre><code># A tibble: 5 x 4
   site_name                       n_bikes .pred_old .pred_new
   &lt;chr&gt;                             &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-1 Dartmouth Harbourfront Greenway      30     117.       68.5
-2 Hollis St                            19      84.4      55.6
-3 South Park St                        59     272.      149. 
-4 Vernon St                           133     185.      111. 
-5 Windsor St                           26     107.       71.5</code></pre>
+1 Dartmouth Harbourfront Greenway      30     118.       72.5
+2 Hollis St                            19      85.1      55.1
+3 South Park St                        59     279.      156. 
+4 Vernon St                           133     188.      117. 
+5 Windsor St                           26     106.       69.6</code></pre>
 </div>
 <p>That is a much better prediction for a rainy and windy day.</p>
+<h2 id="conclusions">Conclusions</h2>
+<p>In the end, the XGBoost models were able to predict bike ridership the best in this data set. In my next post, I’ll “productionalize” the model to serve predictions.</p>
 <h2 class="appendix" id="reproducibility">Reproducibility</h2>
 <details>
 <summary>
@@ -6220,7 +6234,7 @@ Session info
  collate  English_Canada.1252         
  ctype    English_Canada.1252         
  tz       America/Curacao             
- date     2022-05-11                  </code></pre>
+ date     2022-05-12                  </code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"broom","2":"0.8.0","3":"0.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"TRUE","7":"FALSE","8":"2022-04-13","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.2.5.1","3":"0.2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-05-18","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"checkmate","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/checkmate","6":"FALSE","7":"FALSE","8":"2020-02-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"checkmate"},{"1":"class","2":"7.3.20","3":"7.3-20","4":"C:/Program Files/R/R-4.1.3/library/class","5":"C:/Program Files/R/R-4.1.3/library/class","6":"FALSE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"class"},{"1":"cli","2":"3.2.0","3":"3.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2022-02-14","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"codetools","2":"0.2.18","3":"0.2-18","4":"C:/Program Files/R/R-4.1.3/library/codetools","5":"C:/Program Files/R/R-4.1.3/library/codetools","6":"FALSE","7":"FALSE","8":"2020-11-04","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"codetools"},{"1":"colorspace","2":"2.0.3","3":"2.0-3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2022-02-21","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.5.1","3":"1.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2022-03-26","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"data.table","2":"1.14.0","3":"1.14.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/data.table","5":"C:/Users/tdunn/Documents/R/win-library/4.1/data.table","6":"FALSE","7":"FALSE","8":"2021-02-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"data.table"},{"1":"DBI","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-12-20","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.3","3":"2.4.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"dials","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dials","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dials","6":"TRUE","7":"FALSE","8":"2022-04-06","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dials"},{"1":"DiceDesign","2":"1.9","3":"1.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DiceDesign","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DiceDesign","6":"FALSE","7":"FALSE","8":"2021-02-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DiceDesign"},{"1":"digest","2":"0.6.29","3":"0.6.29","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-12-01","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"doParallel","2":"1.0.16","3":"1.0.16","4":"C:/Users/tdunn/Documents/R/win-library/4.1/doParallel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/doParallel","6":"TRUE","7":"FALSE","8":"2020-10-16","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"doParallel"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.8","3":"1.0.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2022-02-08","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"dunnr","2":"0.2.5","3":"0.2.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2022-01-15","9":"Github (taylordunn/dunnr@c83b30e)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"1.0.3","3":"1.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2022-03-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"farver","2":"2.1.0","3":"2.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","5":"C:/Users/tdunn/Documents/R/win-library/4.1/farver","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"farver"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"foreach","2":"1.5.2","3":"1.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/foreach","5":"C:/Users/tdunn/Documents/R/win-library/4.1/foreach","6":"TRUE","7":"FALSE","8":"2022-02-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"foreach"},{"1":"fs","2":"1.5.2","3":"1.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2021-12-08","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"furrr","2":"0.2.3","3":"0.2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/furrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/furrr","6":"FALSE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"furrr"},{"1":"future","2":"1.24.0","3":"1.24.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/future","5":"C:/Users/tdunn/Documents/R/win-library/4.1/future","6":"FALSE","7":"FALSE","8":"2022-02-19","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"future"},{"1":"future.apply","2":"1.8.1","3":"1.8.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/future.apply","5":"C:/Users/tdunn/Documents/R/win-library/4.1/future.apply","6":"FALSE","7":"FALSE","8":"2021-08-10","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"future.apply"},{"1":"generics","2":"0.1.2","3":"0.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2022-01-31","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"globals","2":"0.14.0","3":"0.14.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/globals","5":"C:/Users/tdunn/Documents/R/win-library/4.1/globals","6":"FALSE","7":"FALSE","8":"2020-11-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"globals"},{"1":"glue","2":"1.6.2","3":"1.6.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2022-02-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"gower","2":"0.2.2","3":"0.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gower","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gower","6":"FALSE","7":"FALSE","8":"2020-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gower"},{"1":"GPfit","2":"1.0.8","3":"1.0-8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/GPfit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/GPfit","6":"FALSE","7":"FALSE","8":"2019-02-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"GPfit"},{"1":"gridExtra","2":"2.3","3":"2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gridExtra","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gridExtra","6":"FALSE","7":"FALSE","8":"2017-09-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gridExtra"},{"1":"gt","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gt","6":"TRUE","7":"FALSE","8":"2022-04-21","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gt"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"hardhat","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hardhat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hardhat","6":"FALSE","7":"FALSE","8":"2022-01-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hardhat"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"highr","2":"0.9","3":"0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/highr","6":"FALSE","7":"FALSE","8":"2021-04-16","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"highr"},{"1":"hms","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-09-26","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"FALSE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"infer","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/infer","5":"C:/Users/tdunn/Documents/R/win-library/4.1/infer","6":"TRUE","7":"FALSE","8":"2021-08-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"infer"},{"1":"insight","2":"0.17.0","3":"0.17.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/insight","5":"C:/Users/tdunn/Documents/R/win-library/4.1/insight","6":"FALSE","7":"FALSE","8":"2022-03-29","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"insight"},{"1":"ipred","2":"0.9.12","3":"0.9-12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ipred","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ipred","6":"FALSE","7":"FALSE","8":"2021-09-15","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ipred"},{"1":"iterators","2":"1.0.14","3":"1.0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/iterators","5":"C:/Users/tdunn/Documents/R/win-library/4.1/iterators","6":"TRUE","7":"FALSE","8":"2022-02-05","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"iterators"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2022-02-22","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"kernlab","2":"0.9.30","3":"0.9-30","4":"C:/Users/tdunn/Documents/R/win-library/4.1/kernlab","5":"C:/Users/tdunn/Documents/R/win-library/4.1/kernlab","6":"FALSE","7":"FALSE","8":"2022-04-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"kernlab"},{"1":"knitr","2":"1.37","3":"1.37","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-12-16","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"labeling","2":"0.4.2","3":"0.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","5":"C:/Users/tdunn/Documents/R/win-library/4.1/labeling","6":"FALSE","7":"FALSE","8":"2020-10-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"labeling"},{"1":"lattice","2":"0.20.45","3":"0.20-45","4":"C:/Program Files/R/R-4.1.3/library/lattice","5":"C:/Program Files/R/R-4.1.3/library/lattice","6":"FALSE","7":"FALSE","8":"2021-09-22","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"lattice"},{"1":"lava","2":"1.6.10","3":"1.6.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lava","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lava","6":"FALSE","7":"FALSE","8":"2021-09-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lava"},{"1":"lhs","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lhs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lhs","6":"FALSE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lhs"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"listenv","2":"0.8.0","3":"0.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/listenv","5":"C:/Users/tdunn/Documents/R/win-library/4.1/listenv","6":"FALSE","7":"FALSE","8":"2019-12-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"listenv"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2022-01-26","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"MASS","2":"7.3.55","3":"7.3-55","4":"C:/Program Files/R/R-4.1.3/library/MASS","5":"C:/Program Files/R/R-4.1.3/library/MASS","6":"FALSE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"MASS"},{"1":"Matrix","2":"1.4.0","3":"1.4-0","4":"C:/Program Files/R/R-4.1.3/library/Matrix","5":"C:/Program Files/R/R-4.1.3/library/Matrix","6":"FALSE","7":"FALSE","8":"2021-12-08","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"Matrix"},{"1":"memoise","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-11-26","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"mgcv","2":"1.8.40","3":"1.8-40","4":"C:/Users/tdunn/Documents/R/win-library/4.1/mgcv","5":"C:/Users/tdunn/Documents/R/win-library/4.1/mgcv","6":"TRUE","7":"FALSE","8":"2022-03-29","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"mgcv"},{"1":"modeldata","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modeldata","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modeldata","6":"TRUE","7":"FALSE","8":"2021-07-14","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modeldata"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"modeltime","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modeltime","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modeltime","6":"FALSE","7":"FALSE","8":"2022-04-07","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modeltime"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"nlme","2":"3.1.155","3":"3.1-155","4":"C:/Program Files/R/R-4.1.3/library/nlme","5":"C:/Program Files/R/R-4.1.3/library/nlme","6":"TRUE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"nlme"},{"1":"nnet","2":"7.3.17","3":"7.3-17","4":"C:/Program Files/R/R-4.1.3/library/nnet","5":"C:/Program Files/R/R-4.1.3/library/nnet","6":"FALSE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"nnet"},{"1":"parallelly","2":"1.30.0","3":"1.30.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/parallelly","5":"C:/Users/tdunn/Documents/R/win-library/4.1/parallelly","6":"FALSE","7":"FALSE","8":"2021-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"parallelly"},{"1":"parsnip","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/parsnip","5":"C:/Users/tdunn/Documents/R/win-library/4.1/parsnip","6":"TRUE","7":"FALSE","8":"2022-03-17","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"parsnip"},{"1":"patchwork","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","5":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"patchwork"},{"1":"performance","2":"0.9.0","3":"0.9.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/performance","5":"C:/Users/tdunn/Documents/R/win-library/4.1/performance","6":"FALSE","7":"FALSE","8":"2022-03-30","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"performance"},{"1":"pillar","2":"1.7.0","3":"1.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2022-02-01","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"plyr","2":"1.8.7","3":"1.8.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/plyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/plyr","6":"FALSE","7":"FALSE","8":"2022-03-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"plyr"},{"1":"poissonreg","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/poissonreg","5":"C:/Users/tdunn/Documents/R/win-library/4.1/poissonreg","6":"TRUE","7":"FALSE","8":"2022-03-09","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"poissonreg"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"pROC","2":"1.17.0.1","3":"1.17.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pROC","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pROC","6":"FALSE","7":"FALSE","8":"2021-01-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pROC"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"prodlim","2":"2019.11.13","3":"2019.11.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prodlim","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prodlim","6":"FALSE","7":"FALSE","8":"2019-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prodlim"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"ranger","2":"0.13.1","3":"0.13.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ranger","6":"FALSE","7":"FALSE","8":"2021-07-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ranger"},{"1":"Rcpp","2":"1.0.8.3","3":"1.0.8.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2022-03-17","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"RcppParallel","2":"5.1.4","3":"5.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/RcppParallel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/RcppParallel","6":"FALSE","7":"FALSE","8":"2021-05-04","9":"CRAN (R 4.1.2)","10":"FALSE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"RcppParallel"},{"1":"readr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"recipes","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/recipes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/recipes","6":"TRUE","7":"FALSE","8":"2022-02-18","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"recipes"},{"1":"remotes","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"1.0.2","3":"1.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2022-03-04","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rpart","2":"4.1.16","3":"4.1.16","4":"C:/Program Files/R/R-4.1.3/library/rpart","5":"C:/Program Files/R/R-4.1.3/library/rpart","6":"FALSE","7":"FALSE","8":"2022-01-24","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"rpart"},{"1":"rpart.plot","2":"3.1.0","3":"3.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rpart.plot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rpart.plot","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rpart.plot"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rsample","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rsample","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rsample","6":"TRUE","7":"FALSE","8":"2021-11-08","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rsample"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.8","3":"1.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2020-01-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"TRUE","7":"FALSE","8":"2022-04-13","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"slider","2":"0.2.2","3":"0.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/slider","5":"C:/Users/tdunn/Documents/R/win-library/4.1/slider","6":"FALSE","7":"FALSE","8":"2021-07-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"slider"},{"1":"StanHeaders","2":"2.21.0.7","3":"2.21.0-7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/StanHeaders","5":"C:/Users/tdunn/Documents/R/win-library/4.1/StanHeaders","6":"FALSE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"StanHeaders"},{"1":"stringi","2":"1.7.6","3":"1.7.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-11-29","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"survival","2":"3.2.13","3":"3.2-13","4":"C:/Program Files/R/R-4.1.3/library/survival","5":"C:/Program Files/R/R-4.1.3/library/survival","6":"FALSE","7":"FALSE","8":"2021-08-24","9":"CRAN (R 4.1.3)","10":"NA","11":"C:/Program Files/R/R-4.1.3/library","_rn_":"survival"},{"1":"testthat","2":"3.1.1","3":"3.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-12-03","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tictoc","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tictoc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tictoc","6":"TRUE","7":"FALSE","8":"2021-04-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tictoc"},{"1":"tidymodels","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidymodels","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidymodels","6":"TRUE","7":"FALSE","8":"2022-03-19","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidymodels"},{"1":"tidyr","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2022-02-01","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2022-02-21","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"timeDate","2":"3043.102","3":"3043.102","4":"C:/Users/tdunn/Documents/R/win-library/4.1/timeDate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/timeDate","6":"TRUE","7":"FALSE","8":"2018-02-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"timeDate"},{"1":"tune","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tune","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tune","6":"TRUE","7":"FALSE","8":"2022-03-19","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tune"},{"1":"tzdb","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tzdb"},{"1":"usethis","2":"2.1.5","3":"2.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-12-09","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.4.1","3":"0.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2022-04-13","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"vip","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vip","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vip","6":"TRUE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vip"},{"1":"viridisLite","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/viridisLite","6":"FALSE","7":"FALSE","8":"2021-04-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"viridisLite"},{"1":"warp","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/warp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/warp","6":"FALSE","7":"FALSE","8":"2020-10-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"warp"},{"1":"withr","2":"2.5.0","3":"2.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2022-03-03","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"workflows","2":"0.2.6","3":"0.2.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/workflows","5":"C:/Users/tdunn/Documents/R/win-library/4.1/workflows","6":"TRUE","7":"FALSE","8":"2022-03-18","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"workflows"},{"1":"workflowsets","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/workflowsets","5":"C:/Users/tdunn/Documents/R/win-library/4.1/workflowsets","6":"TRUE","7":"FALSE","8":"2022-03-15","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"workflowsets"},{"1":"xfun","2":"0.29","3":"0.29","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-12-14","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xgboost","2":"1.6.0.1","3":"1.6.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xgboost","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xgboost","6":"FALSE","7":"FALSE","8":"2022-04-16","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xgboost"},{"1":"xml2","2":"1.3.3","3":"1.3.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"},{"1":"yardstick","2":"0.0.9","3":"0.0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yardstick","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yardstick","6":"TRUE","7":"FALSE","8":"2021-11-22","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yardstick"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -6235,13 +6249,13 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [37bfc0a] 2022-05-12: Merge branch &#39;main&#39; of https://github.com/taylordunn/tdunn</code></pre>
+Head:     [0b9917f] 2022-05-12: Added conclusions</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
 <p><a href="https://github.com/taylordunn/tdunn/tree/main/_posts/">Source code</a></p>
 </div>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-Hyndman2006" class="csl-entry" role="doc-biblioentry">
 Hyndman, Rob J, and Anne B Koehler. 2006. <span>“Another Look at Measures of Forecast Accuracy.”</span> <em>International Journal of Forecasting</em> 22 (4): 679–88.

@@ -21,6 +21,11 @@
 I explore and tune different modeling approaches.</description>
       <category>R</category>
       <category>machine learning</category>
+      <category>tidymodels</category>
+      <category>random forest</category>
+      <category>XGBoost</category>
+      <category>support-vector machine</category>
+      <category>forecasting</category>
       <guid>https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model</guid>
       <pubDate>Fri, 29 Apr 2022 00:00:00 +0000</pubDate>
       <media:content url="https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model/predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-6-1.png" medium="image" type="image/png" width="960" height="384"/>
