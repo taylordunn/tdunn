@@ -825,7 +825,7 @@ toc()
 
 For plotting the results this set of workflows, I'll use a custom plotting function with `rank_results()`:
 
-```{r}
+```{r preview=TRUE}
 plot_wf_set_metrics <- function(wf_set_res, rank_metric = "mase") {
   rank_results(wf_set_res, rank_metric = rank_metric) %>%
     mutate(preproc = str_remove(wflow_id, paste0("_", model))) %>%
@@ -1438,7 +1438,10 @@ p <- xgb_final_preds %>%
   geom_line(aes(y = .pred), color = "black") +
   geom_vline(xintercept = min(bike_test$count_date), lty = 2) +
   facet_wrap(~ site_name, ncol = 1, scales = "free_y") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  scale_y_continuous(breaks = seq(0, 600, 200)) +
+  expand_limits(y = 200) +
+  dunnr::add_facet_borders()
 p
 ```
 
