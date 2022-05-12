@@ -100,3 +100,8 @@ ul li {
 /*.posts-list .post-preview .thumbnail img {
   max-width: 100%;
 }*/
+
+/* Remove the all caps transformation on the h4 header */
+d-article h4 {
+  text-transform: none;
+}
