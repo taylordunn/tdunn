@@ -825,7 +825,7 @@ toc()
 
 For plotting the results this set of workflows, I'll use a custom plotting function with `rank_results()`:
 
-```{r preview=TRUE}
+```{r}
 plot_wf_set_metrics <- function(wf_set_res, rank_metric = "mase") {
   rank_results(wf_set_res, rank_metric = rank_metric) %>%
     mutate(preproc = str_remove(wflow_id, paste0("_", model))) %>%
@@ -1447,7 +1447,7 @@ p
 
 Truncate the dates to look closer at the testing set performance:
 
-```{r}
+```{r preview=TRUE}
 p + coord_cartesian(xlim = as.Date(c("2021-07-01", "2022-05-01")))
 ```
 
