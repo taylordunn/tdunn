@@ -16,6 +16,7 @@ categories:
   - random forest
   - XGBoost
   - support-vector machine
+  - forecasting
 output:
   distill::distill_article:
     self_contained: false
@@ -624,16 +625,10 @@ It also has a straightforward interpretation: values greater than one indicate a
 The first models I will try are simple linear regression and Poisson regression, but I will test out a few different pre-processing/feature combinations.
 I would prefer to use negative binomial regression instead of Poisson to account for overdispersion (see aside), but [it hasn't been implemented in `parsnip` yet](https://github.com/tidymodels/parsnip/issues/35#issuecomment-1001088658).
 
-For my base pre-processing, I'll include just `site_name` and `n_bikes_lag_14`:
-
 ```{r}
-glm_recipe <-
-  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
-         data = bike_train) %>%
-  add_role(count_date, new_role = "date_variable") %>%
-  step_novel(all_nominal_predictors()) %>%
-  step_dummy(all_nominal_predictors()) %>%
-  step_zv(all_predictors())
+lm_spec <- linear_reg(engine = "lm")
+library(poissonreg) # This wrapper package is required to use `poisson_reg()`
+poisson_spec <- poisson_reg(engine = "glm")
 ```
 
 <aside>
@@ -648,6 +643,17 @@ bike_train %>%
 
 </aside>
 
+For my base pre-processing, I'll include just `site_name` and `n_bikes_lag_14`:
+
+```{r}
+glm_recipe <-
+  recipe(n_bikes ~ count_date + site_name + n_bikes_lag_14,
+         data = bike_train) %>%
+  add_role(count_date, new_role = "date_variable") %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_predictors())
+```
 
 The first extension of this recipe will include date variables.
 I'll add day of week as categorical, day of year as numerical (and tune a natural spline function), year as numerical and Canadian holidays as categorical.
@@ -666,7 +672,8 @@ glm_recipe_date <-
   step_zv(all_predictors())
 ```
 
-I'll consider the weather variables, with the imputations discussed in the feature engineering section, separately:
+<!-- I'll consider the weather variables, with the imputations discussed in the feature engineering section, separately: -->
+I'll consider the weather variables, with the imputations discussed in the [feature engineering section](#feature-engineering), separately:
 
 ```{r}
 glm_recipe_weather <-
@@ -790,13 +797,9 @@ bind_rows(
   fmt_number(columns = -rec, decimals = 2)
 ```
 
-Define the model specifications and put everything into a `workflow_set()`:
+Put these pre-processing recipes and the model specifications into a `workflow_set()`:
 
 ```{r}
-lm_spec <- linear_reg(engine = "lm")
-library(poissonreg) # This wrapper package is required to use `poisson_reg()`
-poisson_spec <- poisson_reg(engine = "glm")
-
 glm_wf_set <- workflow_set(
   preproc = list(base = glm_recipe,
                  date = glm_recipe_date, weather = glm_recipe_weather,
@@ -848,7 +851,6 @@ rank_results(glm_wf_set_res) %>%
 My function extracts the recipe name from `wflow_id`.
 
 </aside>
-
 
 Across the board, the model will all the features (date and weather predictors; indicated by the square symbols) are best, and Poisson regression slightly outperforms linear.
 Here are the models ranked by MASE:
@@ -1211,7 +1213,7 @@ Those are some pretty interesting (and smooth) trends.
 The best model is one of the `svm_rbf` candidates (though the next 10 are the `svm_linear` models).
 Finalize the workflows and fit:
 
-```{r message=FALSE}
+```{r results='hide'}
 svm_linear_wf_res <-
   extract_workflow_set_result(svm_wf_set_res, "recipe_linear")
 svm_linear_wf <-
@@ -1239,6 +1241,7 @@ svm_rbf_wf <-
   )
 svm_rbf_fit <- fit(svm_rbf_wf, bike_train)
 ```
+
 ## Choosing a final model
 
 ```{r include=FALSE, eval=FALSE}
@@ -1374,7 +1377,7 @@ arima_boost_final_fit <- last_fit(
 )
 ```
 
-I'll choose a model by the best MASE:
+I'll choose a model by the best cross-validated MASE:
 
 ```{r}
 bind_rows(
@@ -1394,6 +1397,9 @@ bind_rows(
   fmt_number(c(mase, std_err), decimals = 4)
 ```
 
+XGBoost takes the top two spots, with `boost_tree_2` (the more thorough tuning) being the slight winner.
+Perform a `last_fit()` and get the performance on the held-out test set:
+
 ```{r}
 xgb_final_fit <- last_fit(
   xgb_workflow_2, split = bike_split, metrics = bike_metrics
@@ -1401,7 +1407,10 @@ xgb_final_fit <- last_fit(
 collect_metrics(xgb_final_fit)
 ```
 
-## Exploring the predictions
+There's a bit of a drop-off in performance from the training metrics.
+Let's dig into the predictions.
+
+### Exploring the predictions
 
 Plot the relationship between actual `n_bikes` and predicted:
 
@@ -1420,7 +1429,7 @@ xgb_final_preds %>%
   facet_wrap(~ data_set)
 ```
 
-Here are the predictions overlaid on the data (vertical line delineates training and testing sets):
+And here are the predictions overlaid on the data (vertical line delineates training and testing sets):
 
 ```{r}
 p <- xgb_final_preds %>%
@@ -1439,7 +1448,8 @@ Truncate the dates to look closer at the testing set performance:
 p + coord_cartesian(xlim = as.Date(c("2021-07-01", "2022-05-01")))
 ```
 
-That looks pretty good to me, though it's a shame to not have more data to test a full year -- most of the test set covers winter and spring.
+This looks okay to my eye, though it does look to be overfitting the training set.
+It's a shame to not have more data to test a full year -- most of the test set covers winter and spring.
 ^[This is my reminder to myself to come back in fall 2022 to see how the model performs on a full summer season.]
 
 To investigate the model performance further, I'll plot the biggest outliers in the training and testing set (and ±1 week on either side):
@@ -1486,9 +1496,9 @@ worst_preds %>%
 
 <aside>
 
-The Vernon St has
+The Vernon St site has
 `r bike_ridership %>% filter(site_name == "Vernon St", n_bikes == 0) %>% nrow()`
-dates with `n_bikes = 0`, all in a row:
+dates with `n_bikes = 0` all in a row:
 
 ```{r}
 bike_ridership %>%
@@ -1498,12 +1508,12 @@ bike_ridership %>%
 
 </aside>
 
-
-Relative to the noise in the data, that doesn't look bad at all.
-The Vernon St site has a series of zeroes in a row that I'm guessing aren't real (see aside).
+Relative to the noise in the data, that doesn't look too bad.
+The Vernon St site has a series of `n_bikes` = 0 in a row that I'm guessing aren't real (see aside).
+It was probably an issue with the counter, or maybe some construction on the street halting traffic for that period.
 
 I also think some of the poor predictions can be explained by missing data.
-For instance, there are a few days of poor predictions around 2022-11-23, where the model is over-estimating `n_bikes` at a few sites.
+For instance, there are some poor predictions around 2021-11-23, where the model is over-estimating `n_bikes` at a few sites.
 Check out the weather around that day:
 
 ```{r}
@@ -1530,6 +1540,11 @@ augment(
 ```
 
 That is a much better prediction for a rainy and windy day.
+
+## Conclusions
+
+In the end, the XGBoost models were able to predict bike ridership the best in this data set.
+In my next post, I'll "productionalize" the model to serve predictions.
 
 ## Reproducibility {.appendix}
 
