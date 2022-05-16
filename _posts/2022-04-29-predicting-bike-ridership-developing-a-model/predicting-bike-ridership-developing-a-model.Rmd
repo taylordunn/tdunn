@@ -1137,7 +1137,7 @@ xgb_tune <- tune_grid(
 )
 toc()
 ```
-Here is the `mase` for the different candidate models:
+Here are the metrics for the different candidate models:
 
 ```{r}
 autoplot(xgb_tune)
