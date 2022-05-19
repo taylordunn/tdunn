@@ -12,7 +12,24 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Wed, 27 Apr 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 29 Apr 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Predicting bike ridership: developing a model</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model</link>
+      <description>Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+I explore and tune different modeling approaches.</description>
+      <category>R</category>
+      <category>machine learning</category>
+      <category>tidymodels</category>
+      <category>random forest</category>
+      <category>XGBoost</category>
+      <category>support-vector machine</category>
+      <category>forecasting</category>
+      <guid>https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model</guid>
+      <pubDate>Fri, 29 Apr 2022 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2022-04-29-predicting-bike-ridership-developing-a-model/predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-71-1.png" medium="image" type="image/png" width="1248" height="768"/>
+    </item>
     <item>
       <title>Predicting bike ridership: getting the data</title>
       <dc:creator>Taylor Dunn</dc:creator>

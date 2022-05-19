@@ -51,16 +51,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span. { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -74,9 +75,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -1031,10 +1032,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     margin-top: 1.5em;
   }
   
-  .figure img {
-    width: 100%;
-  }
-  
   .figure .caption {
     color: rgba(0, 0, 0, 0.6);
     font-size: 12px;
@@ -1864,6 +1861,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
           return "<p>" + $('#ref-' + ref).html() + "</p>";
@@ -1878,6 +1881,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+  
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+  
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
   
       // clear polling timer
       clearInterval(tid);
@@ -1977,6 +2005,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1999,7 +2029,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
   
@@ -2216,7 +2246,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   /* Trying to adjust the post preview image size
   /*.posts-list .post-preview .thumbnail img {
     max-width: 100%;
-  }*/</style>
+  }*/
+  
+  /* Remove the all caps transformation on the h4 header */
+  d-article h4 {
+    text-transform: none;
+  }</style>
   <style type="text/css">
   /* base style */
   
@@ -2606,6 +2641,32 @@ function init_posts_list() {
 <div class="posts-container posts-with-sidebar posts-apply-limit l-screen-inset">
 <div class="posts-list">
 <h1 class="posts-list-caption" data-caption="Taylor Dunn&#39;s personal website">Taylor Dunn's personal website</h1>
+<a href="posts/2022-04-29-predicting-bike-ridership-developing-a-model/" class="post-preview">
+<script class="post-metadata" type="text/json">{"categories":["R","machine learning","tidymodels","random forest","XGBoost","support-vector machine","forecasting"]}</script>
+<div class="metadata">
+<div class="publishedDate">April 29, 2022</div>
+<div class="dt-authors">
+<div class="dt-author">Taylor Dunn</div>
+</div>
+</div>
+<div class="thumbnail">
+<img src="posts/2022-04-29-predicting-bike-ridership-developing-a-model/predicting-bike-ridership-developing-a-model_files/figure-html5/unnamed-chunk-71-1.png"/>
+</div>
+<div class="description">
+<h2>Predicting bike ridership: developing a model</h2>
+<div class="dt-tags">
+<div class="dt-tag">R</div>
+<div class="dt-tag">machine learning</div>
+<div class="dt-tag">tidymodels</div>
+<div class="dt-tag">random forest</div>
+<div class="dt-tag">XGBoost</div>
+<div class="dt-tag">support-vector machine</div>
+<div class="dt-tag">forecasting</div>
+</div>
+<p>Part 2 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+I explore and tune different modeling approaches.</p>
+</div>
+</a>
 <a href="posts/2022-04-27-predicting-bike-ridership-getting-the-data/" class="post-preview">
 <script class="post-metadata" type="text/json">{"categories":["R","API"]}</script>
 <div class="metadata">
@@ -2702,7 +2763,7 @@ I retrieve and explore data from two open APIs.</p>
 </div>
 </div>
 <div class="thumbnail">
-<img src="posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-46-1.png"/>
+<img data-src="posts/2021-12-28-canada-covid-19-data-in-r-exploring-the-api/canada-covid-19-data-in-r-exploring-the-api_files/figure-html5/unnamed-chunk-46-1.png"/>
 </div>
 <div class="description">
 <h2>Canada COVID-19 data in R: exploring the API</h2>
@@ -2936,7 +2997,7 @@ Part 1: the frequentist approach with `ordinal`.</p>
 <ul>
 <li>
 <a href="#category:Articles">Articles</a>
-<span class="category-count">(15)</span>
+<span class="category-count">(16)</span>
 </li>
 <li>
 <a href="#category:Advent_of_Code">Advent of Code</a>
@@ -2963,6 +3024,10 @@ Part 1: the frequentist approach with `ordinal`.</p>
 <span class="category-count">(2)</span>
 </li>
 <li>
+<a href="#category:forecasting">forecasting</a>
+<span class="category-count">(1)</span>
+</li>
+<li>
 <a href="#category:frequentist_statistics">frequentist statistics</a>
 <span class="category-count">(1)</span>
 </li>
@@ -2976,7 +3041,7 @@ Part 1: the frequentist approach with `ordinal`.</p>
 </li>
 <li>
 <a href="#category:machine_learning">machine learning</a>
-<span class="category-count">(2)</span>
+<span class="category-count">(3)</span>
 </li>
 <li>
 <a href="#category:ordinal">ordinal</a>
@@ -2992,15 +3057,19 @@ Part 1: the frequentist approach with `ordinal`.</p>
 </li>
 <li>
 <a href="#category:R">R</a>
-<span class="category-count">(9)</span>
+<span class="category-count">(10)</span>
 </li>
 <li>
 <a href="#category:random_forest">random forest</a>
-<span class="category-count">(2)</span>
+<span class="category-count">(3)</span>
 </li>
 <li>
 <a href="#category:regression">regression</a>
 <span class="category-count">(2)</span>
+</li>
+<li>
+<a href="#category:support-vector_machine">support-vector machine</a>
+<span class="category-count">(1)</span>
 </li>
 <li>
 <a href="#category:text_mining">text mining</a>
@@ -3008,11 +3077,15 @@ Part 1: the frequentist approach with `ordinal`.</p>
 </li>
 <li>
 <a href="#category:tidymodels">tidymodels</a>
-<span class="category-count">(2)</span>
+<span class="category-count">(3)</span>
 </li>
 <li>
 <a href="#category:TidyTuesday">TidyTuesday</a>
 <span class="category-count">(4)</span>
+</li>
+<li>
+<a href="#category:XGBoost">XGBoost</a>
+<span class="category-count">(1)</span>
 </li>
 </ul>
 </div>

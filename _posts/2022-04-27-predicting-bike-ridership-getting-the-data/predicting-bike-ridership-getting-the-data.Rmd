@@ -786,12 +786,14 @@ bike_counts_climate %>%
   theme(legend.position = "top")
 ```
 
-Quite a bit of missing data, but we should have enough to make an interesting model.
+Quite a bit of missing data, but we should have enough to make for an interesting analysis.
 Save the data:
 
 ```{r eval=FALSE}
 write_rds(bike_counts_climate, "bike-ridership-data.rds")
 ```
+
+In [my next post](../2022-04-29-predicting-bike-ridership-developing-a-model), I will use this data to develop and evaluate various prediction models.
 
 ## Reproducibility {.appendix}
 
