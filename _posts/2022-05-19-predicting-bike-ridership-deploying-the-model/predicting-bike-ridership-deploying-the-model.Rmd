@@ -22,6 +22,7 @@ output:
   distill::distill_article:
     self_contained: false
     toc: true
+draft: true
 #bibliography: references.bib
 ---
 
@@ -49,11 +50,13 @@ Here, I will walk through my steps in putting the model into "production" on Goo
 
 * deploying an ETL pipeline with BigQuery and Cloud Scheduler
 
+Check out the source code here: https://github.com/taylordunn/hfx-bike-ridership.
+
 ## Creating the project
 
-Before anything, I had to create and setup a new project on GCP that I called `hfx-bike-ridership`.
+Before anything, I had to create and set up a new project on GCP that I called `hfx-bike-ridership`.
 In addition to the very detailed GCP documentation, there are lots of great resources out there to walk through all the steps, like [this one](https://arbenkqiku.github.io/create-docker-image-with-r-and-deploy-as-cron-job-on-google-cloud).
-In brief: after creating the project, I had to enable billing on the project, activate various APIs, and create credentials (OAuth client and service account).
+In brief: after creating the project, I had to enable billing on the project, activate various APIs, create credentials (OAuth client and service account), and install the Cloud SDK.
 
 ## ETL pipeline
 
@@ -63,8 +66,8 @@ In BigQuery, I created the `bike_counts` and `weather` data sets:
 
 ![](etl1.PNG)
 
-I then wrote a script [`etl.R`](https://github.com/taylordunn/hfx-bike-ridership/blob/main/etl/etl.R) that retrieves bike counter data from the Halifax's open data platform, and weather data from the government of Canada.
-The code is mostly unchanged from [my previous post]((../2022-04-27-predicting-bike-ridership-getting-the-data), except for the bit at the end to upload the data to BigQuery tables:
+I then wrote a script [`etl.R`](https://github.com/taylordunn/hfx-bike-ridership/blob/main/etl/etl.R) that retrieves bike counter data from the Halifax open data platform, and weather data from the government of Canada.
+Most of the code there is copied from my previous posts, except for the bit at the end to upload the data to BigQuery tables:
 
 ```{r eval=FALSE}
 bq_auth("oauth-client.json")
@@ -85,7 +88,7 @@ bq_table_upload(weather_table,
                 write_disposition = "WRITE_TRUNCATE")
 ```
 
-The above makes use of the `bigrquery` package to authenticate (`bq_auth()`) using my OAuth credentials and upload (`bq_table_upload()`) the data (creates if missing, overwrites if existing) to the tables `daily_counts` and `daily_report`.
+This uses the `bigrquery` package to authenticate (`bq_auth()`) using my OAuth credentials and upload (`bq_table_upload()`) the data (creates if missing, overwrites if existing) to the tables `daily_counts` and `daily_report`.
 Here is what BigQuery looked like after running this script:
 
 ![](etl2.PNG)
@@ -94,7 +97,71 @@ And the `daily_counts` table:
 
 ![](etl3.PNG)
 
-I could have simply wrote the data to CSV file and uploaded them via the GCP console, but would defeat the purpose of next step: automation.
+Putting these data into BigQuery, as opposed to a Cloud Storage bucket for example, is convenient for quick queries when I don't want to load the data into R, like this one to find days with zero bikes counted:
+
+![](etl4.PNG)
+
+I could have simply wrote the data to CSV files and uploaded them via the GCP console, but would defeat the purpose of next step: automation.
+To deploy my `etl.R` script, I wrote a fairly simple Dockerfile:
+
+```
+FROM rocker/tidyverse:latest
+
+RUN R -e "install.packages(c('bigrquery', 'httr'), repos = 'http://cran.us.r-project.org')"
+
+ADD oauth-client.json /home/rstudio
+ADD etl/etl.R /home/rstudio
+
+CMD Rscript /home/rstudio/etl.R
+```
+
+Explaining how Docker works is a bit out of scope for this post^[For great introductions to Docker for R users, check out [this by Colin Fay](https://colinfay.me/docker-r-reproducibility/) and [this by Andrew Heiss](https://www.andrewheiss.com/blog/2017/04/27/super-basic-practical-guide-to-docker-and-rstudio/).] but from top to bottom:
+
+* `FROM rocker/tidyverse:latest`
+    * The `tidyverse` Docker image provided by RStudio, which you can read more about here: https://hub.docker.com/r/rocker/tidyverse.
+    * This image is a bit overkill for this simple script. If I were worried about the size and portability of my image, I would instead use the base R image (https://hub.docker.com/_/r-base) and install only the packages I need from `tidyverse`.
+* `RUN R -e "install.packages(c('bigrquery', 'httr'), repos = 'http://cran.us.r-project.org')"`
+    * Installs the other packages I need besides those that come with `tidyverse`.
+    * Particularly, `httr` for interacting with APIs, and `bigrquery` for BigQuery.
+* `ADD oauth-client.json /home/rstudio` and `ADD etl/etl.R /home/rstudio`
+    * Add the ETL script and my credentials to the docker container.
+* `CMD Rscript /home/rstudio/etl.R`
+    * Run the script.
+    
+I then built the image, tagged it, and pushed it to my Container Registry with these commands:
+
+* `docker build -t hfx-bike-ridership-etl .`
+* `docker tag hfx-bike-ridership-etl gcr.io/hfx-bike-ridership/hfx-bike-ridership-etl`
+* `docker push gcr.io/hfx-bike-ridership/hfx-bike-ridership-etl:latest`
+
+Now that it exists on GCP, I want to schedule this container to run every week through Cloud Build and Cloud Scheduler.
+I used the `googleCloudRunner` package and followed [these instructions](https://code.markedmondson.me/googleCloudRunner/articles/cloudscheduler.html):
+
+```{r eval=FALSE}
+library(googleCloudRunner)
+
+cr_setup() # Define project ID and authenticate with credentials
+
+build <- cr_build_make("etl/hfx-bike-ridership-etl.yaml")
+
+cr_schedule(
+  # Schedule for every Sunday at 12am
+  schedule = "0 0 * * SUN",
+  name = "etl",
+  httpTarget = cr_schedule_http(build),
+  region = "northamerica-northeast1"
+)
+```
+
+Here is how the job showed up in Cloud Scheduler:
+
+![](etl5.PNG)
+
+And that's the ETL taken care of.
+I left it for a day, and checked the data on Sunday morning to confirm that the data had been updated as expected.
+
+## The model
+
 
 
 ## Reproducibility {.appendix}
