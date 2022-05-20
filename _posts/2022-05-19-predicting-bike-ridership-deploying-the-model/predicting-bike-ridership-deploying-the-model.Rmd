@@ -1,0 +1,123 @@
+---
+title: "Predicting bike ridership: deploying the model"
+description: |
+  Part 3 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+  I deploy a machine learning model on Google Cloud Platform.
+author:
+  - name: Taylor Dunn
+date: 2022-05-19
+params:
+  date: 2022-05-19
+  slug: 
+categories:
+  - R
+  - machine learning
+  - tidymodels
+  - XGBoost
+  - Google Cloud Platform
+  - Docker
+  - forecasting
+  - MLOps
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+#bibliography: references.bib
+---
+
+
+```{r setup, include=TRUE, code_folding="Setup"}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+library(dunnr)
+extrafont::loadfonts(device = "win", quiet = TRUE)
+theme_set(theme_td())
+set_geom_fonts()
+set_palette()
+```
+
+## Introduction
+
+This is the last in a series of posts about predicting bike ridership in Halifax.
+Previously, I:
+
+* [retrieved and prepared bicycle counter and weather data](../2022-04-27-predicting-bike-ridership-getting-the-data), then
+* [developed and evaluated different machine learning models](../2022-04-29-predicting-bike-ridership-develping-a-model).
+
+Here, I will walk through my steps in putting the model into "production" on Google Cloud Platform (GCP):
+
+* deploying an ETL pipeline with BigQuery and Cloud Scheduler
+
+## Creating the project
+
+Before anything, I had to create and setup a new project on GCP that I called `hfx-bike-ridership`.
+In addition to the very detailed GCP documentation, there are lots of great resources out there to walk through all the steps, like [this one](https://arbenkqiku.github.io/create-docker-image-with-r-and-deploy-as-cron-job-on-google-cloud).
+In brief: after creating the project, I had to enable billing on the project, activate various APIs, and create credentials (OAuth client and service account).
+
+## ETL pipeline
+
+I next set up the ETL (extract, load, transform) pipeline to automatically extract the raw data from their sources, perform some transformations, and load it into a database.
+
+In BigQuery, I created the `bike_counts` and `weather` data sets:
+
+![](etl1.PNG)
+
+I then wrote a script [`etl.R`](https://github.com/taylordunn/hfx-bike-ridership/blob/main/etl/etl.R) that retrieves bike counter data from the Halifax's open data platform, and weather data from the government of Canada.
+The code is mostly unchanged from [my previous post]((../2022-04-27-predicting-bike-ridership-getting-the-data), except for the bit at the end to upload the data to BigQuery tables:
+
+```{r eval=FALSE}
+bq_auth("oauth-client.json")
+
+project <- "hfx-bike-ridership"
+
+daily_counts_table <- bq_table(project, "bike_counts", "daily_counts")
+weather_table <- bq_table(project, "weather", "daily_report")
+
+bq_table_upload(daily_counts_table,
+                value = bike_counts_daily, fields = bike_counts_daily,
+                create_disposition = "CREATE_IF_NEEDED",
+                write_disposition = "WRITE_TRUNCATE")
+
+bq_table_upload(weather_table,
+                value = climate_report_daily, fields = climate_report_daily,
+                create_disposition = "CREATE_IF_NEEDED",
+                write_disposition = "WRITE_TRUNCATE")
+```
+
+The above makes use of the `bigrquery` package to authenticate (`bq_auth()`) using my OAuth credentials and upload (`bq_table_upload()`) the data (creates if missing, overwrites if existing) to the tables `daily_counts` and `daily_report`.
+Here is what BigQuery looked like after running this script:
+
+![](etl2.PNG)
+
+And the `daily_counts` table:
+
+![](etl3.PNG)
+
+I could have simply wrote the data to CSV file and uploaded them via the GCP console, but would defeat the purpose of next step: automation.
+
+
+## Reproducibility {.appendix}
+
+<details><summary>Session info</summary>
+
+```{r echo=FALSE}
+devtools::session_info()$platform
+devtools::session_info()$packages %>%
+  rmarkdown::paged_table()
+```
+
+</details>
+
+<details><summary>Git repository</summary>
+
+```{r echo=FALSE}
+git2r::repository()
+```
+
+</details>
+
+```{r echo=FALSE}
+dunnr::get_distill_source(date = params$date, slug = params$slug)
+```
+
