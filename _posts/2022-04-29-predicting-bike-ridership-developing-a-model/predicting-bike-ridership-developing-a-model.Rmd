@@ -1550,7 +1550,7 @@ In the end, the XGBoost model was able to best predict bike ridership this data 
 
 Is this model useful to anyone? Maybe.
 Is it useful just sitting on my computer? Definitely not.
-So in my next post, I'll put this model into production.
+So in [my next post](../2022-05-19-predicting-bike-ridership-deploying-the-model/), I'll put this model into production.
 
 ## Reproducibility {.appendix}
 
