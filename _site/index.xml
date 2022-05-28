@@ -12,7 +12,25 @@
       <link>https://tdunn.ca</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Fri, 29 Apr 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 19 May 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Predicting bike ridership: deploying the model</title>
+      <dc:creator>Taylor Dunn</dc:creator>
+      <link>https://tdunn.ca/posts/2022-05-19-predicting-bike-ridership-deploying-the-model</link>
+      <description>Part 3 of predicting bike ridership in Halifax, Nova Scotia. In this post,
+I deploy the machine learning model on Google Cloud Platform.</description>
+      <category>R</category>
+      <category>machine learning</category>
+      <category>tidymodels</category>
+      <category>XGBoost</category>
+      <category>Google Cloud Platform</category>
+      <category>Docker</category>
+      <category>Shiny</category>
+      <category>forecasting</category>
+      <category>MLOps</category>
+      <guid>https://tdunn.ca/posts/2022-05-19-predicting-bike-ridership-deploying-the-model</guid>
+      <pubDate>Thu, 19 May 2022 00:00:00 +0000</pubDate>
+    </item>
     <item>
       <title>Predicting bike ridership: developing a model</title>
       <dc:creator>Taylor Dunn</dc:creator>
