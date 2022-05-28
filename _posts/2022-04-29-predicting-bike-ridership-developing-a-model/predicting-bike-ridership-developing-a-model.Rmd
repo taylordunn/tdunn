@@ -1546,8 +1546,11 @@ That is a much better prediction for a rainy and windy day.
 
 ## Conclusions
 
-In the end, the XGBoost models were able to predict bike ridership the best in this data set.
-In my next post, I'll "productionalize" the model to serve predictions.
+In the end, the XGBoost model was able to best predict bike ridership this data set.
+
+Is this model useful to anyone? Maybe.
+Is it useful just sitting on my computer? Definitely not.
+So in my next post, I'll put this model into production.
 
 ## Reproducibility {.appendix}
 
