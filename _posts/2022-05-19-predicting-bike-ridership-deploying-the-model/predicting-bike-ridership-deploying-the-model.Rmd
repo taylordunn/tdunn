@@ -25,6 +25,7 @@ output:
     toc: true
 draft: false
 #bibliography: references.bib
+preview: app2-crop.png
 ---
 
 
@@ -45,16 +46,16 @@ This is the last in a series of posts about predicting bike ridership in Halifax
 Previously I:
 
 * [retrieved and prepared bicycle counter and weather data](../2022-04-27-predicting-bike-ridership-getting-the-data), then
-* [developed and evaluated different machine learning models](../2022-04-29-predicting-bike-ridership-develping-a-model).
+* [developed and evaluated different machine learning models](../2022-04-29-predicting-bike-ridership-developing-a-model).
 
 Here, I will walk through my steps in putting the model into "production" on Google Cloud Platform (GCP):
 
 * deploying an ETL pipeline with BigQuery and Cloud Scheduler,
 * automating model training with Cloud Run and Pub/Sub,
 * serving predictions with a REST API via the `plumber` package ([try it out here](https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/__docs__/)), and
-* developing a Shiny app for exploring predictions ([try it out here](https://www.shinyapps.io/)).
+* developing a Shiny app for visualizing predictions ([try it out here](https://hfx-bike-ridership-app-74govvz7xq-uc.a.run.app/)).
 
-The source code for everything, including Dockerfiles, can be found [here](https://github.com/taylordunn/hfx-bike-ridership).
+The source code for everything, including the Dockerfiles, can be found [on GitHub here](https://github.com/taylordunn/hfx-bike-ridership).
 
 ## Creating the project
 
@@ -486,14 +487,14 @@ The steps were:
 ![](sink.PNG)
 
 3. The destination of this sink is a Pub/Sub topic called `data-updated`.
-4. I added a subscription to this topic which pushes a POST request to the API
+4. I added a subscription to this topic which pushes a POST request to the API.
 
 ![](pubsub.PNG)
 
 5. The POST request triggers the model fitting code, and the updated model is uploaded to the Storage bucket.
 
 This seems like a complex workaround for a fairly simple task -- I might be missing a easier method.
-Also, it may have made more sense to just have the model re-training on a weekly schedule, just after the ETL pipeline, but I wanted more flexibility for ad hoc updates.
+Also, it may have made more sense to just have the model re-train on a weekly schedule, just after the ETL pipeline, but I wanted more flexibility for ad hoc updates.
 Regardless, both the ETL and model training are now fully automated.
 
 ## Deployment
@@ -631,7 +632,7 @@ As with `fit.R`, I put this into a [Docker container](https://github.com/taylord
 ![](cloud-run3.PNG)
 
 Unlike the previous Cloud Run service which only accepts internal requests, this one is publicly available.
-For instance, I can get a prediction for tomorrow's `n_bikes` on Hollis St with the following R code:
+For instance, you can get a prediction for tomorrow's `n_bikes` on Hollis St with the following R code:
 
 ```{r n-bikes-query, cache=TRUE}
 base_url <- "https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/"
@@ -650,9 +651,13 @@ A great feature of `plumber` is that uses a nice HTML interface for documenting 
 Check out this API here: https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/__docs__/.
 (Screenshot below for posterity.)
 
+<details><summary>Screenshot for posterity</summary>
+
 ![](api-ui-crop.png)
 
-I also added a `model_info` option, which can be queried to see timestamps of when the model was tuned and fit, and when the data were updated last:
+</details>
+
+I also added a `model_info` option, which can be queried to see timestamps of when the model was last tuned and trained, and when the data were last updated:
 
 ```{r model-info-query, cache=TRUE}
 query <- "model_info"
@@ -942,9 +947,9 @@ ui <- dashboardPage(
 shinyApp(ui, server)
 ```
 
-I set up the Docker container, pushed it to Container Registry, and deployed on Cloud Run.
+I set up the [Docker container](https://github.com/taylordunn/hfx-bike-ridership/blob/main/app/Dockerfile), pushed it to Container Registry, and deployed on Cloud Run.
 
-Assuming I haven't shut it down (or my billing information is out of date), you can [try the app here](https://hfx-bike-ridership-app-74govvz7xq-uc.a.run.app/) or embedded below:
+Assuming I haven't shut it down (and that my billing information is not out of date), you can [try the app here](https://hfx-bike-ridership-app-74govvz7xq-uc.a.run.app/) or embedded below:
 
 <iframe height="900" width="100%" frameborder="no" src="https://hfx-bike-ridership-app-74govvz7xq-uc.a.run.app/" class="l-screen-inset shaded"> </iframe>
 
@@ -954,14 +959,14 @@ I also included a map showing the locations of the five sites:
 
 ![](app1.png)
 
-The main interest of this dashboard is the forecast number of bikes, so it takes the centre column:
+The main interest of this dashboard is the forecasted number of bikes, so it takes the centre column:
 
 ![](app2.png)
 
-There is a lot of data involved in the full project, but I decided to keep this app fairly small in scope.
+There is a lot of data involved in this proejct, but I decided to keep this app fairly small in scope.
 Just the last 14 days and the next 14 days (relative to the when data/model were updated) are shown here.
 
-The third column shows the most interesting predictors of the model -- the weather variables.
+The third column shows the most interesting predictors of the model -- the weather variables:
 
 ![](app3.png)
 
@@ -981,6 +986,24 @@ and so will the predictions:
 This allows me to ask questions like: how will the predicted number of bicyclists change if it downpours tomorrow?
 
 ## Conclusion
+
+In summary, in this post I used Google Cloud Platform to automate the data ETL pipeline and model training.
+Then model was then deployed in a REST API and Shiny dashboard.
+When considering the full MLOps cycle, the biggest missing piece is some sort of monitoring functionality.
+This could include data validation (e.g. alert is triggered if new data have abnormal or missing values) and model drift detection (e.g. model performance is below some threshold which triggers model re-tuning).
+But as far as personal projects go, I'm content to leave it here and re-visit it every once in a while to see how the data and predictions are holding up.
+
+Regardless of the value of the model, this was a great learning experience.
+I'd not used GCP much before this (we use AWS at my company) but it wasn't too painful a transition between cloud services.
+The packages made my Mark Edmondson ([`googleCloudStorageR`](https://code.markedmondson.me/googleCloudStorageR/), [`googleCloudRunner`](https://code.markedmondson.me/googleCloudRunner/), [`bigQueryR`](https://code.markedmondson.me/bigQueryR/)) were also a great help.
+
+Documenting my process here was important to me.
+I learn best by doing, and second best by seeing what others do in open source projects like this.
+I hope that my write-ups and code can help others in getting their own projects up-and-running.
+[David Robinson put it best in his 2019 keynote](https://www.rstudio.com/resources/rstudioconf-2019/the-unreasonable-effectiveness-of-public-work/):
+
+>
+For data scientists at any stage of their careers, open source development offers practice in collaboration, documentation, and interface design that complement other kinds of software development. And for data scientists more advanced in their careers, writing a book is a great way to crystallize your expertise and ensure others can build on it. All of these practices build skills in communication and collaboration that form an essential component of data science work. Each also lets you build a public portfolio of your skills, get feedback from your peers, and network with the larger data science community.
 
 
 ## Reproducibility {.appendix}
