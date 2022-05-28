@@ -30,6 +30,7 @@ I deploy the machine learning model on Google Cloud Platform.</description>
       <category>MLOps</category>
       <guid>https://tdunn.ca/posts/2022-05-19-predicting-bike-ridership-deploying-the-model</guid>
       <pubDate>Thu, 19 May 2022 00:00:00 +0000</pubDate>
+      <media:content url="https://tdunn.ca/posts/2022-05-19-predicting-bike-ridership-deploying-the-model/app2-crop.png" medium="image" type="image/png" width="711" height="171"/>
     </item>
     <item>
       <title>Predicting bike ridership: developing a model</title>
