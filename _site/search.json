@@ -6,22 +6,22 @@
       "description": "Some additional details about the blog",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2022-06-10T20:19:01+00:00"
+      "last_modified": "2022-06-10T21:35:00+00:00"
     },
     {
       "path": "index.html",
       "title": "Taylor Dunn's personal website",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2022-06-10T20:19:01+00:00"
+      "last_modified": "2022-06-10T21:35:01+00:00"
     },
     {
       "path": "projects.html",
       "title": "Projects",
       "description": "A collection of my projects.\n",
       "author": [],
-      "contents": "\n\n\n\n\n\n\n\n\n tidytuesday-dashboard\n\nA Shiny dashboard compiling tweets from the TidyTuesday project.\n\n\n\n\n\n\n\ncanadacovid\n\nAn R package for the Canada COVID-19 tracker API.\n\n\n\n\n\n\n\ncanadacovidshiny\n\nA Shiny dashboard reporting and visualizing the latest COVID-19 data in Canada.\n\n\n\n\n\n\n\ndunnr\n\nMy personal R package of commonly used functions and templates.\n\n\n\n\n\n\n\ngasr\n\nAn R package for simulating goal attainment scaling (GAS) data.\n\n\n\n\n\n\n\nislr-tidy\n\nAn Introduction to Statistical Learning translated with the tidyverse and tidymodels.\n\n\n\n\n\n\n\n\n",
-      "last_modified": "2022-06-10T20:19:02+00:00"
+      "contents": "\n\n\n\n\n\n\n\n\nPredicting bike ridership in Halifax\n\nAn end-to-end machine learning project to predict bike ridership in Halifax, Nova Scotia, Canada.\n\n\n\n\n\n\n\n tidytuesday-dashboard\n\nA Shiny dashboard compiling tweets from the TidyTuesday project.\n\n\n\n\n\n\n\ncanadacovid\n\nAn R package for the Canada COVID-19 tracker API.\n\n\n\n\n\n\n\ncanadacovidshiny\n\nA Shiny dashboard reporting and visualizing the latest COVID-19 data in Canada.\n\n\n\n\n\n\n\ndunnr\n\nMy personal R package of commonly used functions and templates.\n\n\n\n\n\n\n\ngasr\n\nAn R package for simulating goal attainment scaling (GAS) data.\n\n\n\n\n\n\n\nislr-tidy\n\nAn Introduction to Statistical Learning translated with the tidyverse and tidymodels.\n\n\n\n\n\n\n\n\n",
+      "last_modified": "2022-06-10T21:35:01+00:00"
     }
   ],
   "collections": ["posts/posts.json"]
