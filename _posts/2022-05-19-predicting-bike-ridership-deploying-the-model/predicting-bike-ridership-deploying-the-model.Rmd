@@ -24,10 +24,8 @@ output:
     self_contained: false
     toc: true
 draft: false
-#bibliography: references.bib
 preview: app2-crop.png
 ---
-
 
 ```{r setup, include=TRUE, code_folding="Setup"}
 knitr::opts_chunk$set(echo = TRUE)
@@ -48,7 +46,7 @@ Previously I:
 * [retrieved and prepared bicycle counter and weather data](../2022-04-27-predicting-bike-ridership-getting-the-data), then
 * [developed and evaluated different machine learning models](../2022-04-29-predicting-bike-ridership-developing-a-model).
 
-Here, I will walk through my steps in putting the model into "production" on Google Cloud Platform (GCP):
+Here, I will walk through my steps of putting the model into "production" on Google Cloud Platform (GCP):
 
 * deploying an ETL pipeline with BigQuery and Cloud Scheduler,
 * automating model training with Cloud Run and Pub/Sub,
@@ -69,10 +67,14 @@ I next set up the ETL (extract, load, transform) pipeline to automatically extra
 
 In BigQuery, I created the `bike_counts` and `weather` data sets:
 
-![](etl1.PNG)
+<center>
+
+![](etl1.PNG){width=50%}
+
+</center>
 
 I then wrote a script [`etl.R`](https://github.com/taylordunn/hfx-bike-ridership/blob/main/etl/etl.R) that retrieves and processes bike counter data from the Halifax open data platform, and weather data from the government of Canada.
-Most of the code there is copied from my previous posts, except for the lines at the end to upload the data to BigQuery tables:
+Most of the code there is copied from [my previous post](https://tdunn.ca/posts/2022-04-27-predicting-bike-ridership-getting-the-data/), except for the lines at the end to upload the data to BigQuery tables:
 
 ```{r eval=FALSE}
 bq_auth("oauth-client.json")
@@ -96,17 +98,29 @@ bq_table_upload(weather_table,
 This uses the `bigrquery` package to authenticate (`bq_auth()`) using my OAuth credentials and upload (`bq_table_upload()`) the data (creates if missing, overwrites if existing) to the tables `daily_counts` and `daily_report`.
 Here is what BigQuery looked like after running this script:
 
-![](etl2.PNG)
+<center>
+
+![](etl2.PNG){width=50%}
+
+</center>
 
 And the `daily_counts` table:
 
+<center>
+
 ![](etl3.PNG)
+
+</center>
 
 Putting these data into BigQuery, as opposed to a Cloud Storage bucket for example, is convenient for quick queries when I don't want to load the data into R, like this one to find days with zero bikes counted:
 
-![](etl4.PNG)
+<center>
 
-I could have simply wrote the data to CSV files and uploaded them via the GCP console, but would defeat the purpose of next step: automation.
+![](etl4.PNG){width=50%}
+
+</center>
+
+I could have simply wrote the data to CSV files and uploaded them via the GCP console, but that would defeat the purpose of next step: automation.
 To deploy my `etl.R` script, I wrote a fairly simple Dockerfile:
 
 ```
@@ -129,7 +143,7 @@ Explaining how Docker works is a bit out of scope for this post^[For great intro
     * Installs the other packages I need besides those that come with `tidyverse`.
     * Particularly, `httr` for interacting with APIs, and `bigrquery` for BigQuery.
 * `ADD oauth-client.json /home/rstudio` and `ADD etl/etl.R /home/rstudio`
-    * Add the ETL script and my credentials to the docker container.
+    * Add my GCP credentials the ETL script to the Docker container.
 * `CMD Rscript /home/rstudio/etl.R`
     * Run the script.
     
@@ -160,14 +174,18 @@ cr_schedule(
 
 Here is how the job showed up in Cloud Scheduler:
 
-![](etl5.PNG)
+<center>
+
+![](etl5.PNG){width=150%}
+
+</center>
 
 And that's the ETL taken care of.
 I left it for a day, and checked the data on Sunday morning to confirm that the data had been updated as expected.
 
 ## Model tuning and training
 
-With the data in place, I then added a Cloud Storage bucket to store models, and wrote the
+With the data in place, I then created a Cloud Storage bucket to store models, and wrote the
 [`tune.R` script](https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/tune/tune.R).
 
 ```{r eval=FALSE, code_folding="tune.R"}
@@ -391,19 +409,23 @@ This actual model code and choices are [mostly unchanged from my last post](../2
 retrieves the latest data from BigQuery, splits the data into training and testing, creates resamples, engineers features, tunes the XGBoost model, finds the best hyperparameters by MASE, and saves the model (as an R object) to the bucket.
 I also decided to keep track of metrics with a BigQuery table:
 
-![](model-metrics.PNG)
+<center>
+
+![](model-metrics.PNG){width=70%}
+
+</center>
 
 I decided to keep this part of the pipeline manual.
 Tuning the XGBoost model takes a while on my machine, even with parallel processing, and I've heard enough [horror stories of surprise charges from cloud services](https://reddit.com/r/datascience/comments/tqe3y6/anyone_needs_ec2_instance/) that I don't feel like risking it.
-Also, I only plan on re-tuning if model performance degrades over time.
+I will periodically check in on my model predictions, and only plan on re-tuning if performance degrades appreciably.
 
 What I will automate, however, is model training.
-Every time the data is updated (i.e. Sundays at midnight), I want to train the tuned model on the full data data.
+Every time the data is updated (i.e. Sundays at midnight), I want to train the tuned model on the full data set.
 The idea is pretty simple: get the data from BigQuery, the tuned model from the bucket, fit to the data and save that fit to the same bucket.
-The tricky bit is that I wanted this process to trigger only when the data is updated.
+The tricky bit is that I want this process to trigger only when the data is updated.
 It turns out that [BigQuery currently doesn't have native functionality to trigger Cloud Run](https://stackoverflow.com/questions/54792976/trigger-cloud-function-when-new-data-in-bigquery), so I had to use a workaround.
 
-First, I wrote the [`fit.R` function](https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/fit/fit.R) to work as a `plumber` API ([these instructions were helpful](https://code.markedmondson.me/googleCloudRunner/articles/usecase-r-event-driven-pubsub.html)).
+First, I wrote the [`fit.R` function](https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/fit/fit.R) to work as a `plumber` API ([these instructions were helpful](https://code.markedmondson.me/googleCloudRunner/articles/usecase-r-event-driven-pubsub.html)):
 
 ```{r eval=FALSE, code_folding="fit.R"}
 library(dplyr)
@@ -419,8 +441,8 @@ bq_auth(path = "oauth-client.json")
 gcs_auth("oauth-client.json")
 gcs_upload_set_limit(20000000L) # 20 Mb
 
-# This function will retrieve the latest data from BigQuery, the latest
-#  model from Cloud Storage, and
+# This function will retrieve the latest data from BigQuery, the trained
+#  model from GCS, and fit an XGBoost model, which is saved to GCS
 pub <- function(message) {
   # Define the project, dataset and a new table for this project
   project <- "hfx-bike-ridership"
@@ -472,11 +494,19 @@ function(message = NULL) {
 I wrote a [Docker file to containerize the API](https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/fit/Dockerfile), built the image, and pushed it to the Container Registry.
 I then went to Cloud Run, created a new service called `hfx-bike-ridership-fit` using the just-uploaded Docker image:
 
-![](cloud-run1.PNG)
+<center>
+
+![](cloud-run1.PNG){width=70%}
+
+</center>
 
 Once up and running, this gave me a URL from which to query the API:
 
-![](cloud-run2.PNG)
+<center>
+
+![](cloud-run2.PNG){width=90%}
+
+</center>
 
 Next, I had to set up an internal messaging system.
 The steps were:
@@ -484,17 +514,24 @@ The steps were:
 1. I added a `message("Finished ETL pipeline")` at the end of the `etl.R` script to indicate that the data was updated.
 2. This message shows up in Cloud Logging, so I added a "sink" (which is how Logging routes messages) to look for this specific log.
 
-![](sink.PNG)
+<center>
+
+![](sink.PNG){width=80%}
+
+</center>
 
 3. The destination of this sink is a Pub/Sub topic called `data-updated`.
 4. I added a subscription to this topic which pushes a POST request to the API.
 
-![](pubsub.PNG)
+<center>
 
-5. The POST request triggers the model fitting code, and the updated model is uploaded to the Storage bucket.
+![](pubsub.PNG){width=60%}
 
-This seems like a complex workaround for a fairly simple task -- I might be missing a easier method.
-Also, it may have made more sense to just have the model re-train on a weekly schedule, just after the ETL pipeline, but I wanted more flexibility for ad hoc updates.
+</center>
+5. The POST request triggers the model fitting code, and the new model is uploaded to the Storage bucket.
+
+This seems like a complex workaround for a fairly simple task -- I might be missing an easier method.
+Also, it may have made more sense to just have the model re-train on a weekly schedule (just after the ETL pipeline), but I wanted more flexibility for ad hoc updates.
 Regardless, both the ETL and model training are now fully automated.
 
 ## Deployment
@@ -624,7 +661,7 @@ function() {
 This reads in the model from the Cloud Storage bucket and the latest bike data from BigQuery.
 As inputs, it requires only a single date (`count_date`), for which it will return predictions for all 5 sites.
 One or more specific sites can also be provided (`site_name`).
-If the lagged values (`n_bikes_lag_14`) are not provided, then they will be imputed from the bike data (an error will be returned if the lagged value cannot be imputed).
+If the lagged values (`n_bikes_lag_14`) are not provided, then they will be imputed from the bike data (an error will be returned if the lagged value cannot be imputed, i.e. there is no data 14 days before `count_date`).
 The weather inputs `mean_temperature`, `total_precipitation`, `snow_on_ground`, and `speed_max_gust` are imputed if not provided.
 
 As with `fit.R`, I put this into a [Docker container](https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/api/Dockerfile), pushed to Container Registry, and created a Cloud Run service `hfx-bike-ridership-api` using that image.
@@ -632,7 +669,7 @@ As with `fit.R`, I put this into a [Docker container](https://github.com/taylord
 ![](cloud-run3.PNG)
 
 Unlike the previous Cloud Run service which only accepts internal requests, this one is publicly available.
-For instance, you can get a prediction for tomorrow's `n_bikes` on Hollis St with the following R code:
+For instance, you can get a prediction for `n_bikes` on Hollis St tomorrow (May 23rd, 2022) with the following R code:
 
 ```{r n-bikes-query, cache=TRUE}
 base_url <- "https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/"
@@ -647,7 +684,7 @@ paste0(base_url, query) %>%
   purrr::flatten()
 ```
 
-A great feature of `plumber` is that uses a nice HTML interface for documenting and interacting with REST APIs.
+A great feature of `plumber` is that provides an HTML interface for documenting and interacting with REST APIs.
 Check out this API here: https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/__docs__/.
 (Screenshot below for posterity.)
 
@@ -947,7 +984,7 @@ ui <- dashboardPage(
 shinyApp(ui, server)
 ```
 
-I set up the [Docker container](https://github.com/taylordunn/hfx-bike-ridership/blob/main/app/Dockerfile), pushed it to Container Registry, and deployed on Cloud Run.
+I wrote the [Docker file](https://github.com/taylordunn/hfx-bike-ridership/blob/main/app/Dockerfile), pushed it to Container Registry, and deployed on Cloud Run.
 
 Assuming I haven't shut it down (and that my billing information is not out of date), you can [try the app here](https://hfx-bike-ridership-app-74govvz7xq-uc.a.run.app/) or embedded below:
 
@@ -957,7 +994,11 @@ In terms of design, I went with a three column layout with content organized int
 The left-most column has some basic information, including the date of when the data and model were last updated.
 I also included a map showing the locations of the five sites:
 
-![](app1.png)
+<center>
+
+![](app1.png){width=80%}
+
+</center>
 
 The main interest of this dashboard is the forecasted number of bikes, so it takes the centre column:
 
@@ -968,10 +1009,15 @@ Just the last 14 days and the next 14 days (relative to the when data/model were
 
 The third column shows the most interesting predictors of the model -- the weather variables:
 
-![](app3.png)
+<center>
 
-To add some interactivity to this app, I decided to make this part editable.
-The weather variables in the table at bottom can be double-clicked and changed.
+![](app3.png){width=80%}
+
+</center>
+
+The 14 days to the left of the dashed line are actual values, and the 14 days to right right are imputed future values.^[It would be cool to impute these values with weather forecasts, but I couldn't find a reliable/free way to get that data.]
+The table at the bottom lists all of the visualized weather data.
+To add some interactivity, I decided to make this part editable:
 
 ![](app-weather1.gif)
 
@@ -987,24 +1033,19 @@ This allows me to ask questions like: how will the predicted number of bicyclist
 
 ## Conclusion
 
-In summary, in this post I used Google Cloud Platform to automate the data ETL pipeline and model training.
-Then model was then deployed in a REST API and Shiny dashboard.
+In this post I used Google Cloud Platform to automate the data ETL pipeline and model training.
+The model was then deployed in a REST API and Shiny dashboard.
 When considering the full MLOps cycle, the biggest missing piece is some sort of monitoring functionality.
-This could include data validation (e.g. alert is triggered if new data have abnormal or missing values) and model drift detection (e.g. model performance is below some threshold which triggers model re-tuning).
+This could include data validation (e.g. trigger an alert if new data have abnormal or missing values) and model drift detection (e.g. model performance is below some threshold which triggers model re-tuning).
 But as far as personal projects go, I'm content to leave it here and re-visit it every once in a while to see how the data and predictions are holding up.
 
 Regardless of the value of the model, this was a great learning experience.
 I'd not used GCP much before this (we use AWS at my company) but it wasn't too painful a transition between cloud services.
-The packages made my Mark Edmondson ([`googleCloudStorageR`](https://code.markedmondson.me/googleCloudStorageR/), [`googleCloudRunner`](https://code.markedmondson.me/googleCloudRunner/), [`bigQueryR`](https://code.markedmondson.me/bigQueryR/)) were also a great help.
+The packages by Mark Edmondson ([`googleCloudStorageR`](https://code.markedmondson.me/googleCloudStorageR/), [`googleCloudRunner`](https://code.markedmondson.me/googleCloudRunner/), [`bigQueryR`](https://code.markedmondson.me/bigQueryR/)), and the accompanying documentation, were a great help.
 
 Documenting my process here was important to me.
 I learn best by doing, and second best by seeing what others do in open source projects like this.
-I hope that my write-ups and code can help others in getting their own projects up-and-running.
-[David Robinson put it best in his 2019 keynote](https://www.rstudio.com/resources/rstudioconf-2019/the-unreasonable-effectiveness-of-public-work/):
-
->
-For data scientists at any stage of their careers, open source development offers practice in collaboration, documentation, and interface design that complement other kinds of software development. And for data scientists more advanced in their careers, writing a book is a great way to crystallize your expertise and ensure others can build on it. All of these practices build skills in communication and collaboration that form an essential component of data science work. Each also lets you build a public portfolio of your skills, get feedback from your peers, and network with the larger data science community.
-
+I hope that this walkthrough and code can help others in getting their own MLOps projects up-and-running.
 
 ## Reproducibility {.appendix}
 

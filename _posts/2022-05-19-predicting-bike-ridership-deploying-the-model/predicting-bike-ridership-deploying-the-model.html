@@ -1545,7 +1545,7 @@ and prepared bicycle counter and weather data</a>, then</li>
 href="../2022-04-29-predicting-bike-ridership-developing-a-model">developed
 and evaluated different machine learning models</a>.</li>
 </ul>
-<p>Here, I will walk through my steps in putting the model into
+<p>Here, I will walk through my steps of putting the model into
 “production” on Google Cloud Platform (GCP):</p>
 <ul>
 <li>deploying an ETL pipeline with BigQuery and Cloud Scheduler,</li>
@@ -1576,13 +1576,17 @@ automatically extract the raw data from their sources, perform some
 transformations, and load it into a database.</p>
 <p>In BigQuery, I created the <code>bike_counts</code> and
 <code>weather</code> data sets:</p>
-<p><img src="etl1.PNG" /></p>
+<center>
+<p><img src="etl1.PNG" style="width:50.0%" /></p>
+</center>
 <p>I then wrote a script <a
 href="https://github.com/taylordunn/hfx-bike-ridership/blob/main/etl/etl.R"><code>etl.R</code></a>
 that retrieves and processes bike counter data from the Halifax open
 data platform, and weather data from the government of Canada. Most of
-the code there is copied from my previous posts, except for the lines at
-the end to upload the data to BigQuery tables:</p>
+the code there is copied from <a
+href="https://tdunn.ca/posts/2022-04-27-predicting-bike-ridership-getting-the-data/">my
+previous post</a>, except for the lines at the end to upload the data to
+BigQuery tables:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>bq_auth</span><span class='op'>(</span><span class='st'>"oauth-client.json"</span><span class='op'>)</span>
@@ -1610,18 +1614,24 @@ the end to upload the data to BigQuery tables:</p>
 overwrites if existing) to the tables <code>daily_counts</code> and
 <code>daily_report</code>. Here is what BigQuery looked like after
 running this script:</p>
-<p><img src="etl2.PNG" /></p>
+<center>
+<p><img src="etl2.PNG" style="width:50.0%" /></p>
+</center>
 <p>And the <code>daily_counts</code> table:</p>
+<center>
 <p><img src="etl3.PNG" /></p>
+</center>
 <p>Putting these data into BigQuery, as opposed to a Cloud Storage
 bucket for example, is convenient for quick queries when I don’t want to
 load the data into R, like this one to find days with zero bikes
 counted:</p>
-<p><img src="etl4.PNG" /></p>
+<center>
+<p><img src="etl4.PNG" style="width:50.0%" /></p>
+</center>
 <p>I could have simply wrote the data to CSV files and uploaded them via
-the GCP console, but would defeat the purpose of next step: automation.
-To deploy my <code>etl.R</code> script, I wrote a fairly simple
-Dockerfile:</p>
+the GCP console, but that would defeat the purpose of next step:
+automation. To deploy my <code>etl.R</code> script, I wrote a fairly
+simple Dockerfile:</p>
 <pre><code>FROM rocker/tidyverse:latest
 
 RUN R -e &quot;install.packages(c(&#39;bigrquery&#39;, &#39;httr&#39;), repos = &#39;http://cran.us.r-project.org&#39;)&quot;
@@ -1656,7 +1666,7 @@ packages I need from <code>tidyverse</code>.</li>
 <li><code>ADD oauth-client.json /home/rstudio</code> and
 <code>ADD etl/etl.R /home/rstudio</code>
 <ul>
-<li>Add the ETL script and my credentials to the docker container.</li>
+<li>Add my GCP credentials the ETL script to the Docker container.</li>
 </ul></li>
 <li><code>CMD Rscript /home/rstudio/etl.R</code>
 <ul>
@@ -1694,13 +1704,15 @@ instructions</a>:</p>
 </div>
 </div>
 <p>Here is how the job showed up in Cloud Scheduler:</p>
-<p><img src="etl5.PNG" /></p>
+<center>
+<p><img src="etl5.PNG" style="width:150.0%" /></p>
+</center>
 <p>And that’s the ETL taken care of. I left it for a day, and checked
 the data on Sunday morning to confirm that the data had been updated as
 expected.</p>
 <h2 id="model-tuning-and-training">Model tuning and training</h2>
-<p>With the data in place, I then added a Cloud Storage bucket to store
-models, and wrote the <a
+<p>With the data in place, I then created a Cloud Storage bucket to
+store models, and wrote the <a
 href="https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/tune/tune.R"><code>tune.R</code>
 script</a>.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1935,19 +1947,21 @@ resamples, engineers features, tunes the XGBoost model, finds the best
 hyperparameters by MASE, and saves the model (as an R object) to the
 bucket. I also decided to keep track of metrics with a BigQuery
 table:</p>
-<p><img src="model-metrics.PNG" /></p>
+<center>
+<p><img src="model-metrics.PNG" style="width:70.0%" /></p>
+</center>
 <p>I decided to keep this part of the pipeline manual. Tuning the
 XGBoost model takes a while on my machine, even with parallel
 processing, and I’ve heard enough <a
 href="https://reddit.com/r/datascience/comments/tqe3y6/anyone_needs_ec2_instance/">horror
 stories of surprise charges from cloud services</a> that I don’t feel
-like risking it. Also, I only plan on re-tuning if model performance
-degrades over time.</p>
+like risking it. I will periodically check in on my model predictions,
+and only plan on re-tuning if performance degrades appreciably.</p>
 <p>What I will automate, however, is model training. Every time the data
 is updated (i.e. Sundays at midnight), I want to train the tuned model
-on the full data data. The idea is pretty simple: get the data from
+on the full data set. The idea is pretty simple: get the data from
 BigQuery, the tuned model from the bucket, fit to the data and save that
-fit to the same bucket. The tricky bit is that I wanted this process to
+fit to the same bucket. The tricky bit is that I want this process to
 trigger only when the data is updated. It turns out that <a
 href="https://stackoverflow.com/questions/54792976/trigger-cloud-function-when-new-data-in-bigquery">BigQuery
 currently doesn’t have native functionality to trigger Cloud Run</a>, so
@@ -1956,7 +1970,7 @@ I had to use a workaround.</p>
 href="https://github.com/taylordunn/hfx-bike-ridership/blob/main/model/fit/fit.R"><code>fit.R</code>
 function</a> to work as a <code>plumber</code> API (<a
 href="https://code.markedmondson.me/googleCloudRunner/articles/usecase-r-event-driven-pubsub.html">these
-instructions were helpful</a>).</p>
+instructions were helpful</a>):</p>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>
@@ -1976,8 +1990,8 @@ fit.R
 <span class='fu'><a href='https://cloudyr.github.io/googleCloudStorageR//reference/gcs_auth.html'>gcs_auth</a></span><span class='op'>(</span><span class='st'>"oauth-client.json"</span><span class='op'>)</span>
 <span class='fu'><a href='https://cloudyr.github.io/googleCloudStorageR//reference/gcs_upload.html'>gcs_upload_set_limit</a></span><span class='op'>(</span><span class='fl'>20000000L</span><span class='op'>)</span> <span class='co'># 20 Mb</span>
 
-<span class='co'># This function will retrieve the latest data from BigQuery, the latest</span>
-<span class='co'>#  model from Cloud Storage, and</span>
+<span class='co'># This function will retrieve the latest data from BigQuery, the trained</span>
+<span class='co'>#  model from GCS, and fit an XGBoost model, which is saved to GCS</span>
 <span class='va'>pub</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>message</span><span class='op'>)</span> <span class='op'>{</span>
   <span class='co'># Define the project, dataset and a new table for this project</span>
   <span class='va'>project</span> <span class='op'>&lt;-</span> <span class='st'>"hfx-bike-ridership"</span>
@@ -2034,10 +2048,14 @@ file to containerize the API</a>, built the image, and pushed it to the
 Container Registry. I then went to Cloud Run, created a new service
 called <code>hfx-bike-ridership-fit</code> using the just-uploaded
 Docker image:</p>
-<p><img src="cloud-run1.PNG" /></p>
+<center>
+<p><img src="cloud-run1.PNG" style="width:70.0%" /></p>
+</center>
 <p>Once up and running, this gave me a URL from which to query the
 API:</p>
-<p><img src="cloud-run2.PNG" /></p>
+<center>
+<p><img src="cloud-run2.PNG" style="width:90.0%" /></p>
+</center>
 <p>Next, I had to set up an internal messaging system. The steps
 were:</p>
 <ol type="1">
@@ -2047,22 +2065,26 @@ updated.</li>
 <li>This message shows up in Cloud Logging, so I added a “sink” (which
 is how Logging routes messages) to look for this specific log.</li>
 </ol>
-<p><img src="sink.PNG" /></p>
+<center>
+<p><img src="sink.PNG" style="width:80.0%" /></p>
+</center>
 <ol start="3" type="1">
 <li>The destination of this sink is a Pub/Sub topic called
 <code>data-updated</code>.</li>
 <li>I added a subscription to this topic which pushes a POST request to
 the API.</li>
 </ol>
-<p><img src="pubsub.PNG" /></p>
+<center>
+<p><img src="pubsub.PNG" style="width:60.0%" /></p>
+</center>
 <ol start="5" type="1">
-<li>The POST request triggers the model fitting code, and the updated
-model is uploaded to the Storage bucket.</li>
+<li>The POST request triggers the model fitting code, and the new model
+is uploaded to the Storage bucket.</li>
 </ol>
 <p>This seems like a complex workaround for a fairly simple task – I
-might be missing a easier method. Also, it may have made more sense to
-just have the model re-train on a weekly schedule, just after the ETL
-pipeline, but I wanted more flexibility for ad hoc updates. Regardless,
+might be missing an easier method. Also, it may have made more sense to
+just have the model re-train on a weekly schedule (just after the ETL
+pipeline), but I wanted more flexibility for ad hoc updates. Regardless,
 both the ETL and model training are now fully automated.</p>
 <h2 id="deployment">Deployment</h2>
 <h3 id="rest-api">REST API</h3>
@@ -2201,7 +2223,8 @@ bike data from BigQuery. As inputs, it requires only a single date
 (<code>site_name</code>). If the lagged values
 (<code>n_bikes_lag_14</code>) are not provided, then they will be
 imputed from the bike data (an error will be returned if the lagged
-value cannot be imputed). The weather inputs
+value cannot be imputed, i.e. there is no data 14 days before
+<code>count_date</code>). The weather inputs
 <code>mean_temperature</code>, <code>total_precipitation</code>,
 <code>snow_on_ground</code>, and <code>speed_max_gust</code> are imputed
 if not provided.</p>
@@ -2212,8 +2235,8 @@ service <code>hfx-bike-ridership-api</code> using that image.</p>
 <p><img src="cloud-run3.PNG" /></p>
 <p>Unlike the previous Cloud Run service which only accepts internal
 requests, this one is publicly available. For instance, you can get a
-prediction for tomorrow’s <code>n_bikes</code> on Hollis St with the
-following R code:</p>
+prediction for <code>n_bikes</code> on Hollis St tomorrow (May 23rd,
+2022) with the following R code:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>base_url</span> <span class='op'>&lt;-</span> <span class='st'>"https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/"</span>
@@ -2243,7 +2266,7 @@ $n_bikes_lag_14
 $.pred
 [1] 46.7578</code></pre>
 </div>
-<p>A great feature of <code>plumber</code> is that uses a nice HTML
+<p>A great feature of <code>plumber</code> is that provides an HTML
 interface for documenting and interacting with REST APIs. Check out this
 API here: <a
 href="https://hfx-bike-ridership-api-74govvz7xq-uc.a.run.app/__docs__/"
@@ -2565,9 +2588,9 @@ app.R
 </div>
 </details>
 </div>
-<p>I set up the <a
+<p>I wrote the <a
 href="https://github.com/taylordunn/hfx-bike-ridership/blob/main/app/Dockerfile">Docker
-container</a>, pushed it to Container Registry, and deployed on Cloud
+file</a>, pushed it to Container Registry, and deployed on Cloud
 Run.</p>
 <p>Assuming I haven’t shut it down (and that my billing information is
 not out of date), you can <a
@@ -2580,7 +2603,9 @@ organized into <code>shinydashboard::box()</code>s. The left-most column
 has some basic information, including the date of when the data and
 model were last updated. I also included a map showing the locations of
 the five sites:</p>
-<p><img src="app1.png" /></p>
+<center>
+<p><img src="app1.png" style="width:80.0%" /></p>
+</center>
 <p>The main interest of this dashboard is the forecasted number of
 bikes, so it takes the centre column:</p>
 <p><img src="app2.png" /></p>
@@ -2590,10 +2615,14 @@ keep this app fairly small in scope. Just the last 14 days and the next
 here.</p>
 <p>The third column shows the most interesting predictors of the model –
 the weather variables:</p>
-<p><img src="app3.png" /></p>
-<p>To add some interactivity to this app, I decided to make this part
-editable. The weather variables in the table at bottom can be
-double-clicked and changed.</p>
+<center>
+<p><img src="app3.png" style="width:80.0%" /></p>
+</center>
+<p>The 14 days to the left of the dashed line are actual values, and the
+14 days to right right are imputed future values.<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> The
+table at the bottom lists all of the visualized weather data. To add
+some interactivity, I decided to make this part editable:</p>
 <p><img src="app-weather1.gif" /></p>
 <p>Everything is reactive to this table, so the plots will be updated
 immediately:</p>
@@ -2603,43 +2632,29 @@ immediately:</p>
 <p>This allows me to ask questions like: how will the predicted number
 of bicyclists change if it downpours tomorrow?</p>
 <h2 id="conclusion">Conclusion</h2>
-<p>In summary, in this post I used Google Cloud Platform to automate the
-data ETL pipeline and model training. Then model was then deployed in a
-REST API and Shiny dashboard. When considering the full MLOps cycle, the
-biggest missing piece is some sort of monitoring functionality. This
-could include data validation (e.g. alert is triggered if new data have
-abnormal or missing values) and model drift detection (e.g. model
-performance is below some threshold which triggers model re-tuning). But
-as far as personal projects go, I’m content to leave it here and
-re-visit it every once in a while to see how the data and predictions
-are holding up.</p>
+<p>In this post I used Google Cloud Platform to automate the data ETL
+pipeline and model training. The model was then deployed in a REST API
+and Shiny dashboard. When considering the full MLOps cycle, the biggest
+missing piece is some sort of monitoring functionality. This could
+include data validation (e.g. trigger an alert if new data have abnormal
+or missing values) and model drift detection (e.g. model performance is
+below some threshold which triggers model re-tuning). But as far as
+personal projects go, I’m content to leave it here and re-visit it every
+once in a while to see how the data and predictions are holding up.</p>
 <p>Regardless of the value of the model, this was a great learning
 experience. I’d not used GCP much before this (we use AWS at my company)
 but it wasn’t too painful a transition between cloud services. The
-packages made my Mark Edmondson (<a
+packages by Mark Edmondson (<a
 href="https://code.markedmondson.me/googleCloudStorageR/"><code>googleCloudStorageR</code></a>,
 <a
 href="https://code.markedmondson.me/googleCloudRunner/"><code>googleCloudRunner</code></a>,
 <a
-href="https://code.markedmondson.me/bigQueryR/"><code>bigQueryR</code></a>)
-were also a great help.</p>
+href="https://code.markedmondson.me/bigQueryR/"><code>bigQueryR</code></a>),
+and the accompanying documentation, were a great help.</p>
 <p>Documenting my process here was important to me. I learn best by
 doing, and second best by seeing what others do in open source projects
-like this. I hope that my write-ups and code can help others in getting
-their own projects up-and-running. <a
-href="https://www.rstudio.com/resources/rstudioconf-2019/the-unreasonable-effectiveness-of-public-work/">David
-Robinson put it best in his 2019 keynote</a>:</p>
-<blockquote>
-<p>For data scientists at any stage of their careers, open source
-development offers practice in collaboration, documentation, and
-interface design that complement other kinds of software development.
-And for data scientists more advanced in their careers, writing a book
-is a great way to crystallize your expertise and ensure others can build
-on it. All of these practices build skills in communication and
-collaboration that form an essential component of data science work.
-Each also lets you build a public portfolio of your skills, get feedback
-from your peers, and network with the larger data science community.</p>
-</blockquote>
+like this. I hope that this walkthrough and code can help others in
+getting their own MLOps projects up-and-running.</p>
 <h2 class="appendix" id="reproducibility">Reproducibility</h2>
 <details>
 <summary>
@@ -2655,7 +2670,7 @@ Session info
  collate  English_Canada.utf8              
  ctype    English_Canada.utf8              
  tz       America/Curacao                  
- date     2022-05-27                       </code></pre>
+ date     2022-06-10                       </code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"askpass","2":"1.1","3":"1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/askpass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/askpass","6":"FALSE","7":"FALSE","8":"2019-01-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"askpass"},{"1":"assertthat","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/assertthat","6":"FALSE","7":"FALSE","8":"2019-03-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"assertthat"},{"1":"backports","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","5":"C:/Users/tdunn/Documents/R/win-library/4.1/backports","6":"FALSE","7":"FALSE","8":"2020-12-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"backports"},{"1":"bigrquery","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bigrquery","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bigrquery","6":"FALSE","7":"FALSE","8":"2021-08-05","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bigrquery"},{"1":"bit","2":"4.0.4","3":"4.0.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bit","6":"FALSE","7":"FALSE","8":"2020-08-04","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bit"},{"1":"bit64","2":"4.0.5","3":"4.0.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bit64","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bit64","6":"FALSE","7":"FALSE","8":"2020-08-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bit64"},{"1":"broom","2":"0.8.0","3":"0.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","5":"C:/Users/tdunn/Documents/R/win-library/4.1/broom","6":"FALSE","7":"FALSE","8":"2022-04-13","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"broom"},{"1":"bslib","2":"0.3.1","3":"0.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/bslib","6":"FALSE","7":"FALSE","8":"2021-10-06","9":"CRAN (R 4.2.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"bslib"},{"1":"cachem","2":"1.0.6","3":"1.0.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cachem","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cachem"},{"1":"callr","2":"3.7.0","3":"3.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/callr","6":"FALSE","7":"FALSE","8":"2021-04-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"callr"},{"1":"cellranger","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cellranger","6":"FALSE","7":"FALSE","8":"2016-07-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cellranger"},{"1":"class","2":"7.3.20","3":"7.3-20","4":"C:/Program Files/R/R-4.2.0/library/class","5":"C:/Program Files/R/R-4.2.0/library/class","6":"FALSE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"class"},{"1":"cli","2":"3.2.0","3":"3.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","5":"C:/Users/tdunn/Documents/R/win-library/4.1/cli","6":"FALSE","7":"FALSE","8":"2022-02-14","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"cli"},{"1":"codetools","2":"0.2.18","3":"0.2-18","4":"C:/Program Files/R/R-4.2.0/library/codetools","5":"C:/Program Files/R/R-4.2.0/library/codetools","6":"FALSE","7":"FALSE","8":"2020-11-04","9":"CRAN (R 4.2.0)","10":"TRUE","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"codetools"},{"1":"colorspace","2":"2.0.3","3":"2.0-3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","5":"C:/Users/tdunn/Documents/R/win-library/4.1/colorspace","6":"FALSE","7":"FALSE","8":"2022-02-21","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"colorspace"},{"1":"crayon","2":"1.5.1","3":"1.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","5":"C:/Users/tdunn/Documents/R/win-library/4.1/crayon","6":"FALSE","7":"FALSE","8":"2022-03-26","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"crayon"},{"1":"curl","2":"4.3.2","3":"4.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/curl","6":"FALSE","7":"FALSE","8":"2021-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"curl"},{"1":"DBI","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DBI","6":"FALSE","7":"FALSE","8":"2021-12-20","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DBI"},{"1":"dbplyr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dbplyr","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dbplyr"},{"1":"desc","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/desc","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"desc"},{"1":"devtools","2":"2.4.3","3":"2.4.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/devtools","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"devtools"},{"1":"dials","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dials","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dials","6":"FALSE","7":"FALSE","8":"2022-04-06","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dials"},{"1":"DiceDesign","2":"1.9","3":"1.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DiceDesign","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DiceDesign","6":"FALSE","7":"FALSE","8":"2021-02-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DiceDesign"},{"1":"digest","2":"0.6.29","3":"0.6.29","4":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/digest","6":"FALSE","7":"FALSE","8":"2021-12-01","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"digest"},{"1":"distill","2":"1.3","3":"1.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","5":"C:/Users/tdunn/Documents/R/win-library/4.1/distill","6":"FALSE","7":"FALSE","8":"2021-10-13","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"distill"},{"1":"doParallel","2":"1.0.16","3":"1.0.16","4":"C:/Users/tdunn/Documents/R/win-library/4.1/doParallel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/doParallel","6":"FALSE","7":"FALSE","8":"2020-10-16","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"doParallel"},{"1":"downlit","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/downlit","6":"FALSE","7":"FALSE","8":"2021-10-29","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"downlit"},{"1":"dplyr","2":"1.0.8","3":"1.0.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2022-02-08","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dplyr"},{"1":"DT","2":"0.23","3":"0.23","4":"C:/Users/tdunn/Documents/R/win-library/4.1/DT","5":"C:/Users/tdunn/Documents/R/win-library/4.1/DT","6":"FALSE","7":"FALSE","8":"2022-05-10","9":"CRAN (R 4.2.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"DT"},{"1":"dunnr","2":"0.2.5","3":"0.2.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/dunnr","6":"TRUE","7":"FALSE","8":"2022-01-15","9":"Github (taylordunn/dunnr@c83b30e)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"dunnr"},{"1":"ellipsis","2":"0.3.2","3":"0.3.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ellipsis","6":"FALSE","7":"FALSE","8":"2021-04-29","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ellipsis"},{"1":"evaluate","2":"0.14","3":"0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/evaluate","6":"FALSE","7":"FALSE","8":"2019-05-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"evaluate"},{"1":"extrafont","2":"0.17","3":"0.17","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafont","6":"FALSE","7":"FALSE","8":"2014-12-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafont"},{"1":"extrafontdb","2":"1.0","3":"1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/extrafontdb","6":"FALSE","7":"FALSE","8":"2012-06-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"extrafontdb"},{"1":"fansi","2":"1.0.3","3":"1.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fansi","6":"FALSE","7":"FALSE","8":"2022-03-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fansi"},{"1":"fastmap","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fastmap","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fastmap"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","5":"C:/Users/tdunn/Documents/R/win-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"forcats"},{"1":"foreach","2":"1.5.2","3":"1.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/foreach","5":"C:/Users/tdunn/Documents/R/win-library/4.1/foreach","6":"FALSE","7":"FALSE","8":"2022-02-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"foreach"},{"1":"fs","2":"1.5.2","3":"1.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/fs","6":"FALSE","7":"FALSE","8":"2021-12-08","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"fs"},{"1":"furrr","2":"0.2.3","3":"0.2.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/furrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/furrr","6":"FALSE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"furrr"},{"1":"future","2":"1.24.0","3":"1.24.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/future","5":"C:/Users/tdunn/Documents/R/win-library/4.1/future","6":"FALSE","7":"FALSE","8":"2022-02-19","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"future"},{"1":"future.apply","2":"1.8.1","3":"1.8.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/future.apply","5":"C:/Users/tdunn/Documents/R/win-library/4.1/future.apply","6":"FALSE","7":"FALSE","8":"2021-08-10","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"future.apply"},{"1":"gargle","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gargle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gargle","6":"FALSE","7":"FALSE","8":"2021-07-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gargle"},{"1":"generics","2":"0.1.2","3":"0.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","5":"C:/Users/tdunn/Documents/R/win-library/4.1/generics","6":"FALSE","7":"FALSE","8":"2022-01-31","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"generics"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggplot2"},{"1":"ggrepel","2":"0.9.1","3":"0.9.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ggrepel","6":"FALSE","7":"FALSE","8":"2021-01-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ggrepel"},{"1":"globals","2":"0.14.0","3":"0.14.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/globals","5":"C:/Users/tdunn/Documents/R/win-library/4.1/globals","6":"FALSE","7":"FALSE","8":"2020-11-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"globals"},{"1":"glue","2":"1.6.2","3":"1.6.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","5":"C:/Users/tdunn/Documents/R/win-library/4.1/glue","6":"FALSE","7":"FALSE","8":"2022-02-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"glue"},{"1":"googleAuthR","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/googleAuthR","5":"C:/Users/tdunn/Documents/R/win-library/4.1/googleAuthR","6":"FALSE","7":"FALSE","8":"2022-01-28","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"googleAuthR"},{"1":"googleCloudRunner","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/googleCloudRunner","5":"C:/Users/tdunn/Documents/R/win-library/4.1/googleCloudRunner","6":"FALSE","7":"FALSE","8":"2022-02-28","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"googleCloudRunner"},{"1":"googleCloudStorageR","2":"0.7.0","3":"0.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/googleCloudStorageR","5":"C:/Users/tdunn/Documents/R/win-library/4.1/googleCloudStorageR","6":"FALSE","7":"FALSE","8":"2021-12-16","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"googleCloudStorageR"},{"1":"googlePubsubR","2":"0.0.3","3":"0.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/googlePubsubR","5":"C:/Users/tdunn/Documents/R/win-library/4.1/googlePubsubR","6":"FALSE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"googlePubsubR"},{"1":"gower","2":"0.2.2","3":"0.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gower","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gower","6":"FALSE","7":"FALSE","8":"2020-06-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gower"},{"1":"GPfit","2":"1.0.8","3":"1.0-8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/GPfit","5":"C:/Users/tdunn/Documents/R/win-library/4.1/GPfit","6":"FALSE","7":"FALSE","8":"2019-02-08","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"GPfit"},{"1":"gtable","2":"0.3.0","3":"0.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/gtable","6":"FALSE","7":"FALSE","8":"2019-03-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"gtable"},{"1":"hardhat","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hardhat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hardhat","6":"FALSE","7":"FALSE","8":"2022-01-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hardhat"},{"1":"haven","2":"2.4.1","3":"2.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","5":"C:/Users/tdunn/Documents/R/win-library/4.1/haven","6":"FALSE","7":"FALSE","8":"2021-04-23","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"haven"},{"1":"hms","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","5":"C:/Users/tdunn/Documents/R/win-library/4.1/hms","6":"FALSE","7":"FALSE","8":"2021-09-26","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"hms"},{"1":"htmltools","2":"0.5.2","3":"0.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmltools","6":"FALSE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmltools"},{"1":"htmlwidgets","2":"1.5.4","3":"1.5.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/htmlwidgets","5":"C:/Users/tdunn/Documents/R/win-library/4.1/htmlwidgets","6":"FALSE","7":"FALSE","8":"2021-09-08","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"htmlwidgets"},{"1":"httpuv","2":"1.6.5","3":"1.6.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httpuv","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httpuv","6":"FALSE","7":"FALSE","8":"2022-01-05","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httpuv"},{"1":"httr","2":"1.4.2","3":"1.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/httr","6":"FALSE","7":"FALSE","8":"2020-07-20","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"httr"},{"1":"infer","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/infer","5":"C:/Users/tdunn/Documents/R/win-library/4.1/infer","6":"FALSE","7":"FALSE","8":"2021-08-13","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"infer"},{"1":"ipred","2":"0.9.12","3":"0.9-12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ipred","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ipred","6":"FALSE","7":"FALSE","8":"2021-09-15","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ipred"},{"1":"iterators","2":"1.0.14","3":"1.0.14","4":"C:/Users/tdunn/Documents/R/win-library/4.1/iterators","5":"C:/Users/tdunn/Documents/R/win-library/4.1/iterators","6":"FALSE","7":"FALSE","8":"2022-02-05","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"iterators"},{"1":"jose","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jose","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jose","6":"FALSE","7":"FALSE","8":"2021-11-06","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jose"},{"1":"jquerylib","2":"0.1.4","3":"0.1.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jquerylib","6":"FALSE","7":"FALSE","8":"2021-04-26","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jquerylib"},{"1":"jsonlite","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","5":"C:/Users/tdunn/Documents/R/win-library/4.1/jsonlite","6":"FALSE","7":"FALSE","8":"2022-02-22","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"jsonlite"},{"1":"knitr","2":"1.37","3":"1.37","4":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/knitr","6":"FALSE","7":"FALSE","8":"2021-12-16","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"knitr"},{"1":"later","2":"1.3.0","3":"1.3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/later","5":"C:/Users/tdunn/Documents/R/win-library/4.1/later","6":"FALSE","7":"FALSE","8":"2021-08-18","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"later"},{"1":"lattice","2":"0.20.45","3":"0.20-45","4":"C:/Program Files/R/R-4.2.0/library/lattice","5":"C:/Program Files/R/R-4.2.0/library/lattice","6":"FALSE","7":"FALSE","8":"2021-09-22","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"lattice"},{"1":"lava","2":"1.6.10","3":"1.6.10","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lava","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lava","6":"FALSE","7":"FALSE","8":"2021-09-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lava"},{"1":"lhs","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lhs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lhs","6":"FALSE","7":"FALSE","8":"2020-10-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lhs"},{"1":"lifecycle","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lifecycle","6":"FALSE","7":"FALSE","8":"2021-09-24","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lifecycle"},{"1":"listenv","2":"0.8.0","3":"0.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/listenv","5":"C:/Users/tdunn/Documents/R/win-library/4.1/listenv","6":"FALSE","7":"FALSE","8":"2019-12-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"listenv"},{"1":"lubridate","2":"1.8.0","3":"1.8.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/lubridate","6":"FALSE","7":"FALSE","8":"2021-10-07","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"lubridate"},{"1":"magrittr","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/magrittr","6":"FALSE","7":"FALSE","8":"2022-01-26","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"magrittr"},{"1":"MASS","2":"7.3.56","3":"7.3-56","4":"C:/Program Files/R/R-4.2.0/library/MASS","5":"C:/Program Files/R/R-4.2.0/library/MASS","6":"FALSE","7":"FALSE","8":"2022-03-23","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"MASS"},{"1":"Matrix","2":"1.4.1","3":"1.4-1","4":"C:/Program Files/R/R-4.2.0/library/Matrix","5":"C:/Program Files/R/R-4.2.0/library/Matrix","6":"FALSE","7":"FALSE","8":"2022-03-23","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"Matrix"},{"1":"memoise","2":"2.0.1","3":"2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","5":"C:/Users/tdunn/Documents/R/win-library/4.1/memoise","6":"FALSE","7":"FALSE","8":"2021-11-26","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"memoise"},{"1":"mime","2":"0.12","3":"0.12","4":"C:/Users/tdunn/Documents/R/win-library/4.1/mime","5":"C:/Users/tdunn/Documents/R/win-library/4.1/mime","6":"FALSE","7":"FALSE","8":"2021-09-28","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"mime"},{"1":"modelr","2":"0.1.8","3":"0.1.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/modelr","6":"FALSE","7":"FALSE","8":"2020-05-19","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"modelr"},{"1":"munsell","2":"0.5.0","3":"0.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","5":"C:/Users/tdunn/Documents/R/win-library/4.1/munsell","6":"FALSE","7":"FALSE","8":"2018-06-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"munsell"},{"1":"nnet","2":"7.3.17","3":"7.3-17","4":"C:/Program Files/R/R-4.2.0/library/nnet","5":"C:/Program Files/R/R-4.2.0/library/nnet","6":"FALSE","7":"FALSE","8":"2022-01-16","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"nnet"},{"1":"openssl","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/openssl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/openssl","6":"FALSE","7":"FALSE","8":"2022-03-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"openssl"},{"1":"parallelly","2":"1.30.0","3":"1.30.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/parallelly","5":"C:/Users/tdunn/Documents/R/win-library/4.1/parallelly","6":"FALSE","7":"FALSE","8":"2021-12-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"parallelly"},{"1":"parsnip","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/parsnip","5":"C:/Users/tdunn/Documents/R/win-library/4.1/parsnip","6":"FALSE","7":"FALSE","8":"2022-03-17","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"parsnip"},{"1":"patchwork","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","5":"C:/Users/tdunn/Documents/R/win-library/4.1/patchwork","6":"FALSE","7":"FALSE","8":"2020-12-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"patchwork"},{"1":"pillar","2":"1.7.0","3":"1.7.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pillar","6":"FALSE","7":"FALSE","8":"2022-02-01","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pillar"},{"1":"pkgbuild","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgbuild","6":"FALSE","7":"FALSE","8":"2020-12-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgbuild"},{"1":"pkgconfig","2":"2.0.3","3":"2.0.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgconfig","6":"FALSE","7":"FALSE","8":"2019-09-22","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgconfig"},{"1":"pkgload","2":"1.2.1","3":"1.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pkgload","6":"FALSE","7":"FALSE","8":"2021-04-06","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pkgload"},{"1":"plumber","2":"1.1.0","3":"1.1.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/plumber","5":"C:/Users/tdunn/Documents/R/win-library/4.1/plumber","6":"FALSE","7":"FALSE","8":"2021-03-24","9":"CRAN (R 4.2.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"plumber"},{"1":"plyr","2":"1.8.7","3":"1.8.7","4":"C:/Users/tdunn/Documents/R/win-library/4.1/plyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/plyr","6":"FALSE","7":"FALSE","8":"2022-03-24","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"plyr"},{"1":"prettyunits","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prettyunits","6":"FALSE","7":"FALSE","8":"2020-01-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prettyunits"},{"1":"pROC","2":"1.17.0.1","3":"1.17.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/pROC","5":"C:/Users/tdunn/Documents/R/win-library/4.1/pROC","6":"FALSE","7":"FALSE","8":"2021-01-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"pROC"},{"1":"processx","2":"3.5.2","3":"3.5.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","5":"C:/Users/tdunn/Documents/R/win-library/4.1/processx","6":"FALSE","7":"FALSE","8":"2021-04-30","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"processx"},{"1":"prodlim","2":"2019.11.13","3":"2019.11.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/prodlim","5":"C:/Users/tdunn/Documents/R/win-library/4.1/prodlim","6":"FALSE","7":"FALSE","8":"2019-11-17","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"prodlim"},{"1":"promises","2":"1.2.0.1","3":"1.2.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/promises","5":"C:/Users/tdunn/Documents/R/win-library/4.1/promises","6":"FALSE","7":"FALSE","8":"2021-02-11","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"promises"},{"1":"ps","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","5":"C:/Users/tdunn/Documents/R/win-library/4.1/ps","6":"FALSE","7":"FALSE","8":"2021-02-28","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"ps"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"purrr"},{"1":"R6","2":"2.5.1","3":"2.5.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","5":"C:/Users/tdunn/Documents/R/win-library/4.1/R6","6":"FALSE","7":"FALSE","8":"2021-08-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"R6"},{"1":"Rcpp","2":"1.0.8.3","3":"1.0.8.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rcpp","6":"FALSE","7":"FALSE","8":"2022-03-17","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rcpp"},{"1":"readr","2":"2.1.1","3":"2.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readr"},{"1":"readxl","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","5":"C:/Users/tdunn/Documents/R/win-library/4.1/readxl","6":"FALSE","7":"FALSE","8":"2019-03-13","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"readxl"},{"1":"recipes","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/recipes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/recipes","6":"FALSE","7":"FALSE","8":"2022-02-18","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"recipes"},{"1":"remotes","2":"2.4.2","3":"2.4.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","5":"C:/Users/tdunn/Documents/R/win-library/4.1/remotes","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"remotes"},{"1":"reprex","2":"2.0.0","3":"2.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","5":"C:/Users/tdunn/Documents/R/win-library/4.1/reprex","6":"FALSE","7":"FALSE","8":"2021-04-02","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"reprex"},{"1":"rlang","2":"1.0.2","3":"1.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rlang","6":"FALSE","7":"FALSE","8":"2022-03-04","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rlang"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rmarkdown","6":"FALSE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rmarkdown"},{"1":"rpart","2":"4.1.16","3":"4.1.16","4":"C:/Program Files/R/R-4.2.0/library/rpart","5":"C:/Program Files/R/R-4.2.0/library/rpart","6":"FALSE","7":"FALSE","8":"2022-01-24","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"rpart"},{"1":"rprojroot","2":"2.0.2","3":"2.0.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rprojroot","6":"FALSE","7":"FALSE","8":"2020-11-15","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rprojroot"},{"1":"rsample","2":"0.1.1","3":"0.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rsample","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rsample","6":"FALSE","7":"FALSE","8":"2021-11-08","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rsample"},{"1":"rstudioapi","2":"0.13","3":"0.13","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rstudioapi","6":"FALSE","7":"FALSE","8":"2020-11-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rstudioapi"},{"1":"Rttf2pt1","2":"1.3.8","3":"1.3.8","4":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","5":"C:/Users/tdunn/Documents/R/win-library/4.1/Rttf2pt1","6":"FALSE","7":"FALSE","8":"2020-01-10","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"Rttf2pt1"},{"1":"rvest","2":"1.0.0","3":"1.0.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","5":"C:/Users/tdunn/Documents/R/win-library/4.1/rvest","6":"FALSE","7":"FALSE","8":"2021-03-09","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"rvest"},{"1":"sass","2":"0.4.0","3":"0.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sass","6":"FALSE","7":"FALSE","8":"2021-05-12","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sass"},{"1":"scales","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","5":"C:/Users/tdunn/Documents/R/win-library/4.1/scales","6":"FALSE","7":"FALSE","8":"2022-04-13","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"scales"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sessioninfo","6":"FALSE","7":"FALSE","8":"2018-11-05","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sessioninfo"},{"1":"shiny","2":"1.6.0","3":"1.6.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/shiny","5":"C:/Users/tdunn/Documents/R/win-library/4.1/shiny","6":"FALSE","7":"FALSE","8":"2021-01-25","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"shiny"},{"1":"shinydashboard","2":"0.7.2","3":"0.7.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/shinydashboard","5":"C:/Users/tdunn/Documents/R/win-library/4.1/shinydashboard","6":"FALSE","7":"FALSE","8":"2021-09-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"shinydashboard"},{"1":"showtext","2":"0.9.5","3":"0.9-5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/showtext","5":"C:/Users/tdunn/Documents/R/win-library/4.1/showtext","6":"FALSE","7":"FALSE","8":"2022-02-09","9":"CRAN (R 4.2.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"showtext"},{"1":"showtextdb","2":"3.0","3":"3.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/showtextdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/showtextdb","6":"FALSE","7":"FALSE","8":"2020-06-04","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"showtextdb"},{"1":"stringi","2":"1.7.6","3":"1.7.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringi","6":"FALSE","7":"FALSE","8":"2021-11-29","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringi"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"stringr"},{"1":"survival","2":"3.3.1","3":"3.3-1","4":"C:/Program Files/R/R-4.2.0/library/survival","5":"C:/Program Files/R/R-4.2.0/library/survival","6":"FALSE","7":"FALSE","8":"2022-03-03","9":"CRAN (R 4.2.0)","10":"NA","11":"C:/Program Files/R/R-4.2.0/library","_rn_":"survival"},{"1":"swagger","2":"3.33.1","3":"3.33.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/swagger","5":"C:/Users/tdunn/Documents/R/win-library/4.1/swagger","6":"FALSE","7":"FALSE","8":"2020-10-02","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"swagger"},{"1":"sysfonts","2":"0.8.5","3":"0.8.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/sysfonts","5":"C:/Users/tdunn/Documents/R/win-library/4.1/sysfonts","6":"FALSE","7":"FALSE","8":"2021-08-09","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"sysfonts"},{"1":"testthat","2":"3.1.1","3":"3.1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","5":"C:/Users/tdunn/Documents/R/win-library/4.1/testthat","6":"FALSE","7":"FALSE","8":"2021-12-03","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"testthat"},{"1":"tibble","2":"3.1.6","3":"3.1.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-11-07","9":"CRAN (R 4.1.1)","10":"NA","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tibble"},{"1":"tictoc","2":"1.0.1","3":"1.0.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tictoc","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tictoc","6":"FALSE","7":"FALSE","8":"2021-04-19","9":"CRAN (R 4.1.1)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tictoc"},{"1":"tidymodels","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidymodels","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidymodels","6":"FALSE","7":"FALSE","8":"2022-03-19","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidymodels"},{"1":"tidyr","2":"1.2.0","3":"1.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2022-02-01","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyr"},{"1":"tidyselect","2":"1.1.2","3":"1.1.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyselect","6":"FALSE","7":"FALSE","8":"2022-02-21","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyselect"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tidyverse"},{"1":"timeDate","2":"3043.102","3":"3043.102","4":"C:/Users/tdunn/Documents/R/win-library/4.1/timeDate","5":"C:/Users/tdunn/Documents/R/win-library/4.1/timeDate","6":"FALSE","7":"FALSE","8":"2018-02-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"timeDate"},{"1":"tune","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tune","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tune","6":"FALSE","7":"FALSE","8":"2022-03-19","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tune"},{"1":"tzdb","2":"0.2.0","3":"0.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","5":"C:/Users/tdunn/Documents/R/win-library/4.1/tzdb","6":"FALSE","7":"FALSE","8":"2021-10-27","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"tzdb"},{"1":"usethis","2":"2.1.5","3":"2.1.5","4":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","5":"C:/Users/tdunn/Documents/R/win-library/4.1/usethis","6":"FALSE","7":"FALSE","8":"2021-12-09","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"usethis"},{"1":"utf8","2":"1.2.2","3":"1.2.2","4":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","5":"C:/Users/tdunn/Documents/R/win-library/4.1/utf8","6":"FALSE","7":"FALSE","8":"2021-07-24","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"utf8"},{"1":"vctrs","2":"0.4.1","3":"0.4.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","5":"C:/Users/tdunn/Documents/R/win-library/4.1/vctrs","6":"FALSE","7":"FALSE","8":"2022-04-13","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"vctrs"},{"1":"webutils","2":"1.1","3":"1.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/webutils","5":"C:/Users/tdunn/Documents/R/win-library/4.1/webutils","6":"FALSE","7":"FALSE","8":"2020-04-28","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"webutils"},{"1":"withr","2":"2.5.0","3":"2.5.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","5":"C:/Users/tdunn/Documents/R/win-library/4.1/withr","6":"FALSE","7":"FALSE","8":"2022-03-03","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"withr"},{"1":"workflows","2":"0.2.6","3":"0.2.6","4":"C:/Users/tdunn/Documents/R/win-library/4.1/workflows","5":"C:/Users/tdunn/Documents/R/win-library/4.1/workflows","6":"FALSE","7":"FALSE","8":"2022-03-18","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"workflows"},{"1":"workflowsets","2":"0.2.1","3":"0.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/workflowsets","5":"C:/Users/tdunn/Documents/R/win-library/4.1/workflowsets","6":"FALSE","7":"FALSE","8":"2022-03-15","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"workflowsets"},{"1":"xfun","2":"0.29","3":"0.29","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xfun","6":"FALSE","7":"FALSE","8":"2021-12-14","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xfun"},{"1":"xml2","2":"1.3.3","3":"1.3.3","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xml2","6":"FALSE","7":"FALSE","8":"2021-11-30","9":"CRAN (R 4.1.2)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xml2"},{"1":"xtable","2":"1.8.4","3":"1.8-4","4":"C:/Users/tdunn/Documents/R/win-library/4.1/xtable","5":"C:/Users/tdunn/Documents/R/win-library/4.1/xtable","6":"FALSE","7":"FALSE","8":"2019-04-21","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"xtable"},{"1":"yaml","2":"2.2.1","3":"2.2.1","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yaml","6":"FALSE","7":"FALSE","8":"2020-02-01","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yaml"},{"1":"yardstick","2":"0.0.9","3":"0.0.9","4":"C:/Users/tdunn/Documents/R/win-library/4.1/yardstick","5":"C:/Users/tdunn/Documents/R/win-library/4.1/yardstick","6":"FALSE","7":"FALSE","8":"2021-11-22","9":"CRAN (R 4.1.3)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"yardstick"},{"1":"zip","2":"2.2.0","3":"2.2.0","4":"C:/Users/tdunn/Documents/R/win-library/4.1/zip","5":"C:/Users/tdunn/Documents/R/win-library/4.1/zip","6":"FALSE","7":"FALSE","8":"2021-05-31","9":"CRAN (R 4.1.0)","10":"TRUE","11":"C:/Users/tdunn/Documents/R/win-library/4.1","_rn_":"zip"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -2670,7 +2685,7 @@ Git repository
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>Local:    main C:/Users/tdunn/Documents/tdunn
 Remote:   main @ origin (https://github.com/taylordunn/tdunn)
-Head:     [991231c] 2022-05-28: Updated conclusions</code></pre>
+Head:     [bbf9ff6] 2022-05-28: Rebuild site</code></pre>
 </div>
 </details>
 <div class="layout-chunk" data-layout="l-body">
@@ -2688,6 +2703,10 @@ href="https://colinfay.me/docker-r-reproducibility/">this by Colin
 Fay</a> and <a
 href="https://www.andrewheiss.com/blog/2017/04/27/super-basic-practical-guide-to-docker-and-rstudio/">this
 by Andrew Heiss</a>.<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>It would be cool to impute these
+values with weather forecasts, but I couldn’t find a reliable/free way
+to get that data.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
