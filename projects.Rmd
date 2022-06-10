@@ -23,7 +23,6 @@ projects <- read.csv("content/projects.csv")
 bs4cards::cards(
   data = projects,
   title = title,
-  #text = text,
   text = text,
   link = link,
   image = image
