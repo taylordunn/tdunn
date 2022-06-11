@@ -63,7 +63,7 @@ In brief: after creating the project, I had to enable billing on the project, ac
 
 ## ETL pipeline
 
-I next set up the ETL (extract, load, transform) pipeline to automatically extract the raw data from their sources, perform some transformations, and load it into a database.
+I next set up the ETL (extract, transform, load) pipeline to automatically extract the raw data from their sources, perform some transformations, and load it into a database.
 
 In BigQuery, I created the `bike_counts` and `weather` data sets:
 
@@ -1036,12 +1036,12 @@ This allows me to ask questions like: how will the predicted number of bicyclist
 In this post I used Google Cloud Platform to automate the data ETL pipeline and model training.
 The model was then deployed in a REST API and Shiny dashboard.
 When considering the full MLOps cycle, the biggest missing piece is some sort of monitoring functionality.
-This could include data validation (e.g. trigger an alert if new data have abnormal or missing values) and model drift detection (e.g. model performance is below some threshold which triggers model re-tuning).
+This could include data validation (e.g. trigger an alert if new data have abnormal or missing values) and model drift detection (e.g. model performance is below some threshold which triggers re-tuning).
 But as far as personal projects go, I'm content to leave it here and re-visit it every once in a while to see how the data and predictions are holding up.
 
 Regardless of the value of the model, this was a great learning experience.
 I'd not used GCP much before this (we use AWS at my company) but it wasn't too painful a transition between cloud services.
-The packages by Mark Edmondson ([`googleCloudStorageR`](https://code.markedmondson.me/googleCloudStorageR/), [`googleCloudRunner`](https://code.markedmondson.me/googleCloudRunner/), [`bigQueryR`](https://code.markedmondson.me/bigQueryR/)), and the accompanying documentation, were a great help.
+The packages by Mark Edmondson ([`googleCloudStorageR`](https://code.markedmondson.me/googleCloudStorageR/), [`googleCloudRunner`](https://code.markedmondson.me/googleCloudRunner/)), and the accompanying documentation, were a great help.
 
 Documenting my process here was important to me.
 I learn best by doing, and second best by seeing what others do in open source projects like this.
