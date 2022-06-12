@@ -405,7 +405,7 @@ bq_table_upload(splits_resamples_table,
                 write_disposition = "WRITE_APPEND")
 ```
 
-This actual model code and choices are [mostly unchanged from my last post](../2022-04-29-predicting-bike-ridership-develping-a-model), but in brief it:
+This actual model code and choices are [mostly unchanged from my last post](../2022-04-29-predicting-bike-ridership-developing-a-model), but in brief it:
 retrieves the latest data from BigQuery, splits the data into training and testing, creates resamples, engineers features, tunes the XGBoost model, finds the best hyperparameters by MASE, and saves the model (as an R object) to the bucket.
 I also decided to keep track of metrics with a BigQuery table:
 
